@@ -51,7 +51,7 @@ public class HIDapi
     public static extern int hid_read(IntPtr device, byte[] data, UIntPtr length);
 
     [DllImport("hidapi_mac")]
-    public static extern int hid_read_timeout(IntPtr dev, byte[] data, UIntPtr length, int milliseconds);
+    public static extern int hid_read_timeout(IntPtr dev, byte[] data, ulong length, int milliseconds);
 
     [DllImport("hidapi_mac")]
     public static extern int hid_send_feature_report(IntPtr device, byte[] data, uint length);
