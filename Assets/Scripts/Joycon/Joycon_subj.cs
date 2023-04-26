@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 
 //新しく割り当てられるjoyconを探す時、既に接続しているhid_deviceかどうかを判断できる?
+//hid_enumerateで接続されているJoyConのシリアルナンバーをごとのJoyconConnectingのinstanceを作成する
+
 
 public class Joycon_subj : MonoBehaviour
 {
@@ -488,6 +490,7 @@ public class JoyConConnection
 {
     public bool IsConnecting { get; private set; } = false;
     public bool IsJoyconRight { get; private set; } = false;
+    public string Serial_Number { get; private set; }
     private List<Joycon_subj> _observers=null;
     private Thread _hidReadThread=null;
     private Queue<byte[]> _reportQueue=null;
@@ -499,6 +502,7 @@ public class JoyConConnection
         
     }
 
+    /*
     public void SetJoyconDev(IntPtr newJoyconDev)
     {
         if (!IsConnecting)
@@ -508,7 +512,96 @@ public class JoyConConnection
         }
 
     }
+    */
 
+    public void ConnectToJoyCon()
+    {
+        const int JOYCON_R_PRODUCTID = 8199;
+        const int JOYCON_L_PRODUCTID = 8198;
+
+        if (IsConnecting)
+        {
+            return;
+        }
+        IntPtr device = HIDapi.hid_enumerate(0x0, 0x0);
+        IntPtr topDevice = device;
+        IntPtr joyconR_Info_ptr = IntPtr.Zero;
+
+        byte[] byteBuffer = new byte[200];
+        while (device != IntPtr.Zero)
+        {
+            hid_device_info enInfo = (hid_device_info)Marshal.PtrToStructure(device, typeof(hid_device_info));
+            Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
+            if (enInfo.product_id == JOYCON_R_PRODUCTID)
+            {
+                joyconR_Info_ptr = device;
+                string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);
+                if (Serial_Number == serial_number)//instance作成時に指定したシリアルナンバーと一致した場合のみ接続
+                {
+                    break;
+                }
+            }
+
+            device = enInfo.next;
+        }
+
+        if (joyconR_Info_ptr == IntPtr.Zero)//前のwhileループでJoyconLが見つからなかった
+        {
+            Debug.Log($"{Serial_Number} is not found!");
+            return;
+        }
+        hid_device_info joyconR_info = (hid_device_info)Marshal.PtrToStructure(joyconR_Info_ptr, typeof(hid_device_info));
+
+        _joycon_dev = IntPtr.Zero;
+        _joycon_dev = HIDapi.hid_open_path(joyconR_info.path);
+
+        if (_joycon_dev == IntPtr.Zero)//JoyconLと通信開始できなかった。
+        {
+            Debug.Log($"{Serial_Number} can't open!");
+            return;
+        }
+        IsConnecting = true;
+        Debug.Log($"{Serial_Number} open!");
+
+
+
+        HIDapi.hid_set_nonblocking(_joycon_dev, 1);
+        _hidReadThread = new Thread(
+        () =>
+        {
+            Debug.Log($"StartPolling");
+            int failReadCounter = 0;
+            int i = 0;
+            while (true)
+            {
+                i++;
+                if (i % 1000 == 0)
+                {
+                    Debug.Log($"poll Count:{i}");
+                }
+
+                byte[] inputReport = new byte[50];
+                int ret_read = HIDapi.hid_read_timeout(_joycon_dev, inputReport, 50, 10);
+                if (ret_read != 0)
+                {
+                    _reportQueue.Enqueue(inputReport);
+                    failReadCounter = 0;
+                }
+                else
+                {
+                    failReadCounter++;
+                }
+                if (failReadCounter > 500)
+                {
+                    Debug.Log($"{Serial_Number} ConnectionLost StopPolling");
+                    IsConnecting = false;
+                    break;
+                }
+            }
+        });
+        _hidReadThread.Start();
+        HIDapi.hid_free_enumeration(topDevice);
+    }
     
 
     private void HidReadRoop()
