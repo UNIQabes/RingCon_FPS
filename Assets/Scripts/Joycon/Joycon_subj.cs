@@ -14,6 +14,7 @@ using System.Linq;
 
 public class Joycon_subj : MonoBehaviour
 {
+    static bool isInitialized=true;
     static Dictionary<string,JoyConConnection> _joyConConnections;
     const int JOYCON_R_PRODUCTID = 8199;
     const int JOYCON_L_PRODUCTID =8198;
@@ -30,6 +31,7 @@ public class Joycon_subj : MonoBehaviour
     string JoyconRSerialNum ="";
     string JoyconLSerialNum="";
 
+
     Thread HidReadThreadR=null;
     Thread HidReadThreadL = null;
     Queue<byte[]> ReportQueue_R;
@@ -40,16 +42,39 @@ public class Joycon_subj : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        HIDapi.hid_init();
-        SceneManager.sceneLoaded += sceneLoaded;
-        _joyConConnections = new Dictionary<string, JoyConConnection>();
-        UpdateJoyConConnection();
 
-        foreach (KeyValuePair<string,JoyConConnection> aPair in _joyConConnections)
+        
+        if (isInitialized)
         {
-            aPair.Value.ConnectToJoyCon();
-            aPair.Value.SendSubCmd(new byte[] { 0x03,0x3F},2);
+            HIDapi.hid_init();
+            SceneManager.sceneLoaded += sceneLoaded;
+            _joyConConnections = new Dictionary<string, JoyConConnection>();
+            UpdateJoyConConnection();
+            /*
+            foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
+            {
+                if (aPair.Value.ConnectToJoyCon())
+                {
+                    aPair.Value.SendSubCmd(new byte[] { 0x03, 0x30 }, 2);
+                }
+            }
+            */
+            isInitialized = false;
         }
+
+
+
+        //HIDapi.hid_init();
+        //SceneManager.sceneLoaded += sceneLoaded;
+        //_joyConConnections = new Dictionary<string, JoyConConnection>();
+        //UpdateJoyConConnection();
+
+        //foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
+        //{
+        //    aPair.Value.ConnectToJoyCon();
+        //    aPair.Value.SendSubCmd(new byte[] { 0x03, 0x3F }, 2);
+        //}
+
         /*
         ReportQueue_R = new Queue<byte[]>();
         ReportQueue_L = new Queue<byte[]>();
@@ -65,36 +90,17 @@ public class Joycon_subj : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (joyconRIsConnectiong)
+        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
-            int reportCount = ReportQueue_R.Count;
-            for (int i = 0; i < reportCount; i++)
+            if (aPair.Value.IsConnecting)
             {
-                byte[] inputReport = ReportQueue_R.Dequeue();
-                foreach (Joycon_obs aObs in observers_R)
-                {
-                    aObs.onReadReport(inputReport, 50, Time.deltaTime / reportCount);
-                    //aObs.onReadReport(inputReport, 50, 1.0f/ 120.0f);
-                }
-            }
-        }
-        
-
-        if (joyconLIsConnectiong)
-        {
-            int reportCount = ReportQueue_L.Count;
-            for (int i = 0; i < reportCount; i++)
-            {
-                byte[] inputReport = ReportQueue_L.Dequeue();
-                foreach (Joycon_obs aObs in observers_L)
-                {
-                    aObs.onReadReport(inputReport, 50, Time.deltaTime / reportCount);
-                    //aObs.onReadReport(inputReport, 50, 1.0f/ 120.0f);
-                }
+                aPair.Value.PopInputReportToJoyconObs();
             }
         }
     }
 
+    //辞書(_joycon_Connections)に登録されていないシリアルナンバーを持っているJoyconがhid_enummerateで見つかったら、それを辞書に登録する。
+    //プログラム開始時にこの関数を使って、PCに接続されているそれぞれのJoyconに対応するJoyConConnectionインスタンスを作成する。
     public static bool UpdateJoyConConnection()
     {
         bool newJoyConIsFound=false;
@@ -106,7 +112,6 @@ public class Joycon_subj : MonoBehaviour
         byte[] byteBuffer = new byte[200];
 
         
-
         while (device != IntPtr.Zero)
         {
             hid_device_info enInfo = (hid_device_info)Marshal.PtrToStructure(device, typeof(hid_device_info));
@@ -124,6 +129,8 @@ public class Joycon_subj : MonoBehaviour
             }
             device = enInfo.next;
         }
+
+        HIDapi.hid_free_enumeration(topDevice);
 
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
@@ -435,8 +442,6 @@ public class Joycon_subj : MonoBehaviour
 
 
 
-
-
     byte globalPacketNumber=0;
     void SendSubCmd(IntPtr sentDev, byte[] subCmdIDAndArgs, int subCmdLen)
     {
@@ -464,6 +469,8 @@ public class Joycon_subj : MonoBehaviour
         HIDapi.hid_write(sentDev, sendData, (uint)reportlen);
         Debug.Log($"send subcommand{subCmdIDAndArgs[0]}");
     }
+
+    
 
     void getSubCmdReply(IntPtr sentDev, byte[] buf, int replylen)
     {
@@ -575,6 +582,8 @@ public class JoyConConnection
     const int JOYCON_R_PRODUCTID = 8199;
     const int JOYCON_L_PRODUCTID = 8198;
 
+    public List<byte[]> ThisFrameInputs;
+
     //IsConnectingがfalseなら
     //・_hid_Read_Threadが Null or 動いていない
     //・_joycon_devの参照しているhid_deviceが開いていない/有効でない/IntPtr.Zero
@@ -586,7 +595,7 @@ public class JoyConConnection
     public bool IsConnecting { get; private set; } = false;
     public bool IsJoyconRight { get; private set; } = false;
     public string Serial_Number { get; private set; }
-    private List<Joycon_subj> _observers=null;
+    private List<Joycon_obs> _observers=null;
     private Thread _hidReadThread=null;
     private Queue<byte[]> _reportQueue=null;
     private IntPtr _joycon_dev=IntPtr.Zero;
@@ -600,11 +609,24 @@ public class JoyConConnection
         _hidReadThread = null;
         _reportQueue = new Queue<byte[]>();
         _joycon_dev = IntPtr.Zero;
+        _observers = new List<Joycon_obs>();
+        ThisFrameInputs = new List<byte[]>();
     }
 
-    public void RaiseEvent()
+    public void PopInputReportToJoyconObs()
     {
-
+        int reportCount = _reportQueue.Count;
+        List<byte[]> sentReportInOneFrame=new List<byte[]>();
+        for (int i = 0; i < reportCount; i++)
+        {
+            byte[] inputReport = _reportQueue.Dequeue();
+            sentReportInOneFrame.Add(inputReport);
+        }
+        ThisFrameInputs = sentReportInOneFrame;
+        foreach (Joycon_obs aObs in _observers)
+        {
+            aObs.OnReadReport(sentReportInOneFrame);
+        }
     }
 
     public bool ConnectToJoyCon()
@@ -755,5 +777,12 @@ public class JoyConConnection
         HIDapi.hid_write(_joycon_dev, sendData, (uint)reportlen);
         Debug.Log($"send subcommand{subCmdIDAndArgs[0]} to {Serial_Number}");
     }
+    //特定の連続したサブコマンドを送り続ける場合、途中でサブコマンドの返信を待つ必要がある。そのため、Ring-Conの入力を受け取るための一連のパケットを送る関数は非同期である必要がある。
+
+    public void AddObserver(Joycon_obs joycon_Obs)
+    {
+        _observers.Add(joycon_Obs);
+    }
+
 
 }

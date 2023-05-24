@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Joycon_obs : MonoBehaviour
 {
-    public virtual void onReadReport(byte[] report,uint reportlen,float sec)
+    //1フレーム間にJoycon_subjが受け取ったInputReportがまとめて渡される
+    public virtual void OnReadReport(List<byte[]> reports)
     {
-        
+
     }
 }
