@@ -42,47 +42,15 @@ public class Joycon_subj : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        
         if (isInitialized)
         {
             HIDapi.hid_init();
             SceneManager.sceneLoaded += sceneLoaded;
             _joyConConnections = new Dictionary<string, JoyConConnection>();
             UpdateJoyConConnection();
-            /*
-            foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
-            {
-                if (aPair.Value.ConnectToJoyCon())
-                {
-                    aPair.Value.SendSubCmd(new byte[] { 0x03, 0x30 }, 2);
-                }
-            }
-            */
+            
             isInitialized = false;
         }
-
-
-
-        //HIDapi.hid_init();
-        //SceneManager.sceneLoaded += sceneLoaded;
-        //_joyConConnections = new Dictionary<string, JoyConConnection>();
-        //UpdateJoyConConnection();
-
-        //foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
-        //{
-        //    aPair.Value.ConnectToJoyCon();
-        //    aPair.Value.SendSubCmd(new byte[] { 0x03, 0x3F }, 2);
-        //}
-
-        /*
-        ReportQueue_R = new Queue<byte[]>();
-        ReportQueue_L = new Queue<byte[]>();
-        //joy-conへパケットを送ってinputReportのモードを変更する
-        HIDapi.hid_init();
-        ConnectJoyConL();
-        ConnectJoyConR();
-        */
     }
 
     byte[] buf_update = null;
@@ -131,12 +99,13 @@ public class Joycon_subj : MonoBehaviour
         }
 
         HIDapi.hid_free_enumeration(topDevice);
-
+        /*
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
             aPair.Value.ConnectToJoyCon();
             aPair.Value.SendSubCmd(new byte[] { 0x03, 0x3F }, 2);
         }
+        */
         return newJoyConIsFound;
     }
 
@@ -696,7 +665,10 @@ public class JoyConConnection
             IsConnecting = false;
             Debug.Log($"{Serial_Number} DisConnect");
         }
+        
     }
+
+    
 
     /*実装するには、HidReadRoop内でprivateなイベントリスナーを呼び出すコードを書く必要がありそう
     public bool Update_IsConnecting()
@@ -714,8 +686,9 @@ public class JoyConConnection
         while (IsConnecting)
         {
             byte[] inputReport = new byte[50];
+            inputReport[0] = 0x00;
             int ret_read = HIDapi.hid_read_timeout(_joycon_dev, inputReport, 50, 10);
-            if (ret_read != 0)
+            if (ret_read != 0 && inputReport[0]!=0x00)
             {
                 _reportQueue.Enqueue(inputReport);
                 failReadCounter = 0;
@@ -782,6 +755,10 @@ public class JoyConConnection
     public void AddObserver(Joycon_obs joycon_Obs)
     {
         _observers.Add(joycon_Obs);
+    }
+    public void DelObserver(Joycon_obs joycon_Obs)
+    {
+        _observers.Remove(joycon_Obs);
     }
 
 

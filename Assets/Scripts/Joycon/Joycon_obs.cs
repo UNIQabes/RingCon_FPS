@@ -9,4 +9,9 @@ public class Joycon_obs : MonoBehaviour
     {
 
     }
+    //1フレーム間にJoycon_subjが受け取ったInputReportがまとめて渡される
+    public virtual void OnDisConnect()
+    {
+
+    }
 }
