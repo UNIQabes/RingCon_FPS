@@ -29,6 +29,7 @@ public class MainJoyconInput : Joycon_obs
     public override void OnReadReport(List<byte[]> reports)
     {
         base.OnReadReport(reports);
+        
     }
 
     void Start()
