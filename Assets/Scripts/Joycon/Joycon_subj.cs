@@ -142,6 +142,7 @@ public class Joycon_subj : MonoBehaviour
     }
 
     byte globalPacketNumber = 0;
+    /*
     void SendSubCmd(IntPtr sentDev, byte[] subCmdIDAndArgs, int subCmdLen)
     {
         int reportlen = 10 + subCmdLen;
@@ -168,7 +169,9 @@ public class Joycon_subj : MonoBehaviour
         HIDapi.hid_write(sentDev, sendData, (uint)reportlen);
         Debug.Log($"send subcommand{subCmdIDAndArgs[0]}");
     }
+    */
 
+    /*
     void getSubCmdReply(IntPtr sentDev, byte[] buf, int replylen)
     {
         int counter = 0;
@@ -188,6 +191,7 @@ public class Joycon_subj : MonoBehaviour
             //if (counter > 100) { Debug.Log("AT~~~~"); break; }
         }
     }
+    */
 
     
 
@@ -199,6 +203,7 @@ public class Joycon_subj : MonoBehaviour
         HIDapi.hid_close(joyconR_dev);
         if (HidReadThreadL != null) { HidReadThreadL.Abort(); }
         HIDapi.hid_close(joyconL_dev);
+        Debug.Log(_joyConConnections==null);
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
             aPair.Value.Disconnect();
@@ -347,12 +352,12 @@ public class JoyConConnection
         }
 
     }
-    
+
 
     //新しい実装------------------------
 
-
-    public void SendSubCmdSimple(byte[] subCmdIDAndArgs, int subCmdLen)
+    private byte globalPacketNumber = 0;
+    private void SendSubCmdSimple(byte[] subCmdIDAndArgs, int subCmdLen)
     {
         if (!IsConnecting)
         {
@@ -384,59 +389,11 @@ public class JoyConConnection
         Debug.Log($"send subcommand{subCmdIDAndArgs[0]} to {Serial_Number}");
     }
 
-    byte[] _popedSubCmd_temp = null;
-    Queue<byte[]> _subcmdQueue_temp = new Queue<byte[]>();
-    void pushToSubCmdQueue_temp(byte[] subCmd)
-    {
-        if (_popedSubCmd_temp == null)
-        {
-            _popedSubCmd_temp = subCmd;
-        }
-        else
-        {
-            _subcmdQueue_temp.Enqueue(subCmd);
-        }
-    }
-    void popSubCmdQueue_temp()
-    {
-        if (_subcmdQueue_temp.Count == 0)
-        {
-            _popedSubCmd_temp = null;
-        }
-        else
-        {
-            _popedSubCmd_temp=_subcmdQueue_temp.Dequeue();
-        }
-    }
-
-    List<byte[]> _subCmdReplys_temp = new List<byte[]>();
-    public async UniTask<bool> SendSubCommandAsync(byte[] subCmd, int subCmdLen,
-        byte[] SubCmdReplyBuf, int replyLen, CancellationToken cancellationToken)
-    {
-        
-        byte[] subCmdCpy = new byte[subCmdLen];
-        Array.Copy(subCmd, subCmdCpy, subCmdLen);
-        pushToSubCmdQueue_temp(subCmdCpy);
-        while (_popedSubCmd_temp == subCmdCpy & !cancellationToken.IsCancellationRequested) { }
-        SendSubCmdSimple(subCmdCpy, subCmdLen);
-        byte[] cmdReply = new byte[0];
-
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            bool isbreak = false;
-            foreach (byte[] aReply in _subCmdReplys_temp)
-            { if (aReply[0] == 0x21 & aReply[14] == subCmdCpy[10]) { isbreak = true; cmdReply = aReply; break; } }
-            _subCmdReplys_temp.Clear();
-            if (isbreak) { break; }
-        }
-        await UniTask.WaitUntil(()=>true);
-        Array.Copy(cmdReply, SubCmdReplyBuf, Math.Min(replyLen, cmdReply.Length));
-        popSubCmdQueue_temp();
-        return true;
-    }
+    
     //新しい実装(終)------------------------
 
     //新しい実装2-----------------------後々playerLoopにこの処理を入れるつもり
+    List<byte[]> _subCmdReplys_temp = null;
     Queue<byte[]> subCmdQueue;
     byte[] replyGotSubCmd_ThisFrame;
     byte[] subCmdReply_ThisFrame;
@@ -485,17 +442,7 @@ public class JoyConConnection
         Debug.Log("CancellationRequested");
         
     }
-    /*
-    public void SubCmdQueing(byte[] subCmd, int subCmdLen)
-    {
-        
-        int cmdCpyLen = Math.Min(subCmdLen, subCmd.Length);
-        byte[] subCmdCpy = new byte[cmdCpyLen];
-        Array.Copy(subCmd, subCmdCpy, cmdCpyLen);
-        subCmdQueue.Enqueue(subCmdCpy);
-        Debug.Log($"QueueCount:{subCmdQueue.Count}");
-    }
-    */
+    
 
     public async UniTask SendSubCmd_And_WaitReply(byte[] subCmd,
         byte[] SubCmdReplyBuf, CancellationToken cancellationToken)
@@ -506,28 +453,13 @@ public class JoyConConnection
         subCmdQueue.Enqueue(subCmdCpy);
         Debug.Log($"push{subCmdCpy[0]} QueueCnt:{subCmdQueue.Count}");
         await UniTask.WaitUntil(()=>(subCmdCpy== replyGotSubCmd_ThisFrame), PlayerLoopTiming.EarlyUpdate);
-        Debug.Log("終わったンゴねぇ…");
         //Replyを受け取る
-        Debug.Log(subCmdReply_ThisFrame==null);
-        Debug.Log(SubCmdReplyBuf == null);
         int replyCpyLen= Math.Min(subCmdReply_ThisFrame.Length, SubCmdReplyBuf.Length);
-        Debug.Log(subCmdReply_ThisFrame.Length);
-        Debug.Log(SubCmdReplyBuf.Length);
-
         Array.Copy(subCmdReply_ThisFrame, SubCmdReplyBuf, replyCpyLen);
+        Debug.Log($"get subcommand reply  {(SubCmdReplyBuf[13] >= 0x80 ? "ACK" : "NACK")}  ID:{SubCmdReplyBuf[14]}");
 
     }
-    //新しい実装2(終)-----------------------
-
-
-    /*実装するには、HidReadRoop内でprivateなイベントリスナーを呼び出すコードを書く必要がありそう
-    public bool Update_IsConnecting()
-    {
-        
-        return IsConnecting;
-    }
-    */
-
+    
     private void HidReadRoop()
     {
         Debug.Log($"StartPolling");
@@ -555,7 +487,8 @@ public class JoyConConnection
             }
             if (failReadCounter == 500)
             {
-                SendSubCmd(new byte[]{0x00},1);
+                byte[] ReplyBuf = new byte[1];
+                SendSubCmd_And_WaitReply(new byte[]{0x00}, ReplyBuf,_cancellationToken).Forget();
                 Debug.Log($"Check  {Serial_Number} Connection");
             }
             else if (failReadCounter > 1000)
@@ -568,7 +501,7 @@ public class JoyConConnection
         }
     }
 
-    private byte globalPacketNumber = 0;
+    
     public void SendSubCmd(byte[] subCmdIDAndArgs, int subCmdLen)
     {
         if (!IsConnecting)
@@ -600,7 +533,8 @@ public class JoyConConnection
         HIDapi.hid_write(_joycon_dev, sendData, (uint)reportlen);
         Debug.Log($"send subcommand{subCmdIDAndArgs[0]} to {Serial_Number}");
     }
-    //特定の連続したサブコマンドを送り続ける場合、途中でサブコマンドの返信を待つ必要がある。そのため、Ring-Conの入力を受け取るための一連のパケットを送る関数は非同期である必要がある。
+    
+
 
     public void AddObserver(Joycon_obs joycon_Obs)
     {

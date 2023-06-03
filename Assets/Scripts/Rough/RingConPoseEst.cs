@@ -141,6 +141,7 @@ public class RingConPoseEst : Joycon_obs
 
     private async UniTask joyConSetUp(CancellationToken cancellationToken)
     {
+
         // Enable vibration
         joyconRConnection.SendSubCmd(new byte[] { 0x48, 0x01 }, 2);
         await waitSubCommandReply(cancellationToken);
@@ -186,7 +187,7 @@ public class RingConPoseEst : Joycon_obs
                 {
                     if (aInputReport[0] == 0x21)
                     {
-                        Debug.Log($"get subcommand reply  {(aInputReport[13] >= 0x80 ? "ACK" : "NACK")}  ID:{aInputReport[14]}");
+                        
                         isSentReply = true;
                         break;
                     }

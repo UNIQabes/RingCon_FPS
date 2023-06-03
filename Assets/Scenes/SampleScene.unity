@@ -436,13 +436,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 124219066}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4653cca841cd4bb8896646a691378c3, type: 3}
+  m_Script: {fileID: 11500000, guid: cebaf0d8eb3134b62981eac2188b9f6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FrontVector: {x: 0, y: 0, z: 1}
-  DownWardVector: {x: 0, y: 1, z: 0}
 --- !u!1 &575977970
 GameObject:
   m_ObjectHideFlags: 0
@@ -1632,7 +1630,6 @@ GameObject:
   - component: {fileID: 1732913396}
   - component: {fileID: 1732913395}
   - component: {fileID: 1732913397}
-  - component: {fileID: 1732913398}
   m_Layer: 0
   m_Name: JoyConSupport
   m_TagString: Untagged
@@ -1653,7 +1650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   observers_R:
-  - {fileID: 124219068}
+  - {fileID: 0}
   observers_L: []
 --- !u!4 &1732913396
 Transform:
@@ -1680,17 +1677,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c918e6cc9de24c048a8948aa76df382, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1732913398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732913394}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a0667f7867f346deb5d543906e9e80f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
