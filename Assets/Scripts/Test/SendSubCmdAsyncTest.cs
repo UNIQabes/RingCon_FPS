@@ -32,6 +32,20 @@ public class SendSubCmdAsyncTest : MonoBehaviour
     public void SendSubCommand0x00()
     {
         byte[] buf = new byte[20];
-        _joyconConnection_R.SendSubCommandAsync(new byte[] { 0x00 }, 1, buf,20, _cancellationToken).Forget();
+        //await UniTask.Delay(1000);
+        AsyncTest().Forget();
+        //_joyconConnection_R.SendSubCommandAsync(new byte[] { 0x00 }, 1, buf,20, _cancellationToken).Forget();
     }
+
+    public async UniTaskVoid AsyncTest()
+    {
+        //await UniTask.Delay(2000, cancellationToken: _cancellationToken);
+        await Async2();
+        Debug.Log("終わったンゴねぇ…");
+    }
+    public async UniTask Async2()
+    {
+        while (true) { }
+    }
+
 }

@@ -47,9 +47,9 @@ public class MainJoyconInput : Joycon_obs
             _joyconConnection_R.ConnectToJoyCon();
             Debug.Log("Joyconが見つかった！");
             ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
+            
 
-
-            joyConSetUp(_cancellationToken).Forget();
+            //joyConSetUp(_cancellationToken).Forget();
         }
 
         JoyconPose_R = Quaternion.identity;
@@ -67,12 +67,30 @@ public class MainJoyconInput : Joycon_obs
         }
     }
 
-    public void ReconnectJoyConForget()
+    //テスト
+    public void SubCmdQueing()
     {
-        ReConnectJoyconAsync().Forget();
+        Debug.Log("0");
+        if (_joyconConnection_R == null)
+        {
+            Debug.Log("nullだ");
+        }
+        
     }
+    public async UniTaskVoid SendSubCmd()
+    {
+        byte[] buf = new byte[50];
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, buf, _cancellationToken);
+        Debug.Log($"get subcommand reply  {(buf[13] >= 0x80 ? "ACK" : "NACK")}  ID:{buf[14]}");
+    }
+    public void asyncTrigger()
+    {
+        SendSubCmd().Forget();
+    }
+    //テスト(終わり)
 
     //JoyConを接続し直す
+
     public async UniTask<bool> ReConnectJoyconAsync()
     {
         //以前登録していたJoyConConnectionへの登録を解除 二重にJoyconConnectionに登録するのを防ぐ

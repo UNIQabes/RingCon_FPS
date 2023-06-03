@@ -38,6 +38,7 @@ public class Joycon_subj : MonoBehaviour
     Queue<byte[]> ReportQueue_R;
     Queue<byte[]> ReportQueue_L;
 
+    static CancellationToken _cancellationToken;
 
 
     // Start is called before the first frame update
@@ -49,8 +50,8 @@ public class Joycon_subj : MonoBehaviour
             SceneManager.sceneLoaded += sceneLoaded;
             _joyConConnections = new Dictionary<string, JoyConConnection>();
             UpdateJoyConConnection();
-
             isInitialized = false;
+            _cancellationToken = this.GetCancellationTokenOnDestroy();
         }
     }
 
@@ -92,7 +93,7 @@ public class Joycon_subj : MonoBehaviour
                 string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);
                 if (!_joyConConnections.ContainsKey(serial_number))
                 {
-                    _joyConConnections.Add(serial_number, new JoyConConnection(isJoyConR, serial_number));
+                    _joyConConnections.Add(serial_number, new JoyConConnection(isJoyConR, serial_number, _cancellationToken));
                     newJoyConIsFound = true;
                 }
             }
@@ -139,278 +140,6 @@ public class Joycon_subj : MonoBehaviour
     {
         return _joyConConnections[serial_number];
     }
-
-
-
-    public void ConnectJoyConR()
-    {
-        if (joyconRIsConnectiong)
-        {
-            return;
-        }
-        IntPtr device = HIDapi.hid_enumerate(0x0, 0x0);
-        IntPtr topDevice = device;
-        IntPtr joyconR_Info_ptr = IntPtr.Zero;
-
-        byte[] byteBuffer = new byte[200];
-        while (device != IntPtr.Zero)
-        {
-            hid_device_info enInfo = (hid_device_info)Marshal.PtrToStructure(device, typeof(hid_device_info));
-            Debug.Log($"{intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
-            if (enInfo.product_id == JOYCON_R_PRODUCTID)
-            {
-                joyconR_Info_ptr = device;
-                string serial_number = intPtrToStrUtf32(enInfo.serial_number, 100);
-                if (JoyconRSerialNum == "" | JoyconRSerialNum == serial_number)//まだ一度もjoyconLに接続していないか、以前接続したものと同一のものならば、それ以上JoyconLを探さない
-                {
-                    break;
-                }
-            }
-
-            device = enInfo.next;
-        }
-
-        if (joyconR_Info_ptr == IntPtr.Zero)//前のwhileループでJoyconLが見つからなかった
-        {
-            Debug.Log("joy-conR is not found!");
-            return;
-        }
-        hid_device_info joyconR_info = (hid_device_info)Marshal.PtrToStructure(joyconR_Info_ptr, typeof(hid_device_info));
-
-        joyconR_dev = IntPtr.Zero;
-        joyconR_dev = HIDapi.hid_open_path(joyconR_info.path);
-
-        if (joyconR_dev == IntPtr.Zero)//JoyconLと通信開始できなかった。
-        {
-            Debug.Log("joy-conR can't open!");
-            return;
-        }
-        joyconRIsConnectiong = true;
-        JoyconRSerialNum = intPtrToStrUtf32(joyconR_info.serial_number, 100);
-        Debug.Log($"JoyconRSerialNum:{JoyconRSerialNum}");
-
-        int subCmdSize = 49;
-        byte[] sendData = new byte[subCmdSize];
-        int bufSize = 64;
-        byte[] databuf = new byte[bufSize];
-        HIDapi.hid_set_nonblocking(joyconR_dev, 1);
-        // Enable vibration
-        sendData[0] = 0x48;
-        sendData[1] = 0x01;
-        SendSubCmd(joyconR_dev, sendData, 2);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-        // Enable IMU data
-        sendData[0] = 0x40;
-        sendData[1] = 0x01;
-        SendSubCmd(joyconR_dev, sendData, 2);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-        //Set input report mode to 0x30
-        sendData[0] = 0x03;
-        sendData[1] = 0x30;
-        SendSubCmd(joyconR_dev, sendData, 2);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-        // Enabling MCU data
-        sendData[0] = 0x22;
-        sendData[1] = 0x01;
-        SendSubCmd(joyconR_dev, sendData, 2);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-
-        //-----------------
-        //enabling_MCU_data_21_21_1_1
-        byte[] subcommand_21_21_1_1 = new byte[39] { 0x21, 0x21, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF3 };
-        SendSubCmd(joyconR_dev, subcommand_21_21_1_1, 39);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-        //get_ext_data_59
-        sendData[0] = 0x59;
-        sendData[1] = 0;
-        SendSubCmd(joyconR_dev, sendData, 2);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-        //get_ext_dev_in_format_config_5C
-        byte[] subcommand_get_ext_dev_in_format_config_5C = new byte[38] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 };
-        SendSubCmd(joyconR_dev, subcommand_get_ext_dev_in_format_config_5C, 38);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-        //start_external_polling_5A
-        sendData[0] = 0x5A;
-        sendData[1] = 0x04;
-        sendData[2] = 0x01;
-        sendData[3] = 0x01;
-        sendData[4] = 0x02;
-        SendSubCmd(joyconR_dev, sendData, 5);
-        getSubCmdReply(joyconR_dev, databuf, 49);
-
-
-
-        HidReadThreadR = new Thread(
-        () =>
-        {
-            Debug.Log($"StartPolling");
-            int failReadCounter = 0;
-            int i = 0;
-            while (true)
-            {
-                i++;
-                if (i % 1000 == 0)
-                {
-                    Debug.Log($"poll Count:{i}");
-                }
-
-                byte[] inputReport = new byte[50];
-                int ret_read = HIDapi.hid_read_timeout(joyconR_dev, inputReport, 50, 10);
-                if (ret_read != 0)
-                {
-                    ReportQueue_R.Enqueue(inputReport);
-                    failReadCounter = 0;
-                }
-                else
-                {
-                    failReadCounter++;
-                }
-                if (failReadCounter > 500)
-                {
-                    Debug.Log($"JoyconR ConnectionLost StopPolling");
-                    joyconRIsConnectiong = false;
-                    break;
-                }
-            }
-        });
-        HidReadThreadR.Start();
-        HIDapi.hid_free_enumeration(topDevice);
-    }
-
-    public void ConnectJoyConL()
-    {
-        if (joyconLIsConnectiong)
-        {
-            return;
-        }
-        IntPtr device = HIDapi.hid_enumerate(0x0, 0x0);
-        IntPtr topDevice = device;
-        IntPtr joyconL_Info_ptr = IntPtr.Zero;
-
-        byte[] byteBuffer = new byte[200];
-        while (device != IntPtr.Zero)
-        {
-            hid_device_info enInfo = (hid_device_info)Marshal.PtrToStructure(device, typeof(hid_device_info));
-            Debug.Log($"{intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
-            if (enInfo.product_id == JOYCON_L_PRODUCTID)
-            {
-                joyconL_Info_ptr = device;
-                string serial_number = intPtrToStrUtf32(enInfo.serial_number, 100);
-                if (JoyconLSerialNum == "" | JoyconLSerialNum == serial_number)//まだ一度もjoyconLに接続していないか、以前接続したものと同一のものを見つけたならば、それ以上JoyconLを探さない
-                {
-                    break;
-                }
-            }
-
-            device = enInfo.next;
-        }
-
-        if (joyconL_Info_ptr == IntPtr.Zero)//前のwhileループでJoyconLが見つからなかった
-        {
-            Debug.Log("joy-conL is not found!");
-            return;
-        }
-        hid_device_info joyconL_info = (hid_device_info)Marshal.PtrToStructure(joyconL_Info_ptr, typeof(hid_device_info));
-
-        joyconL_dev = IntPtr.Zero;
-        joyconL_dev = HIDapi.hid_open_path(joyconL_info.path);
-
-        if (joyconL_dev == IntPtr.Zero)//JoyconLと通信開始できなかった。
-        {
-            Debug.Log("joy-conL can't open!");
-            return;
-        }
-
-        joyconLIsConnectiong = true;
-        JoyconLSerialNum = intPtrToStrUtf32(joyconL_info.serial_number, 100);
-        Debug.Log($"JoyconLSerialNum:{JoyconLSerialNum}");
-
-        HIDapi.hid_set_nonblocking(joyconL_dev, 1);
-
-        int subCmdSize = 49;
-        byte[] sendData = new byte[subCmdSize];
-        int bufSize = 64;
-        byte[] databuf = new byte[bufSize];
-
-        subCmdSize = 49;
-        sendData = new byte[subCmdSize];
-        bufSize = 64;
-        databuf = new byte[bufSize];
-
-        // Enable vibration
-        sendData[0] = 0x48;
-        sendData[1] = 0x01;
-        SendSubCmd(joyconL_dev, sendData, 2);
-        getSubCmdReply(joyconL_dev, databuf, 49);
-
-        // Enable IMU data
-        sendData[0] = 0x40;
-        sendData[1] = 0x01;
-        SendSubCmd(joyconL_dev, sendData, 2);
-        getSubCmdReply(joyconL_dev, databuf, 49);
-
-        //Set input report mode to 0x30
-        sendData[0] = 0x03;
-        sendData[1] = 0x30;
-        SendSubCmd(joyconL_dev, sendData, 2);
-        getSubCmdReply(joyconL_dev, databuf, 49);
-
-        // Enabling MCU data
-        sendData[0] = 0x22;
-        sendData[1] = 0x01;
-        SendSubCmd(joyconL_dev, sendData, 2);
-        getSubCmdReply(joyconL_dev, databuf, 49);
-
-
-
-
-        HidReadThreadL = new Thread(
-        () =>
-        {
-            Debug.Log($"StartPolling");
-            int i = 0;
-            int failReadCounter = 0;
-            while (true)
-            {
-                i++;
-                if (i % 1000 == 0)
-                {
-                    Debug.Log($"poll Count:{i}");
-                }
-
-                byte[] inputReport = new byte[50];
-                int ret_read = HIDapi.hid_read_timeout(joyconL_dev, inputReport, 50, 10);
-                if (ret_read != 0)
-                {
-                    ReportQueue_L.Enqueue(inputReport);
-                }
-                else
-                {
-                    failReadCounter++;
-                }
-                if (failReadCounter > 500)
-                {
-                    Debug.Log($"JoyconL ConnectionLost StopPolling");
-                    joyconLIsConnectiong = false;
-                    break;
-                }
-            }
-        });
-
-        HidReadThreadL.Start();
-        HIDapi.hid_free_enumeration(topDevice);
-
-
-    }
-
-
 
     byte globalPacketNumber = 0;
     void SendSubCmd(IntPtr sentDev, byte[] subCmdIDAndArgs, int subCmdLen)
@@ -487,62 +216,7 @@ public class Joycon_subj : MonoBehaviour
         SceneManager.sceneLoaded-= sceneLoaded;
     }
 
-    string bytesToStr(byte[] bytes)
-    {
-        string retV="";
-        foreach (byte aByte in bytes)
-        {
-            retV += aByte.ToString()+" ";
-        }
-        return retV;
-    }
-    string bytesToStrUTF32(byte[] bytes)
-    {
-        string retV="";
-        int lastCode = -1; 
-        for (int i=0;i<=bytes.Length-4;i+=4)
-        {
-            
-            int utf32Code = BitConverter.ToInt32(bytes, i);
-            //0x000000 and 0x10ffff
-            if (0x000000 <= utf32Code & utf32Code <= 0x10ffff& utf32Code!=0)
-            {
-                lastCode = utf32Code;
-                retV += Char.ConvertFromUtf32(utf32Code);
-            }
-            else
-            {
-                break;
-            }
-        }
-        //Debug.Log(lastCode);
-        //Debug.Log(Char.ConvertFromUtf32(lastCode));
-        return retV;
-    }
-    string intPtrToStrUtf32(IntPtr intPtr,int maxlen)
-    {
-        string retV = "";
-        byte[] wcharBuf=new byte[4];
-        IntPtr curPtr=intPtr;
-        while (true)
-        {
-            int counter = 0;
-            Marshal.Copy(curPtr, wcharBuf, 0, wcharBuf.Length);
-            int utf32Code = BitConverter.ToInt32(wcharBuf, 0);
-            //UTF32の文字コードの取り得る値の範囲に収まっているか? & utf32Codeがnull文字じゃないか? & 文字数の最大値に達していないか?
-            if (0x000000 <= utf32Code & utf32Code <= 0x10ffff & utf32Code != 0& counter<= maxlen)
-            {
-                retV += Char.ConvertFromUtf32(utf32Code);
-                counter++;
-            }
-            else
-            {
-                break;
-            }
-            curPtr = IntPtr.Add(curPtr, 4);
-        }
-        return retV;
-    }
+    
 
     
 }
@@ -569,8 +243,10 @@ public class JoyConConnection
     private Queue<byte[]> _reportQueue = null;
     private IntPtr _joycon_dev = IntPtr.Zero;
 
+    private CancellationToken _cancellationToken;
 
-    public JoyConConnection(bool isJoyconRight, string serial_Number)
+
+    public JoyConConnection(bool isJoyconRight, string serial_Number, CancellationToken cancellationToken)
     {
         IsJoyconRight = isJoyconRight;
         Serial_Number = serial_Number;
@@ -580,6 +256,8 @@ public class JoyConConnection
         _joycon_dev = IntPtr.Zero;
         _observers = new List<Joycon_obs>();
         ThisFrameInputs = new List<byte[]>();
+        _cancellationToken= cancellationToken;
+        subCmdQueue = new Queue<byte[]>();
     }
 
     public void PopInputReportToJoyconObs()
@@ -596,6 +274,7 @@ public class JoyConConnection
         {
             aObs.OnReadReport(sentReportInOneFrame);
         }
+        _subCmdReplys_temp = sentReportInOneFrame;
     }
 
     public bool ConnectToJoyCon()
@@ -647,6 +326,7 @@ public class JoyConConnection
         HIDapi.hid_set_nonblocking(_joycon_dev, 1);
         _hidReadThread = new Thread(HidReadRoop);
         _hidReadThread.Start();
+        WaitSubCommandRoop(_cancellationToken).Forget();
         HIDapi.hid_free_enumeration(topDevice);
         return true;
     }
@@ -667,6 +347,7 @@ public class JoyConConnection
         }
 
     }
+    
 
     //新しい実装------------------------
 
@@ -730,8 +411,9 @@ public class JoyConConnection
 
     List<byte[]> _subCmdReplys_temp = new List<byte[]>();
     public async UniTask<bool> SendSubCommandAsync(byte[] subCmd, int subCmdLen,
-    byte[] SubCmdReplyBuf, int replyLen, CancellationToken cancellationToken)
+        byte[] SubCmdReplyBuf, int replyLen, CancellationToken cancellationToken)
     {
+        
         byte[] subCmdCpy = new byte[subCmdLen];
         Array.Copy(subCmd, subCmdCpy, subCmdLen);
         pushToSubCmdQueue_temp(subCmdCpy);
@@ -747,11 +429,95 @@ public class JoyConConnection
             _subCmdReplys_temp.Clear();
             if (isbreak) { break; }
         }
+        await UniTask.WaitUntil(()=>true);
         Array.Copy(cmdReply, SubCmdReplyBuf, Math.Min(replyLen, cmdReply.Length));
         popSubCmdQueue_temp();
         return true;
     }
     //新しい実装(終)------------------------
+
+    //新しい実装2-----------------------後々playerLoopにこの処理を入れるつもり
+    Queue<byte[]> subCmdQueue;
+    byte[] replyGotSubCmd_ThisFrame;
+    byte[] subCmdReply_ThisFrame;
+    private async UniTaskVoid WaitSubCommandRoop(CancellationToken cancellationToken)//基本的にここに渡されるcancellationTokenはJoycon_subjのメンバ変数のcancellationToken
+    {
+        Debug.Log("WaitSubCommandRoop_Start");
+        while ((!cancellationToken.IsCancellationRequested)&IsConnecting)
+        {
+            
+            
+            if (subCmdQueue.Count > 0)
+            {
+                
+                byte[] subCmd = subCmdQueue.Dequeue();
+                Debug.Log($"Pop:{subCmd[0]}");
+                SendSubCmdSimple(subCmd,subCmd.Length);
+                byte[] subCmdReply = null;
+                await UniTask.WaitUntil
+                (
+                    ()=>
+                    {
+                        foreach (byte[] aReply in _subCmdReplys_temp)
+                        {
+                            if (aReply[0] == 0x21 & aReply[14] == subCmd[0])
+                            {
+                                subCmdReply = aReply;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                ,PlayerLoopTiming.PreUpdate, cancellationToken);
+                replyGotSubCmd_ThisFrame = subCmd;
+                subCmdReply_ThisFrame = subCmdReply;
+                await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);//このawait中にSendSubCmd_And_WaitReplyがReplyを取得する
+                replyGotSubCmd_ThisFrame = null;
+                subCmdReply_ThisFrame = null;
+            }
+            else
+            {
+                await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
+                //Debug.Log("まってます");
+
+            }
+        }
+        Debug.Log("CancellationRequested");
+        
+    }
+    /*
+    public void SubCmdQueing(byte[] subCmd, int subCmdLen)
+    {
+        
+        int cmdCpyLen = Math.Min(subCmdLen, subCmd.Length);
+        byte[] subCmdCpy = new byte[cmdCpyLen];
+        Array.Copy(subCmd, subCmdCpy, cmdCpyLen);
+        subCmdQueue.Enqueue(subCmdCpy);
+        Debug.Log($"QueueCount:{subCmdQueue.Count}");
+    }
+    */
+
+    public async UniTask SendSubCmd_And_WaitReply(byte[] subCmd,
+        byte[] SubCmdReplyBuf, CancellationToken cancellationToken)
+    {
+        int cmdCpyLen =subCmd.Length;
+        byte[] subCmdCpy = new byte[cmdCpyLen];
+        Array.Copy(subCmd, subCmdCpy, cmdCpyLen);
+        subCmdQueue.Enqueue(subCmdCpy);
+        Debug.Log($"push{subCmdCpy[0]} QueueCnt:{subCmdQueue.Count}");
+        await UniTask.WaitUntil(()=>(subCmdCpy== replyGotSubCmd_ThisFrame), PlayerLoopTiming.EarlyUpdate);
+        Debug.Log("終わったンゴねぇ…");
+        //Replyを受け取る
+        Debug.Log(subCmdReply_ThisFrame==null);
+        Debug.Log(SubCmdReplyBuf == null);
+        int replyCpyLen= Math.Min(subCmdReply_ThisFrame.Length, SubCmdReplyBuf.Length);
+        Debug.Log(subCmdReply_ThisFrame.Length);
+        Debug.Log(SubCmdReplyBuf.Length);
+
+        Array.Copy(subCmdReply_ThisFrame, SubCmdReplyBuf, replyCpyLen);
+
+    }
+    //新しい実装2(終)-----------------------
 
 
     /*実装するには、HidReadRoop内でprivateなイベントリスナーを呼び出すコードを書く必要がありそう
