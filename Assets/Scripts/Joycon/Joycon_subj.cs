@@ -336,6 +336,7 @@ public class JoyConConnection
         return true;
     }
 
+    //接続切断時の処理
     public void Disconnect()
     {
 
@@ -456,7 +457,7 @@ public class JoyConConnection
         //Replyを受け取る
         int replyCpyLen= Math.Min(subCmdReply_ThisFrame.Length, SubCmdReplyBuf.Length);
         Array.Copy(subCmdReply_ThisFrame, SubCmdReplyBuf, replyCpyLen);
-        Debug.Log($"get subcommand reply  {(SubCmdReplyBuf[13] >= 0x80 ? "ACK" : "NACK")}  ID:{SubCmdReplyBuf[14]}");
+        Debug.Log($"get subcommand reply  {(subCmdReply_ThisFrame[13] >= 0x80 ? "ACK" : "NACK")}  ID:{subCmdReply_ThisFrame[14]}");
 
     }
     
@@ -494,7 +495,9 @@ public class JoyConConnection
             else if (failReadCounter > 1000)
             {
                 Debug.Log($"{Serial_Number} ConnectionLost StopPolling");
-                IsConnecting = false;
+                //IsConnecting = false;
+                Disconnect();
+                Debug.Log("fff");
                 break;
             }
 

@@ -81,6 +81,10 @@ public class MainJoyconInput : Joycon_obs
     {
         SendSubCmd().Forget();
     }
+    public void ReconnectTrigger()
+    {
+        ReConnectJoyconAsync().Forget();
+    }
     //テスト(終わり)
 
     //JoyConを接続し直す
@@ -99,6 +103,7 @@ public class MainJoyconInput : Joycon_obs
         foreach (string aJoyconSerialNum in joyconRKeys)
         {
             newJoyConSerialNum = aJoyconSerialNum;
+            //以前接続していたJoyConに優先的に繋ぐ
             if (newJoyConSerialNum == SerialNumber_R)
             {
                 break;
