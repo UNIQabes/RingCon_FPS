@@ -7,6 +7,7 @@ using System.Threading;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using UnityEngine.LowLevel;
 
 
 //新しく割り当てられるjoyconを探す時、既に接続しているhid_deviceかどうかを判断できる?
@@ -15,6 +16,59 @@ using Cysharp.Threading.Tasks;
 
 public class Joycon_subj : MonoBehaviour
 {
+    //新しい実装
+
+    
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void Init()
+    {
+        /*
+        var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
+
+        foreach (var header in playerLoop.subSystemList)
+        {
+            Debug.LogFormat("------{0}------", header.type.Name);
+            foreach (var subSystem in header.subSystemList)
+            {
+                Debug.LogFormat("{0}.{1}", header.type.Name, subSystem.type.Name);
+            }
+        }
+        */
+
+        
+        HIDapi.hid_init();
+        //SceneManager.sceneLoaded += sceneLoaded;
+        _joyConConnections = new Dictionary<string, JoyConConnection>();
+        UpdateJoyConConnection();
+        isInitialized = false;
+        _cTokenSourceOnAppQuit= new CancellationTokenSource();
+        _cancellationToken = _cTokenSourceOnAppQuit.Token;
+        Application.quitting += OnApplicatioQuitStatic;
+    }
+
+    private static void UpdateStatic()
+    {
+        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
+        {
+            if (aPair.Value.IsConnecting)
+            {
+                aPair.Value.PopInputReportToJoyconObs();
+            }
+        }
+    }
+
+    private static void OnApplicatioQuitStatic()
+    {
+        Debug.Log("アプリ、終わったンゴねぇ…");
+        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
+        {
+            aPair.Value.Disconnect();
+        }
+        _cTokenSourceOnAppQuit.Cancel();
+    }
+    //新しい実装(終わり)
+
+
     static bool isInitialized = true;
     static Dictionary<string, JoyConConnection> _joyConConnections;
     const int JOYCON_R_PRODUCTID = 8199;
@@ -38,12 +92,14 @@ public class Joycon_subj : MonoBehaviour
     Queue<byte[]> ReportQueue_R;
     Queue<byte[]> ReportQueue_L;
 
+    static CancellationTokenSource _cTokenSourceOnAppQuit;
     static CancellationToken _cancellationToken;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        /*
         if (isInitialized)
         {
             HIDapi.hid_init();
@@ -53,6 +109,7 @@ public class Joycon_subj : MonoBehaviour
             isInitialized = false;
             _cancellationToken = this.GetCancellationTokenOnDestroy();
         }
+        */
     }
 
     byte[] buf_update = null;
@@ -60,6 +117,7 @@ public class Joycon_subj : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
             if (aPair.Value.IsConnecting)
@@ -67,6 +125,7 @@ public class Joycon_subj : MonoBehaviour
                 aPair.Value.PopInputReportToJoyconObs();
             }
         }
+        */
     }
 
     //辞書(_joycon_Connections)に登録されていないシリアルナンバーを持っているJoyconがhid_enummerateで見つかったら、それを辞書に登録する。
@@ -196,20 +255,23 @@ public class Joycon_subj : MonoBehaviour
     
 
 
-
+    /*
     private void OnApplicationQuit()
     {
+        
         if (HidReadThreadR != null) {HidReadThreadR.Abort();}
         HIDapi.hid_close(joyconR_dev);
         if (HidReadThreadL != null) { HidReadThreadL.Abort(); }
         HIDapi.hid_close(joyconL_dev);
-        Debug.Log(_joyConConnections==null);
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
             aPair.Value.Disconnect();
         }
-    }
 
+    }
+    */
+
+    
     void sceneLoaded(Scene nextScene, LoadSceneMode mode)
     {
         Debug.Log(nextScene.name);
@@ -463,7 +525,7 @@ public class JoyConConnection
     
     private void HidReadRoop()
     {
-        Debug.Log($"StartPolling");
+        Debug.Log($"StartPolling {Serial_Number}");
         int failReadCounter = 0;
         int i = 0;
         while (IsConnecting)
@@ -497,11 +559,11 @@ public class JoyConConnection
                 Debug.Log($"{Serial_Number} ConnectionLost StopPolling");
                 //IsConnecting = false;
                 Disconnect();
-                Debug.Log("fff");
                 break;
             }
 
         }
+        Debug.Log($"{Serial_Number} Polling Finish");
     }
 
     
