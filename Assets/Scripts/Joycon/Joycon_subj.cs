@@ -17,8 +17,8 @@ using UnityEngine.LowLevel;
 public class Joycon_subj : MonoBehaviour
 {
     //新しい実装
-
     
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Init()
     {
@@ -40,12 +40,40 @@ public class Joycon_subj : MonoBehaviour
         //SceneManager.sceneLoaded += sceneLoaded;
         _joyConConnections = new Dictionary<string, JoyConConnection>();
         UpdateJoyConConnection();
-        isInitialized = false;
         _cTokenSourceOnAppQuit= new CancellationTokenSource();
         _cancellationToken = _cTokenSourceOnAppQuit.Token;
+
+        //Application終了時の処理を設定
         Application.quitting += OnApplicatioQuitStatic;
+        //Updateメソッドを設定
+        PlayerLoopSystem mySystem = new PlayerLoopSystem
+        {
+            type = typeof(JoyConSubjPreUpdate),
+            updateDelegate = UpdateStatic,
+        };
+        PlayerLoopSystem playerloop = PlayerLoop.GetDefaultPlayerLoop();
+        for (var i = 0; i < playerloop.subSystemList.Length; i++)
+        {
+            if (playerloop.subSystemList[i].type.Name == "Update")//PreUpdateのPlayerLoopSystemを置き換える
+            {
+                playerloop.subSystemList[i] = new PlayerLoopSystem
+                {
+                    //subSystemList以外はplayerloop.subSystemList[i]と全く同じ値のPlayerLoopSystemをplayerloop.subSystemList[i]に代入
+                    type = playerloop.subSystemList[i].type,
+                    updateDelegate = playerloop.subSystemList[i].updateDelegate,
+                    subSystemList = playerloop.subSystemList[i].subSystemList.Prepend(mySystem).ToArray(),// subSystemListの先頭にUpdateStatic追加
+                    updateFunction = playerloop.subSystemList[i].updateFunction,
+                    loopConditionFunction = playerloop.subSystemList[i].loopConditionFunction,
+                };
+                break;
+            }
+        }
+
+        PlayerLoop.SetPlayerLoop(playerloop);
     }
 
+
+    public struct JoyConSubjPreUpdate { }
     private static void UpdateStatic()
     {
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
@@ -96,28 +124,13 @@ public class Joycon_subj : MonoBehaviour
     static CancellationToken _cancellationToken;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        /*
-        if (isInitialized)
-        {
-            HIDapi.hid_init();
-            SceneManager.sceneLoaded += sceneLoaded;
-            _joyConConnections = new Dictionary<string, JoyConConnection>();
-            UpdateJoyConConnection();
-            isInitialized = false;
-            _cancellationToken = this.GetCancellationTokenOnDestroy();
-        }
-        */
-    }
-
     byte[] buf_update = null;
     uint replylen = 64;
+    /*
     // Update is called once per frame
     void Update()
     {
-        /*
+        
         foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
         {
             if (aPair.Value.IsConnecting)
@@ -125,8 +138,9 @@ public class Joycon_subj : MonoBehaviour
                 aPair.Value.PopInputReportToJoyconObs();
             }
         }
-        */
+        
     }
+    */
 
     //辞書(_joycon_Connections)に登録されていないシリアルナンバーを持っているJoyconがhid_enummerateで見つかったら、それを辞書に登録する。
     //プログラム開始時にこの関数を使って、PCに接続されているそれぞれのJoyconに対応するJoyConConnectionインスタンスを作成する。
@@ -325,6 +339,7 @@ public class JoyConConnection
         ThisFrameInputs = new List<byte[]>();
         _cancellationToken= cancellationToken;
         subCmdQueue = new Queue<byte[]>();
+        _subCmdReplys_temp = new List<byte[]>();
     }
 
     public void PopInputReportToJoyconObs()
@@ -474,6 +489,7 @@ public class JoyConConnection
                 Debug.Log($"Pop:{subCmd[0]}");
                 SendSubCmdSimple(subCmd,subCmd.Length);
                 byte[] subCmdReply = null;
+                if (cancellationToken==null) { Debug.Log("CTokenがnullです"); };
                 await UniTask.WaitUntil
                 (
                     ()=>

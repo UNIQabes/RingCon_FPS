@@ -139,14 +139,14 @@ public class MainJoyconInput : Joycon_obs
 
     private async UniTask joyConSetUp(CancellationToken cancellationToken)
     {
-
+        
         await UniTask.DelayFrame(100, cancellationToken: cancellationToken);
         //実行コンテクスト(?というらしい)をPreUpdateに切り替える
         await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
 
         byte[] ReplyBuf=new byte[50];
 
-
+        Debug.Log("セットアップします!");
         // Enable vibration
         await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, _cancellationToken);
 
