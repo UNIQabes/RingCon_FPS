@@ -22,19 +22,6 @@ public class Joycon_subj : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Init()
     {
-        /*
-        var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
-
-        foreach (var header in playerLoop.subSystemList)
-        {
-            Debug.LogFormat("------{0}------", header.type.Name);
-            foreach (var subSystem in header.subSystemList)
-            {
-                Debug.LogFormat("{0}.{1}", header.type.Name, subSystem.type.Name);
-            }
-        }
-        */
-
         
         HIDapi.hid_init();
         //SceneManager.sceneLoaded += sceneLoaded;
@@ -45,44 +32,28 @@ public class Joycon_subj : MonoBehaviour
 
         //Application終了時の処理を設定
         Application.quitting += OnApplicatioQuitStatic;
-        //Updateメソッドを設定
-        PlayerLoopSystem mySystem = new PlayerLoopSystem
-        {
-            type = typeof(JoyConSubjPreUpdate),
-            updateDelegate = UpdateStatic,
-        };
-        PlayerLoopSystem playerloop = PlayerLoop.GetDefaultPlayerLoop();
-        for (var i = 0; i < playerloop.subSystemList.Length; i++)
-        {
-            if (playerloop.subSystemList[i].type.Name == "Update")//PreUpdateのPlayerLoopSystemを置き換える
-            {
-                playerloop.subSystemList[i] = new PlayerLoopSystem
-                {
-                    //subSystemList以外はplayerloop.subSystemList[i]と全く同じ値のPlayerLoopSystemをplayerloop.subSystemList[i]に代入
-                    type = playerloop.subSystemList[i].type,
-                    updateDelegate = playerloop.subSystemList[i].updateDelegate,
-                    subSystemList = playerloop.subSystemList[i].subSystemList.Prepend(mySystem).ToArray(),// subSystemListの先頭にUpdateStatic追加
-                    updateFunction = playerloop.subSystemList[i].updateFunction,
-                    loopConditionFunction = playerloop.subSystemList[i].loopConditionFunction,
-                };
-                break;
-            }
-        }
 
-        PlayerLoop.SetPlayerLoop(playerloop);
+        UpdateStatic(_cancellationToken).Forget();
+
+
     }
 
-
-    public struct JoyConSubjPreUpdate { }
-    private static void UpdateStatic()
+    
+    private static async UniTaskVoid UpdateStatic(CancellationToken cancellationToken)
     {
-        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
+        //アプリが動いている間は動いている。
+        while (!cancellationToken.IsCancellationRequested)
         {
-            if (aPair.Value.IsConnecting)
+            foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
             {
-                aPair.Value.PopInputReportToJoyconObs();
+                if (aPair.Value.IsConnecting)
+                {
+                    aPair.Value.PopInputReportToJoyconObs();
+                }
             }
+            await UniTask.Yield(PlayerLoopTiming.PreUpdate);
         }
+        Debug.Log("JoyconSubj.UpdateStatic stop");
     }
 
     private static void OnApplicatioQuitStatic()
@@ -126,6 +97,7 @@ public class Joycon_subj : MonoBehaviour
 
     byte[] buf_update = null;
     uint replylen = 64;
+
     /*
     // Update is called once per frame
     void Update()
@@ -141,6 +113,7 @@ public class Joycon_subj : MonoBehaviour
         
     }
     */
+    
 
     //辞書(_joycon_Connections)に登録されていないシリアルナンバーを持っているJoyconがhid_enummerateで見つかったら、それを辞書に登録する。
     //プログラム開始時にこの関数を使って、PCに接続されているそれぞれのJoyconに対応するJoyConConnectionインスタンスを作成する。
@@ -215,75 +188,6 @@ public class Joycon_subj : MonoBehaviour
     }
 
     byte globalPacketNumber = 0;
-    /*
-    void SendSubCmd(IntPtr sentDev, byte[] subCmdIDAndArgs, int subCmdLen)
-    {
-        int reportlen = 10 + subCmdLen;
-        byte[] sendData = new byte[reportlen];
-        sendData[0] = 0x01; //Output report
-        sendData[1] = (byte)((globalPacketNumber++) % 16);    //Global packet number 0x00から0x0fをループする
-        //左のjoy-conの振動
-        sendData[2] = 0x00; //HF周波数 4step 0x04-0xfc
-        sendData[3] = 0x00; //HF振幅 2step 偶奇でHF周波数が変化 0x00-0xc8
-        sendData[4] = 0x00; //LF周波数 80以上でLF振幅が変化 0x01-0x7f 0x81-0xff
-        sendData[5] = 0x00; //LF振幅 0x40-0x72 変化後40-71
-        //右のjoy-conの振動
-        sendData[6] = 0x00;
-        sendData[7] = 0x00;
-        sendData[8] = 0x00;
-        sendData[9] = 0x00;
-        //サブコマンド
-        sendData[10] = subCmdIDAndArgs[0];
-        //サブコマンドの引数
-        for (int i = 1; i < subCmdLen; i++)
-        {
-            sendData[10 + i] = subCmdIDAndArgs[i];
-        }
-        HIDapi.hid_write(sentDev, sendData, (uint)reportlen);
-        Debug.Log($"send subcommand{subCmdIDAndArgs[0]}");
-    }
-    */
-
-    /*
-    void getSubCmdReply(IntPtr sentDev, byte[] buf, int replylen)
-    {
-        int counter = 0;
-        while (true)
-        {
-            int ret_read = 0;
-            ret_read = HIDapi.hid_read_timeout(sentDev, buf, 50, 1000);
-            if (ret_read != 0)
-            {
-                if (buf[0] == 0x21)
-                {
-                    Debug.Log($"get subcommand reply  {(buf[13] >= 0x80 ? "ACK" : "NACK")}  ID:{buf[14]}");
-                    break;
-                }
-            }
-            counter++;
-            //if (counter > 100) { Debug.Log("AT~~~~"); break; }
-        }
-    }
-    */
-
-    
-
-
-    /*
-    private void OnApplicationQuit()
-    {
-        
-        if (HidReadThreadR != null) {HidReadThreadR.Abort();}
-        HIDapi.hid_close(joyconR_dev);
-        if (HidReadThreadL != null) { HidReadThreadL.Abort(); }
-        HIDapi.hid_close(joyconL_dev);
-        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
-        {
-            aPair.Value.Disconnect();
-        }
-
-    }
-    */
 
     
     void sceneLoaded(Scene nextScene, LoadSceneMode mode)
@@ -324,10 +228,18 @@ public class JoyConConnection
     private Queue<byte[]> _reportQueue = null;
     private IntPtr _joycon_dev = IntPtr.Zero;
 
-    private CancellationToken _cancellationToken;
+    
+    private CancellationTokenSource _cTokenSrcOnDisConnect;//JoyConとの接続が切れた時にキャンセルされるTokenのSource
+    private CancellationTokenSource _cTokenSrcOnDisConnectOrAppQuit;//JoyConとの接続が切れた時かApplication終了時にキャンセルされるTokenのSource
+
+    //private CancellationToken _cancellationToken;//Application終了時or接続切断時にCancellされるToken
+    private CancellationToken _cTokenOnAppQuit;//Application終了時にCancellされるToken
+    private CancellationToken _cTokenOnDisConnect;//JoyConとの接続が切れた時にキャンセルされるToken Application終了時
+    private CancellationToken _cancellationTokenOnDisConnectOrAppQuit;//Application終了時or接続切断時にCancellされるToken
 
 
-    public JoyConConnection(bool isJoyconRight, string serial_Number, CancellationToken cancellationToken)
+
+    public JoyConConnection(bool isJoyconRight, string serial_Number, CancellationToken cancellationTokenOnAppQuit)
     {
         IsJoyconRight = isJoyconRight;
         Serial_Number = serial_Number;
@@ -337,9 +249,9 @@ public class JoyConConnection
         _joycon_dev = IntPtr.Zero;
         _observers = new List<Joycon_obs>();
         ThisFrameInputs = new List<byte[]>();
-        _cancellationToken= cancellationToken;
         subCmdQueue = new Queue<byte[]>();
-        _subCmdReplys_temp = new List<byte[]>();
+        _subCmdReplysInThisFrame = new List<byte[]>();
+        _cTokenOnAppQuit = cancellationTokenOnAppQuit;
     }
 
     public void PopInputReportToJoyconObs()
@@ -356,9 +268,10 @@ public class JoyConConnection
         {
             aObs.OnReadReport(sentReportInOneFrame);
         }
-        _subCmdReplys_temp = sentReportInOneFrame;
+        _subCmdReplysInThisFrame = sentReportInOneFrame;
     }
 
+    //JoyConとの接続時、必ずこれが呼ばれる。この関数は外部の利用者から呼ばれる。
     public bool ConnectToJoyCon()
     {
 
@@ -376,6 +289,7 @@ public class JoyConConnection
             hid_device_info enInfo = (hid_device_info)Marshal.PtrToStructure(device, typeof(hid_device_info));
             //Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
             string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);
+            //シリアルナンバーが一致し、かつJoyConの左右がIsJoyconRightと一致しているか
             if (enInfo.product_id == (IsJoyconRight ? JOYCON_R_PRODUCTID : JOYCON_L_PRODUCTID) & Serial_Number == serial_number)
             {
                 joycon_Info_ptr = device;
@@ -385,7 +299,7 @@ public class JoyConConnection
             device = enInfo.next;
         }
 
-        if (joycon_Info_ptr == IntPtr.Zero)//前のwhileループでJoyconLが見つからなかった
+        if (joycon_Info_ptr == IntPtr.Zero)//前のwhileループでJoyconが見つからなかった
         {
             Debug.Log($"{Serial_Number} is not found!");
             return false;
@@ -393,40 +307,49 @@ public class JoyConConnection
         hid_device_info joycon_info = (hid_device_info)Marshal.PtrToStructure(joycon_Info_ptr, typeof(hid_device_info));
 
         _joycon_dev = IntPtr.Zero;
-        _joycon_dev = HIDapi.hid_open_path(joycon_info.path);
+        _joycon_dev = HIDapi.hid_open_path(joycon_info.path);//JoyConと通信開始
 
         if (_joycon_dev == IntPtr.Zero)//JoyconLと通信開始できなかった。
         {
             Debug.Log($"{Serial_Number} can't open!");
             return false;
         }
+
         IsConnecting = true;
         Debug.Log($"{Serial_Number} open!");
-
-
+        _cTokenSrcOnDisConnect = new CancellationTokenSource();
+        _cTokenOnDisConnect = _cTokenSrcOnDisConnect.Token;
 
         HIDapi.hid_set_nonblocking(_joycon_dev, 1);
+
         _hidReadThread = new Thread(HidReadRoop);
         _hidReadThread.Start();
-        WaitSubCommandRoop(_cancellationToken).Forget();
+        WaitSubCommandRoop().Forget();
+
         HIDapi.hid_free_enumeration(topDevice);
+
+        
         return true;
     }
 
-    //接続切断時の処理
+    //接続切断時には必ずこの関数が呼びだされる。この関数はHIDReadRoopか、外部の利用者から呼ばれる
     public void Disconnect()
     {
 
-        if (_hidReadThread != null && _hidReadThread.IsAlive)
-        {
-            _hidReadThread.Abort();
-            Debug.Log($"{Serial_Number} StopPolling");
-        }
+        
         if (IsConnecting)
         {
             HIDapi.hid_close(_joycon_dev);
             IsConnecting = false;
+            _cTokenSrcOnDisConnect.Cancel();
+            Debug.Log(_cTokenOnDisConnect.IsCancellationRequested);
             Debug.Log($"{Serial_Number} DisConnect");
+        }
+        if (_hidReadThread != null && _hidReadThread.IsAlive)
+        {
+            Debug.Log($"{Serial_Number} StopPolling");
+            _hidReadThread.Abort();
+            
         }
 
     }
@@ -471,30 +394,35 @@ public class JoyConConnection
     //新しい実装(終)------------------------
 
     //新しい実装2-----------------------後々playerLoopにこの処理を入れるつもり
-    List<byte[]> _subCmdReplys_temp = null;
+    List<byte[]> _subCmdReplysInThisFrame;
     Queue<byte[]> subCmdQueue;
-    byte[] replyGotSubCmd_ThisFrame;
-    byte[] subCmdReply_ThisFrame;
-    private async UniTaskVoid WaitSubCommandRoop(CancellationToken cancellationToken)//基本的にここに渡されるcancellationTokenはJoycon_subjのメンバ変数のcancellationToken
+    byte[] replyGotSubCmd_ThisFrame;//replyがないフレームはnull
+    byte[] subCmdReply_ThisFrame;//replyがないフレームはnull
+
+
+    //Joyconと接続している(isConnecting=true)の時には動いている
+    private async UniTaskVoid WaitSubCommandRoop()//基本的にここに渡されるcancellationTokenは接続切断時にcancellされるやつ
     {
+        //CancellationToken(Appが実行中か)とIsConnecting
         Debug.Log("WaitSubCommandRoop_Start");
-        while ((!cancellationToken.IsCancellationRequested)&IsConnecting)
+        while ((!_cTokenOnDisConnect.IsCancellationRequested)&IsConnecting)
         {
-            
-            
+
+            //Debug.Log("まわってます");
             if (subCmdQueue.Count > 0)
             {
                 
                 byte[] subCmd = subCmdQueue.Dequeue();
-                Debug.Log($"Pop:{subCmd[0]}");
+                Debug.Log($"pop {subCmd[0]} from subcmdQueue");
                 SendSubCmdSimple(subCmd,subCmd.Length);
                 byte[] subCmdReply = null;
-                if (cancellationToken==null) { Debug.Log("CTokenがnullです"); };
+                Debug.Log($"wait {subCmd[0]} reply");
                 await UniTask.WaitUntil
                 (
                     ()=>
                     {
-                        foreach (byte[] aReply in _subCmdReplys_temp)
+                        Debug.Log("チェックしてます");
+                        foreach (byte[] aReply in _subCmdReplysInThisFrame)
                         {
                             if (aReply[0] == 0x21 & aReply[14] == subCmd[0])
                             {
@@ -502,43 +430,55 @@ public class JoyConConnection
                                 return true;
                             }
                         }
-                        return false;
+                        return false| !IsConnecting;//接続が切れた場合待っても意味がない。
                     }
-                ,PlayerLoopTiming.PreUpdate, cancellationToken);
+                ,PlayerLoopTiming.PreUpdate, _cTokenOnDisConnect);
+                
+                if (_cTokenOnDisConnect.IsCancellationRequested) { break; }
+                Debug.Log($"get {subCmd[0]} reply");
                 replyGotSubCmd_ThisFrame = subCmd;
                 subCmdReply_ThisFrame = subCmdReply;
-                await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);//このawait中にSendSubCmd_And_WaitReplyがReplyを取得する
+                Debug.Log($"sendSubcmdAndWaitReplyさん!subcmdReply(ID:{replyGotSubCmd_ThisFrame[0]})を受け取ってください!");
+                //このawait中にSendSubCmd_And_WaitReplyがsubCmdReply_ThisFrameを見てReplyを取得する
+                await UniTask.DelayFrame(1,PlayerLoopTiming.PreUpdate, _cTokenOnDisConnect);
+                if (_cTokenOnDisConnect.IsCancellationRequested) { break; }
                 replyGotSubCmd_ThisFrame = null;
                 subCmdReply_ThisFrame = null;
+                Debug.Log("subcmdReplyをクリアしました");
             }
             else
             {
-                await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
-                //Debug.Log("まってます");
+                await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cTokenOnDisConnect);//applicationが終了するとここで自動で止まるっぽい?updateメソッドが呼び出されなくなっているだけでこの関数は生きている気がする
+                if (_cTokenOnDisConnect.IsCancellationRequested) { break; Debug.Log("終わった〜"); }
 
             }
         }
-        Debug.Log("CancellationRequested");
+        Debug.Log($"{Serial_Number} WaitSubCommandRoop Stop");
         
     }
     
 
     public async UniTask SendSubCmd_And_WaitReply(byte[] subCmd,
-        byte[] SubCmdReplyBuf, CancellationToken cancellationToken)
+        byte[] SubCmdReplyBuf, CancellationToken cancellationToken)//多分cancellationTokenはいらない気がするが、一応残していく
     {
+        
         int cmdCpyLen =subCmd.Length;
         byte[] subCmdCpy = new byte[cmdCpyLen];
         Array.Copy(subCmd, subCmdCpy, cmdCpyLen);
         subCmdQueue.Enqueue(subCmdCpy);
-        Debug.Log($"push{subCmdCpy[0]} QueueCnt:{subCmdQueue.Count}");
-        await UniTask.WaitUntil(()=>(subCmdCpy== replyGotSubCmd_ThisFrame), PlayerLoopTiming.EarlyUpdate);
+        Debug.Log($"push {subCmdCpy[0]} to subcmdQueue QueueCnt:{subCmdQueue.Count}");
+        //subcmdのreplyが来るまでawait
+        await UniTask.WaitUntil(()=>((subCmdCpy== replyGotSubCmd_ThisFrame)), PlayerLoopTiming.EarlyUpdate, _cTokenOnDisConnect);
+        if (_cTokenOnDisConnect.IsCancellationRequested) { Debug.Log($"Reply waiting is cancelled because {Serial_Number} disconnect"); }
         //Replyを受け取る
         int replyCpyLen= Math.Min(subCmdReply_ThisFrame.Length, SubCmdReplyBuf.Length);
         Array.Copy(subCmdReply_ThisFrame, SubCmdReplyBuf, replyCpyLen);
+        Debug.Log($"subcmdReply(ID:{replyGotSubCmd_ThisFrame[0]})を受け取りました!");
         Debug.Log($"get subcommand reply  {(subCmdReply_ThisFrame[13] >= 0x80 ? "ACK" : "NACK")}  ID:{subCmdReply_ThisFrame[14]}");
 
     }
-    
+
+    //JoyConが接続している時(isConnecting===true)は動いている
     private void HidReadRoop()
     {
         Debug.Log($"StartPolling {Serial_Number}");
@@ -567,12 +507,13 @@ public class JoyConConnection
             if (failReadCounter == 500)
             {
                 byte[] ReplyBuf = new byte[1];
-                SendSubCmd_And_WaitReply(new byte[]{0x00}, ReplyBuf,_cancellationToken).Forget();
+                SendSubCmd_And_WaitReply(new byte[]{0x00}, ReplyBuf, _cTokenOnAppQuit).Forget();
                 Debug.Log($"Check  {Serial_Number} Connection");
             }
             else if (failReadCounter > 1000)
             {
-                Debug.Log($"{Serial_Number} ConnectionLost StopPolling");
+                Debug.Log($"{Serial_Number} ConnectionLost");
+                Debug.Log($"{Serial_Number} HidReadRoop Stop");
                 //IsConnecting = false;
                 Disconnect();
                 break;

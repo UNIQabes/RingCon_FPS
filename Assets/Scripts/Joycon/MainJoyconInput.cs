@@ -6,7 +6,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 public class MainJoyconInput : Joycon_obs
 {
-    private CancellationToken _cancellationToken;
+    private CancellationToken _cancellationToken;//Application終了時にCancellされるToken
 
     public static Quaternion JoyconPose_R { get; private set; }
     public static Quaternion SmoothedPose_R { get; private set; }
@@ -140,7 +140,7 @@ public class MainJoyconInput : Joycon_obs
     private async UniTask joyConSetUp(CancellationToken cancellationToken)
     {
         
-        await UniTask.DelayFrame(100, cancellationToken: cancellationToken);
+        //await UniTask.DelayFrame(100, cancellationToken: cancellationToken);
         //実行コンテクスト(?というらしい)をPreUpdateに切り替える
         await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
 
