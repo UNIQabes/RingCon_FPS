@@ -28,21 +28,21 @@ public class Joycon_subj : MonoBehaviour
         _joyConConnections = new Dictionary<string, JoyConConnection>();
         UpdateJoyConConnection();
         _cTokenSourceOnAppQuit= new CancellationTokenSource();
-        _cancellationToken = _cTokenSourceOnAppQuit.Token;
+        _cancellationTokenOnAppQuit = _cTokenSourceOnAppQuit.Token;
 
         //Application終了時の処理を設定
         Application.quitting += OnApplicatioQuitStatic;
 
-        UpdateStatic(_cancellationToken).Forget();
+        UpdateStatic().Forget();
 
 
     }
 
     
-    private static async UniTaskVoid UpdateStatic(CancellationToken cancellationToken)
+    private static async UniTaskVoid UpdateStatic()
     {
         //アプリが動いている間は動いている。
-        while (!cancellationToken.IsCancellationRequested)
+        while (!_cancellationTokenOnAppQuit.IsCancellationRequested)
         {
             foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
             {
@@ -51,7 +51,7 @@ public class Joycon_subj : MonoBehaviour
                     aPair.Value.PopInputReportToJoyconObs();
                 }
             }
-            await UniTask.Yield(PlayerLoopTiming.PreUpdate);
+            await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cancellationTokenOnAppQuit);
         }
         Debug.Log("JoyconSubj.UpdateStatic stop");
     }
@@ -92,28 +92,13 @@ public class Joycon_subj : MonoBehaviour
     Queue<byte[]> ReportQueue_L;
 
     static CancellationTokenSource _cTokenSourceOnAppQuit;
-    static CancellationToken _cancellationToken;
+    static CancellationToken _cancellationTokenOnAppQuit;
 
 
     byte[] buf_update = null;
     uint replylen = 64;
 
-    /*
-    // Update is called once per frame
-    void Update()
-    {
-        
-        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
-        {
-            if (aPair.Value.IsConnecting)
-            {
-                aPair.Value.PopInputReportToJoyconObs();
-            }
-        }
-        
-    }
-    */
-    
+   
 
     //辞書(_joycon_Connections)に登録されていないシリアルナンバーを持っているJoyconがhid_enummerateで見つかったら、それを辞書に登録する。
     //プログラム開始時にこの関数を使って、PCに接続されているそれぞれのJoyconに対応するJoyConConnectionインスタンスを作成する。
@@ -139,7 +124,7 @@ public class Joycon_subj : MonoBehaviour
                 string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);
                 if (!_joyConConnections.ContainsKey(serial_number))
                 {
-                    _joyConConnections.Add(serial_number, new JoyConConnection(isJoyConR, serial_number, _cancellationToken));
+                    _joyConConnections.Add(serial_number, new JoyConConnection(isJoyConR, serial_number, _cancellationTokenOnAppQuit));
                     newJoyConIsFound = true;
                 }
             }
@@ -147,13 +132,6 @@ public class Joycon_subj : MonoBehaviour
         }
 
         HIDapi.hid_free_enumeration(topDevice);
-        /*
-        foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
-        {
-            aPair.Value.ConnectToJoyCon();
-            aPair.Value.SendSubCmd(new byte[] { 0x03, 0x3F }, 2);
-        }
-        */
         return newJoyConIsFound;
     }
 
@@ -205,6 +183,14 @@ public class Joycon_subj : MonoBehaviour
 
     
 }
+
+
+
+
+
+
+
+
 public class JoyConConnection
 {
     const int JOYCON_R_PRODUCTID = 8199;
@@ -407,8 +393,6 @@ public class JoyConConnection
         Debug.Log("WaitSubCommandRoop_Start");
         while ((!_cTokenOnDisConnect.IsCancellationRequested)&IsConnecting)
         {
-
-            //Debug.Log("まわってます");
             if (subCmdQueue.Count > 0)
             {
                 
@@ -421,7 +405,7 @@ public class JoyConConnection
                 (
                     ()=>
                     {
-                        Debug.Log("チェックしてます");
+                        //Debug.Log("チェックしてます");
                         foreach (byte[] aReply in _subCmdReplysInThisFrame)
                         {
                             if (aReply[0] == 0x21 & aReply[14] == subCmd[0])
@@ -430,29 +414,26 @@ public class JoyConConnection
                                 return true;
                             }
                         }
-                        return false| !IsConnecting;//接続が切れた場合待っても意味がない。
+                        return false;
                     }
                 ,PlayerLoopTiming.PreUpdate, _cTokenOnDisConnect);
-                
-                if (_cTokenOnDisConnect.IsCancellationRequested) { break; }
                 Debug.Log($"get {subCmd[0]} reply");
                 replyGotSubCmd_ThisFrame = subCmd;
                 subCmdReply_ThisFrame = subCmdReply;
-                Debug.Log($"sendSubcmdAndWaitReplyさん!subcmdReply(ID:{replyGotSubCmd_ThisFrame[0]})を受け取ってください!");
+                Debug.Log($"sendSubcmdAndWaitReplyさん!subCmdReply_ThisFrame(ID:{replyGotSubCmd_ThisFrame[0]})を受け取ってください!");
                 //このawait中にSendSubCmd_And_WaitReplyがsubCmdReply_ThisFrameを見てReplyを取得する
                 await UniTask.DelayFrame(1,PlayerLoopTiming.PreUpdate, _cTokenOnDisConnect);
-                if (_cTokenOnDisConnect.IsCancellationRequested) { break; }
                 replyGotSubCmd_ThisFrame = null;
                 subCmdReply_ThisFrame = null;
-                Debug.Log("subcmdReplyをクリアしました");
+                Debug.Log("subCmdReply_ThisFrameをクリアしました");
             }
             else
             {
                 await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cTokenOnDisConnect);//applicationが終了するとここで自動で止まるっぽい?updateメソッドが呼び出されなくなっているだけでこの関数は生きている気がする
-                if (_cTokenOnDisConnect.IsCancellationRequested) { break; Debug.Log("終わった〜"); }
 
             }
         }
+        //基本的にはCancellationTokenのCancellによって停止するため、この部分に到達することはない
         Debug.Log($"{Serial_Number} WaitSubCommandRoop Stop");
         
     }
@@ -469,7 +450,6 @@ public class JoyConConnection
         Debug.Log($"push {subCmdCpy[0]} to subcmdQueue QueueCnt:{subCmdQueue.Count}");
         //subcmdのreplyが来るまでawait
         await UniTask.WaitUntil(()=>((subCmdCpy== replyGotSubCmd_ThisFrame)), PlayerLoopTiming.EarlyUpdate, _cTokenOnDisConnect);
-        if (_cTokenOnDisConnect.IsCancellationRequested) { Debug.Log($"Reply waiting is cancelled because {Serial_Number} disconnect"); }
         //Replyを受け取る
         int replyCpyLen= Math.Min(subCmdReply_ThisFrame.Length, SubCmdReplyBuf.Length);
         Array.Copy(subCmdReply_ThisFrame, SubCmdReplyBuf, replyCpyLen);
