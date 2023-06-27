@@ -4,9 +4,26 @@ using UnityEngine;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+
+
+
 public class MainJoyconInput : Joycon_obs
 {
-    private CancellationToken _cancellationToken;//Application終了時にCancellされるToken
+    private static MainJoyconInput instance=null;
+    private static MainJoyconInput getInstance
+    {
+        get
+        {
+            if (instance==null)
+            {
+                instance = new MainJoyconInput();
+            }
+            return instance;
+        }
+    }
+
+    private static CancellationTokenSource cancellationTokenSourceOnAppQuit;
+    private static CancellationToken cancellationTokenOnAppQuit;//Application終了時にCancellされるToken
 
     public static Quaternion JoyconPose_R { get; private set; }
     public static Quaternion SmoothedPose_R { get; private set; }
@@ -20,20 +37,78 @@ public class MainJoyconInput : Joycon_obs
     //MainのJoyConのJoyConConnection nullでないなら、このJoyConConnectionに登録している
     private static JoyConConnection _joyconConnection_R;
 
-    public static JoyConConnectInfo ConnectInfo= JoyConConnectInfo.JoyConIsNotFound;
+    public static JoyConConnectInfo ConnectInfo = JoyConConnectInfo.JoyConIsNotFound;
 
-    private List<byte[]> _inputReportsInThisFrame = null;//コルーチンでも実装できそう
-    private bool _isReadyPolling = false;
+    private static List<byte[]> _inputReportsInThisFrame = null;//コルーチンでも実装できそう
+    private static bool _isReadyPolling = false;
+
+    
+    //新しい実装------------------------------
+    
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void Init()
+    {
+
+        
+        _joyconConnection_R = null;
+        cancellationTokenSourceOnAppQuit = new CancellationTokenSource();
+        cancellationTokenOnAppQuit = cancellationTokenSourceOnAppQuit.Token;
+        Joycon_subj.UpdateJoyConConnection();
+        List<string> joyconRKeys = Joycon_subj.GetJoyConSerialNumbers_R();
+        JoyConConnection newJoyConConnection = null;
+        if (joyconRKeys.Count > 0)
+        {
+            SerialNumber_R = joyconRKeys[0];
+            _joyconConnection_R = Joycon_subj.GetJoyConConnection(SerialNumber_R);
+            _joyconConnection_R.AddObserver(getInstance);
+            _joyconConnection_R.ConnectToJoyCon();
+            Debug.Log("Joyconが見つかった！");
+            ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
 
 
+            joyConSetUp(cancellationTokenOnAppQuit).Forget();
+        }
 
+        JoyconPose_R = Quaternion.identity;
+        SmoothedPose_R = Quaternion.identity;
+        ringconStrain = 0;
+        Application.quitting += OnApplicatioQuitStatic;
+        updatestatic().Forget();
+    }
+
+    static async UniTaskVoid updatestatic()
+    {
+        while (!cancellationTokenOnAppQuit.IsCancellationRequested)
+        {
+            SmoothedPose_R = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R, 0.05f);
+            if (ConnectInfo != JoyConConnectInfo.JoyConIsNotFound && !_joyconConnection_R.IsConnecting)
+            {
+                ConnectInfo = JoyConConnectInfo.JoyConIsNotFound;
+                Debug.Log("接続が切れたよ!!!");
+            }
+            await UniTask.Yield(PlayerLoopTiming.EarlyUpdate,cancellationTokenOnAppQuit);
+        }
+        
+    }
+
+    private static void OnApplicatioQuitStatic()
+    {
+
+        cancellationTokenSourceOnAppQuit.Cancel();
+        
+    }
+
+    //以上　新しい実装------------------------------
+
+
+    /*
     void Start()
     {
         _joyconConnection_R = null;
-        _cancellationToken = this.GetCancellationTokenOnDestroy();
+        cancellationTokenOnAppQuit = this.GetCancellationTokenOnDestroy();
         Joycon_subj.UpdateJoyConConnection();
         List<string> joyconRKeys = Joycon_subj.GetJoyConSerialNumbers_R();
-        JoyConConnection newJoyConConnection=null;
+        JoyConConnection newJoyConConnection = null;
         if (joyconRKeys.Count > 0)
         {
             SerialNumber_R = joyconRKeys[0];
@@ -42,9 +117,9 @@ public class MainJoyconInput : Joycon_obs
             _joyconConnection_R.ConnectToJoyCon();
             Debug.Log("Joyconが見つかった！");
             ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
-            
 
-            joyConSetUp(_cancellationToken).Forget();
+
+            joyConSetUp(cancellationTokenOnAppQuit).Forget();
         }
 
         JoyconPose_R = Quaternion.identity;
@@ -52,36 +127,40 @@ public class MainJoyconInput : Joycon_obs
         ringconStrain = 0;
     }
 
+
     void Update()
     {
         SmoothedPose_R = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R, 0.05f);
-        if (ConnectInfo!= JoyConConnectInfo.JoyConIsNotFound && !_joyconConnection_R.IsConnecting)
+        if (ConnectInfo != JoyConConnectInfo.JoyConIsNotFound && !_joyconConnection_R.IsConnecting)
         {
             ConnectInfo = JoyConConnectInfo.JoyConIsNotFound;
             Debug.Log("接続が切れたよ!!!");
         }
     }
+    */
 
     //テスト
-    public void SubCmdQueing()
+    public static void SubCmdQueing()
     {
         Debug.Log("0");
         if (_joyconConnection_R == null)
         {
             Debug.Log("nullだ");
         }
-        
     }
-    public async UniTaskVoid SendSubCmd()
+
+    public static async UniTaskVoid SendSubCmd()
     {
         byte[] buf = new byte[50];
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, buf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, buf, cancellationTokenOnAppQuit);
     }
-    public void asyncTrigger()
+
+    public static void asyncTrigger()
     {
         SendSubCmd().Forget();
     }
-    public void ReconnectTrigger()
+
+    public static void ReconnectTrigger()
     {
         ReConnectJoyconAsync().Forget();
     }
@@ -89,15 +168,15 @@ public class MainJoyconInput : Joycon_obs
 
     //JoyConを接続し直す
 
-    public async UniTask<bool> ReConnectJoyconAsync()
+    public static async UniTask<bool> ReConnectJoyconAsync()
     {
         //以前登録していたJoyConConnectionへの登録を解除 二重にJoyconConnectionに登録するのを防ぐ
-        if (_joyconConnection_R!=null)
+        if (_joyconConnection_R != null)
         {
-            _joyconConnection_R.DelObserver(this);
+            _joyconConnection_R.DelObserver(getInstance);
             _joyconConnection_R = null;
         }
-        string newJoyConSerialNum="";
+        string newJoyConSerialNum = "";
         Joycon_subj.UpdateJoyConConnection();
         List<string> joyconRKeys = Joycon_subj.GetJoyConSerialNumbers_R();
         foreach (string aJoyconSerialNum in joyconRKeys)
@@ -111,22 +190,22 @@ public class MainJoyconInput : Joycon_obs
         }
 
 
-        if (newJoyConSerialNum!="")
+        if (newJoyConSerialNum != "")
         {
             JoyConConnection newJoyConConnection = Joycon_subj.GetJoyConConnection(newJoyConSerialNum);
 
             if (newJoyConConnection.ConnectToJoyCon())
             {
                 ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
-                newJoyConConnection.AddObserver(this);
+                newJoyConConnection.AddObserver(getInstance);
                 _joyconConnection_R = newJoyConConnection;
-                await joyConSetUp(_cancellationToken);
+                await joyConSetUp(cancellationTokenOnAppQuit);
             }
             else
             {
                 Debug.Log("接続できなかった!!");
             }
-            
+
         }
 
         JoyconPose_R = Quaternion.identity;
@@ -135,44 +214,44 @@ public class MainJoyconInput : Joycon_obs
         return true;
     }
 
-    
 
-    private async UniTask joyConSetUp(CancellationToken cancellationToken)
+
+    private static async UniTask joyConSetUp(CancellationToken cancellationToken)
     {
-        
+
         //await UniTask.DelayFrame(100, cancellationToken: cancellationToken);
         //実行コンテクスト(?というらしい)をPreUpdateに切り替える
         await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
 
-        byte[] ReplyBuf=new byte[50];
+        byte[] ReplyBuf = new byte[50];
 
         Debug.Log("セットアップします!");
         // Enable vibration
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
 
         // Enable IMU data
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x40, 0x01 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x40, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
         //Set input report mode to 0x30
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, ReplyBuf, cancellationTokenOnAppQuit);
 
         // Enabling MCU data
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x22, 0x01 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x22, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
         //enabling_MCU_data_21_21_1_1
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[39] { 0x21, 0x21, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF3 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[39] { 0x21, 0x21, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF3 }, ReplyBuf, cancellationTokenOnAppQuit);
 
         //get_ext_data_59
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x59, 0x0 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x59, 0x0 }, ReplyBuf, cancellationTokenOnAppQuit);
 
         //get_ext_dev_in_format_config_5C
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 }, ReplyBuf, cancellationTokenOnAppQuit);
 
         //start_external_polling_5A
-        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5A, 0x04, 0x01, 0x01, 0x02 }, ReplyBuf, _cancellationToken);
+        await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5A, 0x04, 0x01, 0x01, 0x02 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-        ConnectInfo=JoyConConnectInfo.JoyConIsReady;
+        ConnectInfo = JoyConConnectInfo.JoyConIsReady;
         Debug.Log("おわり!!!");
     }
 
@@ -218,7 +297,7 @@ public class MainJoyconInput : Joycon_obs
 
 
     }
-    public void applyIMUData(Vector3 accV, Vector3 gyroV, float sec)
+    public static void applyIMUData(Vector3 accV, Vector3 gyroV, float sec)
     {
         float gyro_x = gyroV.x;
         float gyro_y = gyroV.y;
@@ -252,7 +331,7 @@ public class MainJoyconInput : Joycon_obs
     }
 
 
-    private async UniTask waitSubCommandReply(CancellationToken cancellationToken)
+    private static async UniTask waitSubCommandReply(CancellationToken cancellationToken)
     {
         bool isSentReply = false;
         while (!isSentReply)
@@ -279,6 +358,10 @@ public class MainJoyconInput : Joycon_obs
     {
         GUI.Label(new Rect(50, 50, 50, 50), "Hello.");
     }
+
+
+    
+
 }
 
 public enum JoyConConnectInfo

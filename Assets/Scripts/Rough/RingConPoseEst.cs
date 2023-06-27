@@ -26,7 +26,7 @@ public class RingConPoseEst : Joycon_obs
     // Start is called before the first frame update
     void Start()
     {
-        _cTokenOnDestroy = this.GetCancellationTokenOnDestroy();
+        //_cTokenOnDestroy = this.GetCancellationTokenOnDestroy();
         List<string> joyconRKeys=Joycon_subj.GetJoyConSerialNumbers_R();
         if (joyconRKeys.Count > 0)
         {
@@ -60,7 +60,7 @@ public class RingConPoseEst : Joycon_obs
     void Update()
     {
         smoothedPose = Quaternion.Slerp(smoothedPose, joyconPose, 0.05f);
-        this.transform.rotation = smoothedPose;
+        //this.transform.rotation = smoothedPose;
         
     }
     public override void OnReadReport(List<byte[]> reports)
@@ -199,3 +199,4 @@ public class RingConPoseEst : Joycon_obs
         
     }
 }
+
