@@ -314,7 +314,14 @@ public class JoyConConnection
 
         HIDapi.hid_free_enumeration(topDevice);
 
-        
+
+
+        _reportQueue = new Queue<byte[]>();
+        ThisFrameInputs = new List<byte[]>();
+        subCmdQueue = new Queue<byte[]>();
+        _subCmdReplysInThisFrame = new List<byte[]>();
+
+
         return true;
     }
 
