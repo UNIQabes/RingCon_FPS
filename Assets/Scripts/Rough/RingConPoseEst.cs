@@ -26,7 +26,7 @@ public class RingConPoseEst : Joycon_obs
     // Start is called before the first frame update
     void Start()
     {
-        _cTokenOnDestroy = this.GetCancellationTokenOnDestroy();
+        //_cTokenOnDestroy = this.GetCancellationTokenOnDestroy();
         List<string> joyconRKeys=Joycon_subj.GetJoyConSerialNumbers_R();
         if (joyconRKeys.Count > 0)
         {
@@ -60,7 +60,7 @@ public class RingConPoseEst : Joycon_obs
     void Update()
     {
         smoothedPose = Quaternion.Slerp(smoothedPose, joyconPose, 0.05f);
-        this.transform.rotation = smoothedPose;
+        //this.transform.rotation = smoothedPose;
         
     }
     public override void OnReadReport(List<byte[]> reports)
@@ -141,6 +141,7 @@ public class RingConPoseEst : Joycon_obs
 
     private async UniTask joyConSetUp(CancellationToken cancellationToken)
     {
+
         // Enable vibration
         joyconRConnection.SendSubCmd(new byte[] { 0x48, 0x01 }, 2);
         await waitSubCommandReply(cancellationToken);
@@ -186,7 +187,7 @@ public class RingConPoseEst : Joycon_obs
                 {
                     if (aInputReport[0] == 0x21)
                     {
-                        Debug.Log($"get subcommand reply  {(aInputReport[13] >= 0x80 ? "ACK" : "NACK")}  ID:{aInputReport[14]}");
+                        
                         isSentReply = true;
                         break;
                     }
@@ -198,3 +199,4 @@ public class RingConPoseEst : Joycon_obs
         
     }
 }
+
