@@ -14,9 +14,16 @@ public class RingConPosing : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.rotation = V3_MyUtil.rotationWithMatrix(MainJoyconInput.SmoothedPose_R,
+        this.transform.rotation = V3_MyUtil.rotationWithMatrix(MainJoyconInput.SmoothedPose_R_Ring,
             new Vector3(-1, 0, 0),
             new Vector3(0, 1, 0),
             new Vector3(0, 0, -1));
+    }
+
+    private void OnGUI()
+    {
+        GUIStyle textStyle=new GUIStyle();
+        textStyle.fontSize = 50;
+        GUI.Label(new Rect(50, 50, 100, 100), $"ringconstrain:{MainJoyconInput.ringconStrain}", textStyle);
     }
 }
