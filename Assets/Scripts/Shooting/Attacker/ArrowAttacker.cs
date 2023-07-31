@@ -23,7 +23,9 @@ public class ArrowAttacker : MonoBehaviour
         if (target)
         {
             float damage= ChargeRate >= 1 ? FullChargedDamage : Mathf.Clamp(ChargeRate, 0, 1) * (MiddleChargeMaxDamage - MiddleChargeMinDamage) + MiddleChargeMinDamage;
-            target.OnContact(new ShootingContactData(-damage));
+            
+            target.OnContact(new ShootingContactData(-damage,contactPos: other.ClosestPoint(this.transform.position),
+                contactType: ChargeRate >= 1 ? ShootingContactType.FullChargeShot : ShootingContactType.NormalShot));
 
         }
     }

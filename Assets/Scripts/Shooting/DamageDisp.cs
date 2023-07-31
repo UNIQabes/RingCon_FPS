@@ -8,13 +8,15 @@ using Cysharp.Threading.Tasks;
 public class DamageDisp : MonoBehaviour
 {
     public string DispText;
-    private TextMeshProUGUI _tmp;
     public Vector3 InitialPos;
+    public int FontSize=24;
 
     [SerializeField] float _upTime;
     [SerializeField] float _stayTime;
     [SerializeField] float _fadeTime;
     [SerializeField] float _upOffset;
+
+    private TextMeshProUGUI _tmp;
 
 
     // Start is called before the first frame update
@@ -23,6 +25,8 @@ public class DamageDisp : MonoBehaviour
         InitialPos = this.transform.position;
         this.transform.position = InitialPos;
         _tmp = this.gameObject.GetComponent<TextMeshProUGUI>();
+        _tmp.fontSize = FontSize;
+        _tmp.text = DispText;
         _tmp.alpha = 1;
         FixedUpdateUnitask().Forget();
     }

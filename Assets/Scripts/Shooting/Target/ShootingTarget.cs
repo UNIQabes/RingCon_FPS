@@ -20,17 +20,36 @@ public class ShootingTarget : MonoBehaviour
         Debug.Log($"HPVariation:{contactData.HPVariation}");
     
     }
+
+    //CanvasがoverRayモードの時のみ使える
+    protected void PrintDamageDisp(string dispStr,DamageDisp damageDispAsset,RectTransform canvasRect,Vector3 worldPos,int fontSize=24)
+    {
+        Debug.Log($"dispStr:{dispStr}");
+        Vector3 damageDispPos;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, Camera.main.WorldToScreenPoint(worldPos), null, out damageDispPos);
+        damageDispAsset.DispText = dispStr;
+        damageDispAsset.FontSize = fontSize;
+        Instantiate(damageDispAsset.gameObject, damageDispPos, Quaternion.identity, canvasRect);
+    }
 }
 
 public class ShootingContactData
 {
     public float HPVariation { get; private set; }
     public Vector3 ContactPos { get; private set; }
+    public ShootingContactType ContactType { get; private set; }
 
-    public ShootingContactData(float hpVariation,Vector3 contactPos=new Vector3())
+    public ShootingContactData(float hpVariation,Vector3 contactPos=new Vector3(),ShootingContactType contactType=ShootingContactType.NormalShot)
     {
         HPVariation = hpVariation;
         ContactPos = contactPos;
+        ContactType = contactType;
     }                       
     
+}
+
+public enum ShootingContactType
+{
+    NormalShot,
+    FullChargeShot
 }

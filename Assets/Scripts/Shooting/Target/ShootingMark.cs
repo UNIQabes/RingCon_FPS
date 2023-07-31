@@ -7,22 +7,29 @@ using Cysharp.Threading.Tasks;
 public class ShootingMark : ShootingTarget
 {
 
-    [SerializeField]SoundPoint _soundPoint;
+    [SerializeField] SoundPoint _soundPoint;
     [SerializeField] AudioClip ClipOnDestroy;
     [SerializeField] AudioClip ClipOnHit;
+    [SerializeField] AudioClip ClipOnFullCharge;
     [SerializeField] float HP;
     [SerializeField] float _scale;
     [SerializeField] int _disappearingTime;
     [SerializeField] int _reappearingTime;
     [SerializeField] DamageDisp _damageDisp;
-    [SerializeField] RectTransform _canvasRect;
+    RectTransform _canvasRect;
     bool IsDestroyed=false;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Scene内のGameObjectやComponentの取得
+        _canvasRect = GameObject.Find("Canvas").GetComponent<RectTransform>();
+        //Scene内のGameObjectやComponentの取得(終)
+
+
         IsDestroyed = false;
         UpdateAsync().Forget();
+        
     }
 
     async UniTaskVoid UpdateAsync()
@@ -62,15 +69,15 @@ public class ShootingMark : ShootingTarget
         
         
         base.OnContact(contactData);
-        Vector3 damageDispPos;
-        RectTransformUtility.ScreenPointToWorldPointInRectangle(_canvasRect, Camera.main.WorldToScreenPoint(contactData.ContactPos), null,out damageDispPos);
-        Instantiate(_damageDisp.gameObject, damageDispPos, Quaternion.identity,_canvasRect);
+        PrintDamageDisp((-contactData.HPVariation).ToString(), _damageDisp,_canvasRect, contactData.ContactPos,
+            fontSize: contactData.ContactType == ShootingContactType.FullChargeShot?48:24);
         HP += contactData.HPVariation;
         if (HP < 0)
         {
             if (_soundPoint && ClipOnDestroy)
             {
                 _soundPoint.audioClip = ClipOnDestroy;
+                if (contactData.ContactType == ShootingContactType.FullChargeShot){_soundPoint.audioClip = ClipOnFullCharge;}
                 Instantiate(_soundPoint.gameObject);
             }
             //Destroy(this.gameObject);
@@ -81,6 +88,7 @@ public class ShootingMark : ShootingTarget
             if (_soundPoint && ClipOnHit)
             {
                 _soundPoint.audioClip = ClipOnHit;
+                if (contactData.ContactType == ShootingContactType.FullChargeShot) { _soundPoint.audioClip = ClipOnFullCharge; }
                 Instantiate(_soundPoint.gameObject);
             }
         }
