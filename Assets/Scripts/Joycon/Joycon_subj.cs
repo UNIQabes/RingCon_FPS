@@ -116,9 +116,10 @@ public class Joycon_subj : MonoBehaviour
         while (device != IntPtr.Zero)
         {
             hid_device_info enInfo = (hid_device_info)Marshal.PtrToStructure(device, typeof(hid_device_info));
-            Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
+            //Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
             if (enInfo.product_id == JOYCON_R_PRODUCTID | enInfo.product_id == JOYCON_L_PRODUCTID)
             {
+                Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
                 bool isJoyConR = (enInfo.product_id == JOYCON_R_PRODUCTID);
                 joycon_Info_ptr = device;
                 string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);
@@ -285,7 +286,7 @@ public class JoyConConnection
             device = enInfo.next;
         }
 
-        if (joycon_Info_ptr == IntPtr.Zero)//前のwhileループでJoyconが見つからなかった
+        if (joycon_Info_ptr == IntPtr.Zero)//上のwhileループでJoyconが見つからなかった
         {
             Debug.Log($"{Serial_Number} is not found!");
             return false;
@@ -335,7 +336,7 @@ public class JoyConConnection
             HIDapi.hid_close(_joycon_dev);
             IsConnecting = false;
             _cTokenSrcOnDisConnect.Cancel();
-            Debug.Log(_cTokenOnDisConnect.IsCancellationRequested);
+            //Debug.Log(_cTokenOnDisConnect.IsCancellationRequested);
             Debug.Log($"{Serial_Number} DisConnect");
         }
         if (_hidReadThread != null && _hidReadThread.IsAlive)
