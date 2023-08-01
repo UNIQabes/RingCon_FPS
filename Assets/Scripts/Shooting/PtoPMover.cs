@@ -8,7 +8,7 @@ public class PtoPMover : MonoBehaviour
     
     [SerializeField] List<Vector3> _wayPoints;
     [SerializeField] float moveSpeed;
-    private int _nextwayPoint=0;
+    [SerializeField] int NextwayPoint=0;
     
     // Start is called before the first frame update
     void Start()
@@ -18,13 +18,13 @@ public class PtoPMover : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 nextWayPoint = _wayPoints[_nextwayPoint];
+        Vector3 nextWayPoint = _wayPoints[NextwayPoint];
         float thisFrameDelta = Time.fixedDeltaTime * moveSpeed;
         Vector3 nextWayPointDirection = nextWayPoint-this.transform.position ;
         if (nextWayPointDirection.magnitude < thisFrameDelta)
         {
             this.transform.position = nextWayPoint;
-            _nextwayPoint = (_nextwayPoint + 1) % _wayPoints.Count;
+            NextwayPoint = (NextwayPoint + 1) % _wayPoints.Count;
         }
         else
         {

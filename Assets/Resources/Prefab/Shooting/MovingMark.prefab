@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d2a5a84c1a4924111bc8951db2674e69, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -117,6 +117,7 @@ MonoBehaviour:
   - {x: 12, y: -5, z: 3}
   - {x: -12, y: -5, z: 3}
   moveSpeed: 8
+  NextwayPoint: 0
 --- !u!114 &5076316309332042220
 MonoBehaviour:
   m_ObjectHideFlags: 0

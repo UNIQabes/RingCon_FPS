@@ -11,7 +11,7 @@ public class PlayerShooter : MonoBehaviour
     private RectTransform _canvasRect;
     private ArrowAttacker _arrowAttacker;
 
-    public GameObject TestObject;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,28 +22,7 @@ public class PlayerShooter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*
-        Vector3 ReticleWorldPos = RTransform_MyUtil.OverLayRectToWorld(ReticleObject.transform.position, _canvasRect, Camera.main, 20);
-        //TestObject.transform.position = ReticleWorldPos;
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            
-            Quaternion bulletPose=V3_MyUtil.RotateV2V(Vector3.forward, ReticleWorldPos-this.transform.position);
-            RaycastHit hit;
-            Physics.Raycast(Camera.main.transform.position, ReticleWorldPos - Camera.main.transform.position, out hit,500);
-            if (hit.collider)
-            {
-                bulletPose= V3_MyUtil.RotateV2V(Vector3.forward, hit.collider.transform.position - this.transform.position);
-                Debug.Log("RayHit");
-            }
-
-            Instantiate(BulletObject,this.transform.position+ this.transform.rotation*new Vector3(0,0,1), bulletPose);
-        }
-        */
         shotCoolTime -= Time.deltaTime;
-
-
-
     }
 
     float _shotRate = 4f/30f;

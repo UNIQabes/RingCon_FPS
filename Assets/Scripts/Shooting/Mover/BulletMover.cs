@@ -6,16 +6,18 @@ public class BulletMover : MonoBehaviour
 {
     public float LifeTime;
     public float BulletSpeed;
+    [SerializeField] Rigidbody _rigidbody;
     // Start is called before the first frame update
     void Start()
     {
-        
+        _rigidbody = this.gameObject.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        this.transform.position += this.transform.rotation * new Vector3(0,0,1)* Time.fixedDeltaTime*BulletSpeed;
+        //this.transform.position += this.transform.rotation * new Vector3(0,0,1)* Time.fixedDeltaTime*BulletSpeed;
+        _rigidbody.MovePosition(this.transform.position+ this.transform.rotation * new Vector3(0, 0, 1) * Time.fixedDeltaTime * BulletSpeed);
         LifeTime -= Time.fixedDeltaTime;
         if (LifeTime < 0)
         {
