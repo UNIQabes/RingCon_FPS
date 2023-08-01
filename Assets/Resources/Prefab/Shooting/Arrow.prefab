@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeTime: 2
-  BulletSpeed: 60
+  BulletSpeed: 130
 --- !u!54 &6806658367941113008
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -178,4 +178,4 @@ MonoBehaviour:
   FullChargedDamage: 300
   MiddleChargeMaxDamage: 150
   MiddleChargeMinDamage: 10
-  ChargeRate: 0
+  ChargeRate: 0.03

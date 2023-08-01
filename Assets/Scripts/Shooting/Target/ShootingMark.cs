@@ -95,4 +95,9 @@ public class ShootingMark : ShootingTarget
         
     }
 
+    void OnValidate()
+    {
+        this.transform.localScale =  new Vector3(1, 1, 1)*_scale;
+    }
+
 }

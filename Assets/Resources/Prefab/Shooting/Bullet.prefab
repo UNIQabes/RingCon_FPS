@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeTime: 2
-  BulletSpeed: 30
+  BulletSpeed: 100
 --- !u!114 &1925690248419668064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,7 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee21ac4371bf4f13a2e75f76fdc5151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeTime: 2
   BulletDamage: 20
 --- !u!54 &353865804764858356
 Rigidbody:
