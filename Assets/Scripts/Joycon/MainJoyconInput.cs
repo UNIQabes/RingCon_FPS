@@ -291,6 +291,10 @@ public class MainJoyconInput : Joycon_obs
 
     public override void OnReadReport(List<byte[]> reports)
     {
+        if (reports == null || reports.Count < 37)
+        {
+            return;
+        }
         int x30ReportNum = 0;
         foreach (byte[] report in reports)
         {
