@@ -291,10 +291,7 @@ public class MainJoyconInput : Joycon_obs
 
     public override void OnReadReport(List<byte[]> reports)
     {
-        if (reports == null || reports.Count < 37)
-        {
-            return;
-        }
+        
         int x30ReportNum = 0;
         foreach (byte[] report in reports)
         {
@@ -310,27 +307,31 @@ public class MainJoyconInput : Joycon_obs
 
         foreach (byte[] report in reports)
         {
-            if (report[0] == 0x30)
+            if (report != null && report.Length >= 37)
             {
-                float sec = Time.deltaTime / x30ReportNum;
-                ringconStrain = BitConverter.ToInt16(report, 39);
-                float gyro_x1 = 0.070f * (float)BitConverter.ToInt16(report, 19);
-                float gyro_y1 = 0.070f * (float)BitConverter.ToInt16(report, 21);
-                float gyro_z1 = 0.070f * (float)BitConverter.ToInt16(report, 23);
-                float acc_x1 = 0.000244f * (float)BitConverter.ToInt16(report, 13);
-                float acc_y1 = 0.000244f * (float)BitConverter.ToInt16(report, 15);
-                float acc_z1 = 0.000244f * (float)BitConverter.ToInt16(report, 17);
-                applyIMUData(new Vector3(acc_x1, acc_y1, acc_z1), new Vector3(gyro_x1, gyro_y1, gyro_z1), sec / 2);
+                if (report[0] == 0x30)
+                {
+                    float sec = Time.deltaTime / x30ReportNum;
+                    ringconStrain = BitConverter.ToInt16(report, 39);
+                    float gyro_x1 = 0.070f * (float)BitConverter.ToInt16(report, 19);
+                    float gyro_y1 = 0.070f * (float)BitConverter.ToInt16(report, 21);
+                    float gyro_z1 = 0.070f * (float)BitConverter.ToInt16(report, 23);
+                    float acc_x1 = 0.000244f * (float)BitConverter.ToInt16(report, 13);
+                    float acc_y1 = 0.000244f * (float)BitConverter.ToInt16(report, 15);
+                    float acc_z1 = 0.000244f * (float)BitConverter.ToInt16(report, 17);
+                    applyIMUData(new Vector3(acc_x1, acc_y1, acc_z1), new Vector3(gyro_x1, gyro_y1, gyro_z1), sec / 2);
 
 
-                float gyro_x2 = 0.070f * (float)BitConverter.ToInt16(report, 31);
-                float gyro_y2 = 0.070f * (float)BitConverter.ToInt16(report, 33);
-                float gyro_z2 = 0.070f * (float)BitConverter.ToInt16(report, 35);
-                float acc_x2 = 0.000244f * (float)BitConverter.ToInt16(report, 25);
-                float acc_y2 = 0.000244f * (float)BitConverter.ToInt16(report, 27);
-                float acc_z2 = 0.000244f * (float)BitConverter.ToInt16(report, 29);
-                applyIMUData(new Vector3(acc_x2, acc_y2, acc_z2), new Vector3(gyro_x2, gyro_y2, gyro_z2), sec / 2);
+                    float gyro_x2 = 0.070f * (float)BitConverter.ToInt16(report, 31);
+                    float gyro_y2 = 0.070f * (float)BitConverter.ToInt16(report, 33);
+                    float gyro_z2 = 0.070f * (float)BitConverter.ToInt16(report, 35);
+                    float acc_x2 = 0.000244f * (float)BitConverter.ToInt16(report, 25);
+                    float acc_y2 = 0.000244f * (float)BitConverter.ToInt16(report, 27);
+                    float acc_z2 = 0.000244f * (float)BitConverter.ToInt16(report, 29);
+                    applyIMUData(new Vector3(acc_x2, acc_y2, acc_z2), new Vector3(gyro_x2, gyro_y2, gyro_z2), sec / 2);
+                }
             }
+            
         }
 
 
