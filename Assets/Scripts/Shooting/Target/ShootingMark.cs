@@ -7,17 +7,18 @@ using Cysharp.Threading.Tasks;
 public class ShootingMark : ShootingTarget
 {
 
-    [SerializeField] SoundPoint _soundPoint;
-    [SerializeField] AudioClip ClipOnDestroy;
-    [SerializeField] AudioClip ClipOnHit;
-    [SerializeField] AudioClip ClipOnFullCharge;
-    [SerializeField] float HP;
-    [SerializeField] float _scale;
-    [SerializeField] int _disappearingTime;
-    [SerializeField] int _reappearingTime;
-    [SerializeField] DamageDisp _damageDisp;
-    RectTransform _canvasRect;
-    bool IsDestroyed=false;
+    [SerializeField] protected SoundPoint _soundPoint;
+    [SerializeField] protected AudioClip ClipOnDestroy;
+    [SerializeField] protected AudioClip ClipOnHit;
+    [SerializeField] protected AudioClip ClipOnFullCharge;
+    [SerializeField] protected float HP;
+    [SerializeField] protected float _scale;
+    [SerializeField] protected Vector3 originalScale = new Vector3(1, 1, 1);
+    [SerializeField] protected int _disappearingTime;
+    [SerializeField] protected int _reappearingTime;
+    [SerializeField] protected DamageDisp _damageDisp;
+    protected RectTransform _canvasRect;
+    protected bool IsDestroyed =false;
 
     // Start is called before the first frame update
     void Start()
@@ -37,21 +38,21 @@ public class ShootingMark : ShootingTarget
         CancellationToken cToken=this.GetCancellationTokenOnDestroy();
         while (true)
         {
-            transform.localScale = new Vector3(1, 1, 1) * _scale;
+            transform.localScale = originalScale * _scale;
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate,cToken);
             while (!IsDestroyed)
             {
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cToken);
             }
             transform.localScale = new Vector3(0,0,0);
-            await UniTask.Delay(_disappearingTime);
+            await UniTask.Delay(_disappearingTime, cancellationToken: cToken) ;
 
             float reappearingTimer = 0;
             while (true)
             {
                 reappearingTimer += Time.fixedDeltaTime;
                 int reappearingTimer_ms = (int)(reappearingTimer * 1000);
-                transform.localScale = new Vector3(1, 1, 1)* _scale* (float)reappearingTimer_ms / (float)_reappearingTime;
+                transform.localScale = originalScale * _scale* (float)reappearingTimer_ms / (float)_reappearingTime;
                 if (reappearingTimer_ms > _reappearingTime)
                 {
                     //transform.localScale = new Vector3(1, 1, 1)* _scale;
@@ -97,7 +98,7 @@ public class ShootingMark : ShootingTarget
 
     void OnValidate()
     {
-        this.transform.localScale =  new Vector3(1, 1, 1)*_scale;
+        this.transform.localScale = originalScale * _scale;
     }
 
 }

@@ -15,7 +15,7 @@ public class PlayerShooter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _canvasRect = CanvasObj.GetComponent<RectTransform>();
+        //_canvasRect = CanvasObj.GetComponent<RectTransform>();
         _arrowAttacker = ArrowGObject.GetComponent<ArrowAttacker>();
     }
 
@@ -33,7 +33,7 @@ public class PlayerShooter : MonoBehaviour
         if (shotCoolTime <= 0)
         {
             Quaternion bulletPose = V3_MyUtil.RotateV2V(Vector3.forward, shotDirection);
-            Instantiate(BulletObject, this.transform.position + this.transform.rotation * new Vector3(0, 0, 1), bulletPose);
+            Instantiate(BulletObject, this.transform.position + this.transform.rotation * new Vector3(0, 0, 2), bulletPose);
         }
         
     }
@@ -42,7 +42,7 @@ public class PlayerShooter : MonoBehaviour
 
         if (shotCoolTime <= 0)
         {
-            Vector3 muzzlePos = this.transform.position + this.transform.rotation * new Vector3(0, 0, 1);
+            Vector3 muzzlePos = this.transform.position + this.transform.rotation * new Vector3(0, 0, 2);
             Quaternion bulletPose = V3_MyUtil.RotateV2V(Vector3.forward, aimTo - muzzlePos);
             Instantiate(BulletObject, muzzlePos, bulletPose);
             shotCoolTime = _shotRate;
@@ -64,7 +64,7 @@ public class PlayerShooter : MonoBehaviour
     {
         if (FillingRate > 0)
         {
-            Vector3 muzzlePos = this.transform.position + this.transform.rotation * new Vector3(0, 0, 1);
+            Vector3 muzzlePos = this.transform.position + this.transform.rotation * new Vector3(0, 0, 2);
             Quaternion bulletPose = V3_MyUtil.RotateV2V(Vector3.forward, aimTo - muzzlePos);
             _arrowAttacker.ChargeRate = FillingRate;
             Instantiate(ArrowGObject, muzzlePos, bulletPose);

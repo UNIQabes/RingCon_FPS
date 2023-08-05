@@ -126,9 +126,12 @@ public class MainJoyconInput : Joycon_obs
     {
         while (!cancellationTokenOnAppQuit.IsCancellationRequested)
         {
+            //ResetYRot_xyOrder();
             SmoothedPose_R = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R, 0.05f);
-            SmoothedPose_R_Arrow = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R_Arrow, 0.05f);
-            SmoothedPose_R_Ring = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R_Ring, 0.05f);
+            SmoothedPose_R_Arrow = Quaternion.Slerp(SmoothedPose_R_Arrow, JoyconPose_R_Arrow, 0.05f);
+            SmoothedPose_R_Ring = Quaternion.Slerp(SmoothedPose_R_Ring, JoyconPose_R_Ring, 0.05f);
+            
+            
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationTokenOnAppQuit);
         }
         
@@ -295,9 +298,12 @@ public class MainJoyconInput : Joycon_obs
         int x30ReportNum = 0;
         foreach (byte[] report in reports)
         {
-            if (report[0] == 0x30)
+            if (report != null && report.Length >= 37)
             {
-                x30ReportNum++;
+                if (report[0] == 0x30)
+                {
+                    x30ReportNum++;
+                }
             }
         }
         if (x30ReportNum == 0)
@@ -412,6 +418,8 @@ public class MainJoyconInput : Joycon_obs
         return (retPose, retSmoothedPose);
     }
 
+    
+
 
     private static async UniTask waitSubCommandReply(CancellationToken cancellationToken)
     {
@@ -436,11 +444,20 @@ public class MainJoyconInput : Joycon_obs
 
     }
 
-    void OnGUI()
+    public static void ResetYRot_xyOrder()
     {
-        GUI.Label(new Rect(50, 50, 50, 50), "Hello.");
+        
+        Vector3 joycon_frontV = JoyconPose_R_Arrow * FrontVector_R_Arrow.normalized;
+        Vector3 Smoothed_frontV = SmoothedPose_R_Arrow * FrontVector_R_Arrow.normalized;
+        //accPose = Quaternion.AngleAxis((Mathf.Atan2(gyro_frontV.x, gyro_frontV.z) - Mathf.Atan2(acc_frontV.x, acc_frontV.z)) * 180 / Mathf.PI, new Vector3(0, 1, 0)) * accPose;
+        Vector3 joyconFront_DownVVertical = V3_MyUtil.GetVerticalComp(joycon_frontV, DownWardVector_R_Arrow).normalized;
+        Vector3 smoothedFront_DownVVertical = V3_MyUtil.GetVerticalComp(Smoothed_frontV, DownWardVector_R_Arrow).normalized;
+        Vector3 FrontVector = new Vector3(1,0,0);
+        JoyconPose_R_Arrow=V3_MyUtil.RotateV2V(joyconFront_DownVVertical, FrontVector_R_Arrow) * JoyconPose_R_Arrow;
+        SmoothedPose_R_Arrow = V3_MyUtil.RotateV2V(smoothedFront_DownVVertical, FrontVector_R_Arrow) * SmoothedPose_R_Arrow;
     }
 
+    
 
     
 
