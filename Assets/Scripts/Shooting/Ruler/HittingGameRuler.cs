@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TMPro;
 
 public class HittingGameRuler : MonoBehaviour
 {
@@ -11,9 +12,12 @@ public class HittingGameRuler : MonoBehaviour
     public List<GameObject> Waves;
     private List<GameObject>[] marks;
     private List<GameObject> destroyedMarks;
+    public TextMeshProUGUI CountDownText;
+    private float timer;
     // Start is called before the first frame update
     void Start()
     {
+        timer = 0;
         //destroyedMarks = new List<GameObject>();
         waveNum = 0;
         marks = new List<GameObject>[Waves.Count];
@@ -26,20 +30,24 @@ public class HittingGameRuler : MonoBehaviour
             }
             Waves[i].SetActive(false);
         }
-        UpdateAsync().Forget();
+        FixedUpdateAsync().Forget();
     }
 
     
 
-    async UniTaskVoid UpdateAsync()
+    async UniTaskVoid FixedUpdateAsync()
     {
         CancellationToken cToken = this.gameObject.GetCancellationTokenOnDestroy();
         while (waveNum < Waves.Count)
         {
+            
+            
             Waves[waveNum].SetActive(true);
-
+            
             await UniTask.WaitUntil(() =>
             {
+                timer += Time.fixedDeltaTime;
+                CountDownText.text = $"TIME:{(int)timer/60}:{((int)timer%60).ToString("D2")}";
                 bool clearWave = true;
                 foreach (GameObject aMark in marks[waveNum])
                 {
@@ -50,9 +58,10 @@ public class HittingGameRuler : MonoBehaviour
                     }
                 }
                 return clearWave;
-            }, PlayerLoopTiming.Update, cToken);
+            }, PlayerLoopTiming.FixedUpdate, cToken);
             waveNum++;
         }
+
         Debug.Log("おわりだよ~");
     } 
 

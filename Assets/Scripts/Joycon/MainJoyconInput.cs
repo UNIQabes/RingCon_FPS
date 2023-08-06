@@ -32,7 +32,12 @@ public class MainJoyconInput : Joycon_obs
     public static Quaternion SmoothedPose_R_Arrow { get; private set; }
     public static Quaternion JoyconPose_R_Ring { get; private set; }
     public static Quaternion SmoothedPose_R_Ring { get; private set; }
+    public static Quaternion JoyconPose_R_Remote { get; private set; }
+    public static Quaternion SmoothedPose_R_Remote { get; private set; }
     public static float ringconStrain { get; private set; }
+    public static bool RButton { get; private set; }
+    public static bool ZRButton { get; private set; }
+
     //以下の2つはJoyconに搭載されたIMUにおける座標系(Nintend Switch Reverse Engeneeringのimu_sensor_notes>Axes definitionに書いてある)で、自分が指定したい正面方向と下方向を指定する
     //public static Vector3 FrontVector_R = new Vector3(0, 0, 1);
     public static Vector3 FrontVector_R = new Vector3(1, 0, 0);
@@ -42,6 +47,8 @@ public class MainJoyconInput : Joycon_obs
     public static Vector3 DownWardVector_R_Arrow = new Vector3(0, 1, 0);
     public static Vector3 FrontVector_R_Ring = new Vector3(0, 0, 1);
     public static Vector3 DownWardVector_R_Ring = new Vector3(0, 1, 0);
+    public static Vector3 FrontVector_R_Remote = new Vector3(1, 0, 0);
+    public static Vector3 DownWardVector_R_Remote = new Vector3(0, 0, 1);
 
     //MainのJoyConのシリアルナンバー 接続しているJoyCon、もしくは接続していないときは優先して登録するJoyCon。空の文字列の時は好きに登録すれば良い。
     public static string SerialNumber_R { get; private set; } = "";
@@ -90,6 +97,8 @@ public class MainJoyconInput : Joycon_obs
         SmoothedPose_R_Arrow = Quaternion.identity;
         JoyconPose_R_Ring = Quaternion.identity;
         SmoothedPose_R_Ring = Quaternion.identity;
+        JoyconPose_R_Remote= Quaternion.identity;
+        SmoothedPose_R_Remote = Quaternion.identity;
         ringconStrain = 0;
         Application.quitting += OnApplicatioQuitStatic;
         updatestatic().Forget();
@@ -335,6 +344,9 @@ public class MainJoyconInput : Joycon_obs
                     float acc_y2 = 0.000244f * (float)BitConverter.ToInt16(report, 27);
                     float acc_z2 = 0.000244f * (float)BitConverter.ToInt16(report, 29);
                     applyIMUData(new Vector3(acc_x2, acc_y2, acc_z2), new Vector3(gyro_x2, gyro_y2, gyro_z2), sec / 2);
+                    byte buttonStatus = report[3];
+                    RButton = (buttonStatus & 0b01000000) > 0;
+                    ZRButton = (buttonStatus & 0b10000000) > 0;
                 }
             }
             
@@ -379,6 +391,7 @@ public class MainJoyconInput : Joycon_obs
         (JoyconPose_R_Arrow,SmoothedPose_R_Arrow) =applyIMUData(accV,gyroV,sec,DownWardVector_R_Arrow,FrontVector_R_Arrow, JoyconPose_R_Arrow, SmoothedPose_R_Arrow);
         (JoyconPose_R_Ring, SmoothedPose_R_Ring) = applyIMUData(accV, gyroV, sec, DownWardVector_R_Ring, FrontVector_R_Ring, JoyconPose_R_Ring, SmoothedPose_R_Ring);
         (JoyconPose_R, SmoothedPose_R) = applyIMUData(accV, gyroV, sec, DownWardVector_R, FrontVector_R, JoyconPose_R, SmoothedPose_R);
+        (JoyconPose_R_Remote, SmoothedPose_R_Remote) = applyIMUData(accV, gyroV, sec, DownWardVector_R_Remote, FrontVector_R_Remote, JoyconPose_R_Remote, SmoothedPose_R_Remote);
     }
 
     private static (Quaternion pose,Quaternion smoothedPose) applyIMUData(Vector3 accV, Vector3 gyroV, float sec,
@@ -455,6 +468,16 @@ public class MainJoyconInput : Joycon_obs
         Vector3 FrontVector = new Vector3(1,0,0);
         JoyconPose_R_Arrow=V3_MyUtil.RotateV2V(joyconFront_DownVVertical, FrontVector_R_Arrow) * JoyconPose_R_Arrow;
         SmoothedPose_R_Arrow = V3_MyUtil.RotateV2V(smoothedFront_DownVVertical, FrontVector_R_Arrow) * SmoothedPose_R_Arrow;
+
+
+        Vector3 joycon_frontV_Remote = JoyconPose_R_Remote * FrontVector_R_Remote.normalized;
+        Vector3 Smoothed_frontV_Remote = SmoothedPose_R_Remote * FrontVector_R_Remote.normalized;
+        //accPose = Quaternion.AngleAxis((Mathf.Atan2(gyro_frontV.x, gyro_frontV.z) - Mathf.Atan2(acc_frontV.x, acc_frontV.z)) * 180 / Mathf.PI, new Vector3(0, 1, 0)) * accPose;
+        Vector3 joyconFront_DownVVertical_Remote = V3_MyUtil.GetVerticalComp(joycon_frontV_Remote, DownWardVector_R_Remote).normalized;
+        Vector3 smoothedFront_DownVVertical_Remote = V3_MyUtil.GetVerticalComp(Smoothed_frontV_Remote, DownWardVector_R_Remote).normalized;
+        Vector3 FrontVector_Remote = new Vector3(1, 0, 0);
+        JoyconPose_R_Remote = V3_MyUtil.RotateV2V(joyconFront_DownVVertical_Remote, FrontVector_R_Remote) * JoyconPose_R_Remote;
+        SmoothedPose_R_Remote = V3_MyUtil.RotateV2V(smoothedFront_DownVVertical_Remote, FrontVector_R_Remote) * SmoothedPose_R_Remote;
     }
 
     

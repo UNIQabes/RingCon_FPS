@@ -73,7 +73,7 @@ public class ShootingMark : ShootingTarget
         PrintDamageDisp((-contactData.HPVariation).ToString(), _damageDisp,_canvasRect, contactData.ContactPos,
             fontSize: contactData.ContactType == ShootingContactType.FullChargeShot?48:24);
         HP += contactData.HPVariation;
-        if (HP < 0)
+        if (HP <= 0)
         {
             if (_soundPoint && ClipOnDestroy)
             {
