@@ -70,8 +70,12 @@ public class ShootingMark : ShootingTarget
         
         
         base.OnContact(contactData);
-        PrintDamageDisp((-contactData.HPVariation).ToString(), _damageDisp,_canvasRect, contactData.ContactPos,
-            fontSize: contactData.ContactType == ShootingContactType.FullChargeShot?48:24);
+        if (_canvasRect)
+        {
+            PrintDamageDisp((-contactData.HPVariation).ToString(), _damageDisp, _canvasRect, contactData.ContactPos,
+            fontSize: contactData.ContactType == ShootingContactType.FullChargeShot ? 48 : 24);
+        }
+        
         HP += contactData.HPVariation;
         if (HP <= 0)
         {

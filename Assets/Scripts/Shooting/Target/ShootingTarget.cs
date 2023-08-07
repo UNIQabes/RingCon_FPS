@@ -26,6 +26,7 @@ public class ShootingTarget : MonoBehaviour
     {
         Debug.Log($"dispStr:{dispStr}");
         Vector3 damageDispPos;
+        Debug.Log($"canvasRect==null:{canvasRect==null}");
         RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, Camera.main.WorldToScreenPoint(worldPos), null, out damageDispPos);
         damageDispAsset.DispText = dispStr;
         damageDispAsset.FontSize = fontSize;

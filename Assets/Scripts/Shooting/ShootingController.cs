@@ -88,7 +88,7 @@ public class ShootingController : MonoBehaviour
                 {
                     _playerShooter.ShootBulletTo(shotPoint);
                 }
-                else if (RingConAttached & (MainJoyconInput.ringconStrain < 3500 || (arrowCharged & MainJoyconInput.ringconStrain < 3200)) | MainJoyconInput.ZRButton)
+                else if (RingConAttached & (MainJoyconInput.ringconStrain < 3500 || (arrowCharged & MainJoyconInput.ringconStrain < 4000)) | MainJoyconInput.ZRButton)
                 {
                     arrowCharged = true;
                     //Debug.Log($"ひっぱてるよ〜{MainJoyconInput.ringconStrain}");
@@ -168,49 +168,7 @@ public class ShootingController : MonoBehaviour
 
 
 
-            //    if (xRot_xyOrder < _XRot_xyOrder_ResetYRot)
-            //    {
-            //        //Debug.Log(_XRot_xyOrder_ResetYRot);
-            //        //Debug.Log("リセットした~");
-            //        MainJoyconInput.ResetYRot_xyOrder();
-            //    }
-            //    Vector3 ReticleWorldPos = RTransform_MyUtil.OverLayRectToWorld(_reticleGobj.transform.position, _canvasRect, Camera.main, 20);
-            //    Vector3 shotDirection = ReticleWorldPos - _playerShooter.transform.position;
-            //    Vector3 shotPoint = ReticleWorldPos;
-
-            //    Physics.Raycast(Camera.main.transform.position, ReticleWorldPos - Camera.main.transform.position, out hit, 500);
-
-
-
-
-            //    if (hit.collider)
-            //    {
-            //        shotDirection = hit.collider.transform.position - _playerShooter.transform.position;
-            //        shotPoint = hit.point;
-
-            //        //Debug.Log($"RayHit:{hit.collider.gameObject.name}");
-            //    }
-
-            //    if ((RingConAttached & MainJoyconInput.ringconStrain > 5000) | MainJoyconInput.RButton)
-            //    {
-            //        _playerShooter.ShootBulletTo(shotPoint);
-            //    }
-            //    else if (RingConAttached & (MainJoyconInput.ringconStrain < 3500 || (arrowCharged & MainJoyconInput.ringconStrain < 3200)) | MainJoyconInput.ZRButton)
-            //    {
-            //        arrowCharged = true;
-            //        //Debug.Log($"ひっぱてるよ〜{MainJoyconInput.ringconStrain}");
-            //        _playerShooter.ChargeArrow(1);
-            //    }
-            //    else
-            //    {
-            //        arrowCharged = false;
-            //        _playerShooter.ShootArrowTo(shotPoint);
-            //    }
-
-            //    _reticleGraphic.SetfilledRate(_playerShooter.FillingRate);
-            //    _reticleGraphic.SetIsRockedOn(hit.collider);
-            //    _reticleGraphic.SetIsReticleFixed(isReticleFix);
-            //    prevRingconStrain = MainJoyconInput.ringconStrain;
+            
         }
 
 

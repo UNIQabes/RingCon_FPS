@@ -14,6 +14,11 @@ public class HittingGameRuler : MonoBehaviour
     private List<GameObject> destroyedMarks;
     public TextMeshProUGUI CountDownText;
     private float timer;
+    public ResultPanel ResultPanel_p;
+    public float BRankMaxTime;
+    public float ARankMaxTime;
+    public float SRankMaxTime;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,7 +66,26 @@ public class HittingGameRuler : MonoBehaviour
             }, PlayerLoopTiming.FixedUpdate, cToken);
             waveNum++;
         }
+        ResultPanel_p.resultDetails.Add($"TIME:{(int)timer / 60}:{((int)timer % 60).ToString("D2")}");
+        if (SRankMaxTime > timer)
+        {
+            ResultPanel_p.resultDetails.Add($"RANK:" + "<color=yellow>S</color>");
+        }
+        else if(ARankMaxTime > timer)
+        {
+            ResultPanel_p.resultDetails.Add($"RANK:" + "<color=red>A</color>");
+        }
+        else if (BRankMaxTime > timer)
+        {
+            ResultPanel_p.resultDetails.Add($"RANK:" + "<color=blue>B</color>");
+        }
+        else 
+        {
+            ResultPanel_p.resultDetails.Add($"RANK:" + "<color=green>C</color>");
+        }
 
+        ResultPanel_p.gameObject.SetActive(true);
+        ResultPanel_p.DispResultDetails();
         Debug.Log("おわりだよ~");
     } 
 
