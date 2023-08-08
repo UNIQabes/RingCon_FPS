@@ -48,7 +48,7 @@ public class HIDapi
     public static extern IntPtr hid_open_path(string path);
 
     [DllImport("hidapi")]
-    public static extern int hid_read(IntPtr device, byte[] data, UIntPtr length);
+    public static extern int hid_read(IntPtr device, byte[] data, ulong length);
 
     [DllImport("hidapi")]
     public static extern int hid_read_timeout(IntPtr dev, byte[] data, ulong length, int milliseconds);

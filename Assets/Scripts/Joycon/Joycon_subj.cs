@@ -32,18 +32,21 @@ public class Joycon_subj : MonoBehaviour
 
         //Application終了時の処理を設定
         Application.quitting += OnApplicatioQuitStatic;
-
+        DebugOnGUI.Log($"UpdateStatic 1", "UpdateStatic");
         UpdateStatic().Forget();
+        
 
 
     }
 
-    
+    //debug
     private static async UniTaskVoid UpdateStatic()
     {
+        DebugOnGUI.Log($"UpdateStatic 2", "UpdateStatic");
         //アプリが動いている間は動いている。
         while (!_cancellationTokenOnAppQuit.IsCancellationRequested)
         {
+            
             foreach (KeyValuePair<string, JoyConConnection> aPair in _joyConConnections)
             {
                 if (aPair.Value.IsConnecting)
@@ -51,7 +54,10 @@ public class Joycon_subj : MonoBehaviour
                     aPair.Value.PopInputReportToJoyconObs();
                 }
             }
+            DebugOnGUI.Log($"_cancellationTokenOnAppQuit.IsCancellationRequested {_cancellationTokenOnAppQuit.IsCancellationRequested}", "UpdateStatic");
             await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cancellationTokenOnAppQuit);
+            DebugOnGUI.Log($"UpdateStatic 4", "UpdateStatic 4");
+
         }
         Debug.Log("JoyconSubj.UpdateStatic stop");
     }
@@ -407,13 +413,18 @@ public class JoyConConnection
                 
                 byte[] subCmd = subCmdQueue.Dequeue();
                 Debug.Log($"pop {subCmd[0]} from subcmdQueue");
+                DebugOnGUI.Log($"pop {subCmd[0]} from subcmdQueue", "WaitSubCommandRoop");
                 SendSubCmdSimple(subCmd,subCmd.Length);
                 byte[] subCmdReply = null;
                 Debug.Log($"wait {subCmd[0]} reply");
+                DebugOnGUI.Log($"wait {subCmd[0]} reply", "WaitSubCommandRoop");
+
+                int debugCounter = 0;
                 await UniTask.WaitUntil
                 (
                     ()=>
                     {
+                        DebugOnGUI.Log($"debugCounter:{debugCounter++}", "WaitSubCommandRoop");
                         //Debug.Log("チェックしてます");
                         foreach (byte[] aReply in _subCmdReplysInThisFrame)
                         {
@@ -477,7 +488,9 @@ public class JoyConConnection
         {
             byte[] inputReport = new byte[50];
             inputReport[0] = 0x00;
-            int ret_read = HIDapi.hid_read_timeout(_joycon_dev, inputReport, 50, 10);
+            //int ret_read = HIDapi.hid_read_timeout(_joycon_dev, inputReport, 50, 10);
+            int ret_read = HIDapi.hid_read(_joycon_dev, inputReport, 50);
+
             if (ret_read != 0 && inputReport[0]!=0x00)
             {
                 _reportQueue.Enqueue(inputReport);
@@ -488,18 +501,38 @@ public class JoyConConnection
                 {
                     Debug.Log($" {Serial_Number} poll Count:{i}");
                 }
+                lock (DebugOnGUI.lockObject)
+                {
+                    DebugOnGUI.Log($"PollCount:{i}","PollCount");
+                }
+                if (inputReport[0] == 0x21) 
+                {
+                    lock (DebugOnGUI.lockObject)
+                    {
+                        DebugOnGUI.Log($"Report:{inputReport[0]}", "inputReport");
+                    }
+                    
+                }
+
             }
             else
             {
+                lock (DebugOnGUI.lockObject)
+                {
+                    DebugOnGUI.Log($"failReadCounter:{failReadCounter}", "failReadCounter");
+                }
+                
                 failReadCounter++;
             }
-            if (failReadCounter == 500)
+            //if (failReadCounter == 500)
+            if (failReadCounter == 50000)
             {
                 byte[] ReplyBuf = new byte[1];
                 SendSubCmd_And_WaitReply(new byte[]{0x00}, ReplyBuf, _cTokenOnAppQuit).Forget();
                 Debug.Log($"Check  {Serial_Number} Connection");
             }
-            else if (failReadCounter > 1000)
+            //else if (failReadCounter > 1000)
+            else if (failReadCounter > 100000)
             {
                 Debug.Log($"{Serial_Number} ConnectionLost");
                 Debug.Log($"{Serial_Number} HidReadRoop Stop");
