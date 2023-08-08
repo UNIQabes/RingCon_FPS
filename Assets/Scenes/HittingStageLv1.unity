@@ -4010,6 +4010,8 @@ GameObject:
   - component: {fileID: 535482487}
   - component: {fileID: 535482489}
   - component: {fileID: 535482490}
+  - component: {fileID: 535482492}
+  - component: {fileID: 535482491}
   m_Layer: 0
   m_Name: GM
   m_TagString: Untagged
@@ -4034,9 +4036,11 @@ MonoBehaviour:
   _chargeCircleImage: {fileID: 206541055}
   _canvasRect: {fileID: 1384453285}
   _reticleGraphic: {fileID: 206541057}
-  _maxXRot_xyOrder_deg: 30
-  _maxYRot_xyOrder_deg: 45
-  _XRot_xyOrder_ResetYRot_deg: -45
+  MaxXRot_xyOrder_deg: 0
+  MaxYRot_xyOrder_deg: 0
+  XRot_xyOrder_ResetYRot_deg: -75
+  XSensetivity_KeyMouseMode: 0
+  YSensetivity_KeyMouseMode: 0
   ControllerMode: 2
 --- !u!4 &535482488
 Transform:
@@ -4098,6 +4102,38 @@ MonoBehaviour:
   BRankMaxTime: 65
   ARankMaxTime: 60
   SRankMaxTime: 55
+--- !u!114 &535482491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535482486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20a9362534b4467cbc49cdddc64afd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shootingController: {fileID: 535482487}
+  _settingName: PlayerSetting
+  _enable: 1
+  _setOnStart: 1
+--- !u!114 &535482492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535482486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bede7640d9c0d4a74869a732eb17ae2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SettingName: PlayerSetting
+  _enable: 1
+  _loadSettingOnStart: 1
+  _saveSettingOnDestroy: 1
 --- !u!1 &547494764
 GameObject:
   m_ObjectHideFlags: 0
@@ -11139,6 +11175,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1384453285}
     m_Modifications:
+    - target: {fileID: 6526857966723889033, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: _playerSettingSetter
+      value: 
+      objectReference: {fileID: 535482491}
     - target: {fileID: 8613495412583890264, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

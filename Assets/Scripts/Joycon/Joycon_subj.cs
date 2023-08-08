@@ -120,6 +120,7 @@ public class Joycon_subj : MonoBehaviour
             if (enInfo.product_id == JOYCON_R_PRODUCTID | enInfo.product_id == JOYCON_L_PRODUCTID)
             {
                 Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
+                DebugOnGUI.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}","connected");
                 bool isJoyConR = (enInfo.product_id == JOYCON_R_PRODUCTID);
                 joycon_Info_ptr = device;
                 string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);

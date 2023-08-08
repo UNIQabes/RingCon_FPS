@@ -118,10 +118,12 @@ public class MainJoyconInput : Joycon_obs
             SmoothedPose_R_Arrow = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R_Arrow, 0.05f);
             SmoothedPose_R_Ring = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R_Ring, 0.05f);
             */
+            DebugOnGUI.Log($"{ConnectInfo} {SerialNumber_R}", "ConnectInfo");
             if (_joyconConnection_R!=null&&!_joyconConnection_R.IsConnecting)
             {
                 if (ConnectInfo != JoyConConnectInfo.JoyConIsNotFound)
                 {
+                    DebugOnGUI.Log("接続が切れたよ", "Joycon");
                     Debug.Log("接続が切れたよ!!!");
                 }
                 ConnectInfo = JoyConConnectInfo.JoyConIsNotFound;
@@ -155,6 +157,7 @@ public class MainJoyconInput : Joycon_obs
             if (ConnectInfo!=JoyConConnectInfo.JoyConIsReady & IsTryingReconnectJoycon)
             {
                 Debug.Log("再接続を試行します");
+                DebugOnGUI.Log("再接続を試行します", "Joycon");
                 bool connectIsSuccess=await ReConnectJoyconAsync();
             }
             await UniTask.Delay(1000,false,PlayerLoopTiming.EarlyUpdate,cancellationTokenOnAppQuit);
@@ -226,12 +229,13 @@ public class MainJoyconInput : Joycon_obs
         if (newJoyConSerialNum != "")
         {
             JoyConConnection newJoyConConnection = Joycon_subj.GetJoyConConnection(newJoyConSerialNum);
-
+            //DebugOnGUI.Log(newJoyConSerialNum, "dedwedsfef");
             if (newJoyConConnection.ConnectToJoyCon())
             {
                 ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
                 newJoyConConnection.AddObserver(getInstance);
                 _joyconConnection_R = newJoyConConnection;
+                SerialNumber_R = newJoyConSerialNum;
                 await joyConSetUp(cancellationTokenOnAppQuit);
             }
             else
@@ -265,33 +269,42 @@ public class MainJoyconInput : Joycon_obs
         try
         {
             Debug.Log("セットアップします!");
+            DebugOnGUI.Log("セットアップします", "Joycon");
             // Enable vibration
+            DebugOnGUI.Log($"{SerialNumber_R}:Enable vibration", "Joycon");
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-
+            DebugOnGUI.Log("{SerialNumber_R}:Enable IMU data", "Joycon");
             // Enable IMU data
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x40, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            DebugOnGUI.Log($"{SerialNumber_R}:Set input report mode to 0x30", "Joycon");
             //Set input report mode to 0x30
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            DebugOnGUI.Log($"{SerialNumber_R}:Enabling MCU data", "Joycon");
             // Enabling MCU data
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x22, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            DebugOnGUI.Log($"{SerialNumber_R}:enabling_MCU_data_21_21_1_1", "Joycon");
             //enabling_MCU_data_21_21_1_1
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[39] { 0x21, 0x21, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF3 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            DebugOnGUI.Log($"{SerialNumber_R}:get_ext_data_59", "Joycon");
             //get_ext_data_59
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x59, 0x0 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            DebugOnGUI.Log($"{SerialNumber_R}:get_ext_dev_in_format_config_5C", "Joycon");
             //get_ext_dev_in_format_config_5C
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            DebugOnGUI.Log($"{SerialNumber_R}:start_external_polling_5A", "Joycon");
             //start_external_polling_5A
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5A, 0x04, 0x01, 0x01, 0x02 }, ReplyBuf, cancellationTokenOnAppQuit);
 
             ConnectInfo = JoyConConnectInfo.JoyConIsReady;
-            Debug.Log("Joyconのセットアップが完了しました");
+            Debug.Log($"{SerialNumber_R}:Joyconのセットアップが完了しました");
+            DebugOnGUI.Log("Joyconのセットアップが完了しました", "Joycon");
         }
         catch(OperationCanceledException e)
         {
