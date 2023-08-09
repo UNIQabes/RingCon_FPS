@@ -57,7 +57,6 @@ public class Joycon_subj : MonoBehaviour
     //debug
     private static async UniTaskVoid UpdateStatic()
     {
-        DebugOnGUI.Log($"UpdateStatic 2", "UpdateStatic");
         //アプリが動いている間は動いている。
         while (!_cancellationTokenOnAppQuit.IsCancellationRequested)
         {
@@ -69,7 +68,7 @@ public class Joycon_subj : MonoBehaviour
                     aPair.Value.PopInputReportToJoyconObs();
                 }
             }
-            DebugOnGUI.Log($"_cancellationTokenOnAppQuit.IsCancellationRequested {_cancellationTokenOnAppQuit.IsCancellationRequested}", "UpdateStatic");
+            
             try
             {
                 await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cancellationTokenOnAppQuit);
@@ -79,7 +78,6 @@ public class Joycon_subj : MonoBehaviour
                 DebugOnGUI.Log($"{e}", "error");
                 throw e;
             }
-            DebugOnGUI.Log($"UpdateStatic 4", "UpdateStatic 4");
 
         }
         Debug.Log("JoyconSubj.UpdateStatic stop");
@@ -525,7 +523,7 @@ public class JoyConConnection
                 }
                 lock (DebugOnGUI.lockObject)
                 {
-                    DebugOnGUI.Log($"PollCount:{i}","PollCount");
+                    DebugOnGUI.Log($"{Serial_Number} PollCount:{i}","PollCount");
                 }
                 
 

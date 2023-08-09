@@ -14,6 +14,7 @@ public class ShootingController : MonoBehaviour
     [SerializeField] public float MaxXRot_xyOrder_deg;
     [SerializeField] public float MaxYRot_xyOrder_deg;
     [SerializeField] public float XRot_xyOrder_ResetYRot_deg = -75;
+    [SerializeField] public float XRot_Offset_xyOrder_deg=0;
 
     [SerializeField] public float GyroDriftCalibration_YRot_xyOrder = 2.5f;
 
@@ -40,7 +41,10 @@ public class ShootingController : MonoBehaviour
     {
         float maxYRot_xyOrder = MaxYRot_xyOrder_deg * Mathf.PI/180f;
         float maxXRot_xyOrder = MaxXRot_xyOrder_deg * Mathf.PI / 180f;
-        float _XRot_xyOrder_ResetYRot= XRot_xyOrder_ResetYRot_deg * Mathf.PI / 180f;
+        float XRot_xyOrder_ResetYRot= XRot_xyOrder_ResetYRot_deg * Mathf.PI / 180f;
+        float XRot_Offset_xyOrder= XRot_Offset_xyOrder_deg * Mathf.PI / 180f;
+
+
         bool isReticleFix = false;
         RaycastHit hit;
         if (ControllerMode == ShootingControllerMode.JoyCon)
@@ -48,13 +52,13 @@ public class ShootingController : MonoBehaviour
             if (MainJoyconInput.ConnectInfo == JoyConConnectInfo.JoyConIsReady)
             {
                 MainJoyconInput.RotatZRot(GyroDriftCalibration_YRot_xyOrder * Time.fixedDeltaTime) ;
-                DebugOnGUI.Log($"R:{MainJoyconInput.RButton} ZR:{MainJoyconInput.ZRButton}", "ddd");
+                DebugOnGUI.Log($"R:{MainJoyconInput.RButton} \nZR:{MainJoyconInput.ZRButton} \nA:{MainJoyconInput.AButton} \nRingconStrain:{MainJoyconInput.ringconStrain}", "JoyconButton");
                 bool RingConAttached = MainJoyconInput.ringconStrain > 100;
                 isReticleFix = !(Mathf.Abs(MainJoyconInput.ringconStrain - prevRingconStrain) < 20);
                 Vector3 ringconFrontV = MainJoyconInput.SmoothedPose_R_Arrow * new Vector3(1, 0, 0);
                 Vector3 ringconFrontV_InGame = new Vector3(-ringconFrontV.z, -ringconFrontV.y, ringconFrontV.x);
 
-                float xRot_xyOrder = Mathf.Atan2(ringconFrontV_InGame.y, Mathf.Sqrt(Mathf.Pow(ringconFrontV_InGame.x, 2) + Mathf.Pow(ringconFrontV_InGame.z, 2)));
+                float xRot_xyOrder = Mathf.Atan2(ringconFrontV_InGame.y, Mathf.Sqrt(Mathf.Pow(ringconFrontV_InGame.x, 2) + Mathf.Pow(ringconFrontV_InGame.z, 2)))+ XRot_Offset_xyOrder;
                 float yRot_xyOrder = Mathf.Atan2(ringconFrontV_InGame.x, ringconFrontV_InGame.z);
 
                 //_reticleGobj.transform.position = new Vector3(604 + 600 * (yRot_xyOrder), 320 + 400 * (xRot_xyOrder), 0);
@@ -67,7 +71,7 @@ public class ShootingController : MonoBehaviour
                         Mathf.Clamp(xRot_xyOrder / maxXRot_xyOrder / 2 + 0.5f, 0, 1) * (maxY_canvas - minY_canvas) + minY_canvas, 0);
                 }
 
-                if (xRot_xyOrder < _XRot_xyOrder_ResetYRot|MainJoyconInput.AButton)
+                if (xRot_xyOrder < XRot_xyOrder_ResetYRot|MainJoyconInput.AButton)
                 {
                     //Debug.Log(_XRot_xyOrder_ResetYRot);
                     //Debug.Log("リセットした~");
@@ -193,7 +197,7 @@ public class ShootingController : MonoBehaviour
 
     private void OnGUI()
     {
-        DebugOnGUI.Log($"RingconStrain:{MainJoyconInput.ringconStrain}","a");
+        //DebugOnGUI.Log($"RingconStrain:{MainJoyconInput.ringconStrain}","a");
     }
 }
 

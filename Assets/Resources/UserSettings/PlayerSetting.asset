@@ -20,8 +20,8 @@ MonoBehaviour:
   Score_HittingStage3: 999
   ControllerMode: 1
   MaxXRot_xyOrder_deg: 30
-  MaxYRot_xyOrder_deg: 45
-  XRotOffset_xyOrder_deg: -21
-  GyroDriftCalibration_YRot_xyOrder: 0
+  MaxYRot_xyOrder_deg: 60
+  XRotOffset_xyOrder_deg: 18
+  GyroDriftCalibration_YRot_xyOrder: 2.0580072
   XSensitivity: 5
   YSensitivity: 5

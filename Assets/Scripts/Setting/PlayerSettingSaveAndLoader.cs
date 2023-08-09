@@ -24,6 +24,8 @@ public class PlayerSettingSaveAndLoader : MonoBehaviour
         
     }
 
+    
+
     void SaveSetting()
     {
         if (!_enable)

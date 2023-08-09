@@ -4039,6 +4039,8 @@ MonoBehaviour:
   MaxXRot_xyOrder_deg: 0
   MaxYRot_xyOrder_deg: 0
   XRot_xyOrder_ResetYRot_deg: -75
+  XRot_Offset_xyOrder_deg: 0
+  GyroDriftCalibration_YRot_xyOrder: 2.5
   XSensetivity_KeyMouseMode: 0
   YSensetivity_KeyMouseMode: 0
   ControllerMode: 2
@@ -4081,7 +4083,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4100b8d64ec2f41ba82cbd3aabfcce82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveNum: 0
+  waveNum: 13
   Waves:
   - {fileID: 530906281}
   - {fileID: 1854439564}
@@ -4099,9 +4101,9 @@ MonoBehaviour:
   - {fileID: 173865394}
   CountDownText: {fileID: 2073006848}
   ResultPanel_p: {fileID: 12071029}
-  BRankMaxTime: 65
-  ARankMaxTime: 60
-  SRankMaxTime: 55
+  BRankMaxTime: 80
+  ARankMaxTime: 70
+  SRankMaxTime: 60
 --- !u!114 &535482491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4965,6 +4967,7 @@ GameObject:
   - component: {fileID: 798913077}
   - component: {fileID: 798913076}
   - component: {fileID: 798913079}
+  - component: {fileID: 798913080}
   m_Layer: 5
   m_Name: ReturnButton
   m_TagString: Untagged
@@ -5036,7 +5039,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 798913077}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 798913080}
+        m_TargetAssemblyTypeName: TransSceneButton, Assembly-CSharp
+        m_MethodName: OnClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &798913077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5090,6 +5105,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &798913080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798913074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6232649119aae4619b5588b82399ff4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nextSceneName: StageSelectScene
 --- !u!1 &809609114
 GameObject:
   m_ObjectHideFlags: 0

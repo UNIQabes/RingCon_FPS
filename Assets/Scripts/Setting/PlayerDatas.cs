@@ -11,9 +11,11 @@ public class PlayerDatas : ScriptableObject
     public float Score_HittingStage2 = 999;
     public string Rank_HittingStage3 = "C";
     public float Score_HittingStage3 = 999;
+    public string Rank_ScoreAttack1 = "C";
+    public float Score_ScoreAttack1 = 999;
+    
+
     public ShootingControllerMode ControllerMode = ShootingControllerMode.KeyMouse;
-
-
 
     //JoyConSettings
     public int MaxXRot_xyOrder_deg = 30;
@@ -72,5 +74,14 @@ public class PlayerDatas : ScriptableObject
         PlayerPrefs.Save();
     }
 
+    
+
+    public void OnValidate()
+    {
+        //SaveToPlayerPrefs();
+    }
+
 
 }
+
+

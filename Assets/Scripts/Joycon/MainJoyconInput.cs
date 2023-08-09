@@ -144,7 +144,7 @@ public class MainJoyconInput : Joycon_obs
             SmoothedPose_R_Arrow = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R_Arrow, 0.05f);
             SmoothedPose_R_Ring = Quaternion.Slerp(SmoothedPose_R, JoyconPose_R_Ring, 0.05f);
             */
-            DebugOnGUI.Log($"{ConnectInfo} {SerialNumber_R}", "ConnectInfo");
+            DebugOnGUI.Log($"{SerialNumber_R} {ConnectInfo}", "ConnectInfo");
             if (_joyconConnection_R!=null&&!_joyconConnection_R.IsConnecting)
             {
                 if (ConnectInfo != JoyConConnectInfo.JoyConIsNotFound)
@@ -258,7 +258,7 @@ public class MainJoyconInput : Joycon_obs
             //DebugOnGUI.Log(newJoyConSerialNum, "dedwedsfef");
             if (newJoyConConnection.ConnectToJoyCon())
             {
-                ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
+                //ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
                 newJoyConConnection.AddObserver(getInstance);
                 _joyconConnection_R = newJoyConConnection;
                 SerialNumber_R = newJoyConSerialNum;
@@ -287,15 +287,16 @@ public class MainJoyconInput : Joycon_obs
 
         //await UniTask.DelayFrame(100, cancellationToken: cancellationToken);
         //実行コンテクスト(?というらしい)をPreUpdateに切り替える
-        await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
+        await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationTokenOnAppQuit);
 
         byte[] ReplyBuf = new byte[50];
 
-
+        
         try
         {
+            ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
             Debug.Log("セットアップします!");
-            DebugOnGUI.Log("セットアップします", "Joycon");
+            DebugOnGUI.Log("セットアップ開始", "Joycon");
             // Enable vibration
             DebugOnGUI.Log($"{SerialNumber_R}:Enable vibration", "Joycon");
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
@@ -308,23 +309,23 @@ public class MainJoyconInput : Joycon_obs
             //Set input report mode to 0x30
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:Enabling MCU data", "Joycon");
+            DebugOnGUI.Log($"{SerialNumber_R}:Enable MCU data", "Joycon");
             // Enabling MCU data
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x22, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:enabling_MCU_data_21_21_1_1", "Joycon");
+            DebugOnGUI.Log($"{SerialNumber_R}:Enable MCU data", "Joycon");
             //enabling_MCU_data_21_21_1_1
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[39] { 0x21, 0x21, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF3 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:get_ext_data_59", "Joycon");
+            DebugOnGUI.Log($"{SerialNumber_R}:Get external data", "Joycon");
             //get_ext_data_59
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x59, 0x0 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:get_ext_dev_in_format_config_5C", "Joycon");
+            DebugOnGUI.Log($"{SerialNumber_R}:Get external device in format config 5C", "Joycon");
             //get_ext_dev_in_format_config_5C
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:start_external_polling_5A", "Joycon");
+            DebugOnGUI.Log($"{SerialNumber_R}:Start external polling 5A", "Joycon");
             //start_external_polling_5A
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5A, 0x04, 0x01, 0x01, 0x02 }, ReplyBuf, cancellationTokenOnAppQuit);
 
@@ -335,9 +336,18 @@ public class MainJoyconInput : Joycon_obs
         catch(OperationCanceledException e)
         {
             ConnectInfo = JoyConConnectInfo.JoyConIsNotFound;
+            DebugOnGUI.Log("JoyConのセットアップに失敗しました", "Joycon");
             Debug.Log("JoyConのセットアップに失敗しました。");
         }
 
+    }
+
+    public static async UniTaskVoid SetupAgain()
+    {
+        if (ConnectInfo == JoyConConnectInfo.JoyConIsReady)
+        {
+            await joyConSetUp(cancellationTokenOnAppQuit);
+        }
     }
 
     public override void OnReadReport(List<byte[]> reports)

@@ -62,6 +62,10 @@ public class ReticleSettingPanel : MonoBehaviour
         _playerSettingSetter.SetSetting();
         JoyconSettingPanelGObj.SetActive(value);
         KeyMouseSettingPanelGObj.SetActive(!value);
+        if (value)
+        {
+            MainJoyconInput.SetupAgain().Forget();
+        }
     }
 
     public void OnMaxXChanged(float value)
