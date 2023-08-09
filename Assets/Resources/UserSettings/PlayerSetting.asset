@@ -18,9 +18,10 @@ MonoBehaviour:
   Score_HittingStage2: 999
   Rank_HittingStage3: C
   Score_HittingStage3: 999
-  ControllerMode: 0
-  MaxXRot_xyOrder_deg: 34
-  MaxYRot_xyOrder_deg: 1
+  ControllerMode: 1
+  MaxXRot_xyOrder_deg: 30
+  MaxYRot_xyOrder_deg: 45
   XRotOffset_xyOrder_deg: -21
+  GyroDriftCalibration_YRot_xyOrder: 0
   XSensitivity: 5
   YSensitivity: 5

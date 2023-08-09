@@ -37,6 +37,7 @@ public class MainJoyconInput : Joycon_obs
     public static float ringconStrain { get; private set; }
     public static bool RButton { get; private set; }
     public static bool ZRButton { get; private set; }
+    public static bool AButton { get; private set; }
 
     //以下の2つはJoyconに搭載されたIMUにおける座標系(Nintend Switch Reverse Engeneeringのimu_sensor_notes>Axes definitionに書いてある)で、自分が指定したい正面方向と下方向を指定する
     //public static Vector3 FrontVector_R = new Vector3(0, 0, 1);
@@ -66,8 +67,33 @@ public class MainJoyconInput : Joycon_obs
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Init()
     {
+        Joycon_subj.RegisterAfterInitCallback(AfterSubjInitCallback);
 
-        
+        /*
+        _joyconConnection_R = null;
+        cancellationTokenSourceOnAppQuit = new CancellationTokenSource();
+        cancellationTokenOnAppQuit = cancellationTokenSourceOnAppQuit.Token;
+        Joycon_subj.UpdateJoyConConnection();
+        IsTryingReconnectJoycon = true;
+
+        JoyconPose_R = Quaternion.identity;
+        SmoothedPose_R = Quaternion.identity;
+        JoyconPose_R_Arrow = Quaternion.identity;
+        SmoothedPose_R_Arrow = Quaternion.identity;
+        JoyconPose_R_Ring = Quaternion.identity;
+        SmoothedPose_R_Ring = Quaternion.identity;
+        JoyconPose_R_Remote= Quaternion.identity;
+        SmoothedPose_R_Remote = Quaternion.identity;
+        ringconStrain = 0;
+        Application.quitting += OnApplicatioQuitStatic;
+        updatestatic().Forget();
+        reconnectTask().Forget();
+        fixedupdatestatic().Forget();
+        */
+    }
+
+    static void AfterSubjInitCallback()
+    {
         _joyconConnection_R = null;
         cancellationTokenSourceOnAppQuit = new CancellationTokenSource();
         cancellationTokenOnAppQuit = cancellationTokenSourceOnAppQuit.Token;
@@ -97,7 +123,7 @@ public class MainJoyconInput : Joycon_obs
         SmoothedPose_R_Arrow = Quaternion.identity;
         JoyconPose_R_Ring = Quaternion.identity;
         SmoothedPose_R_Ring = Quaternion.identity;
-        JoyconPose_R_Remote= Quaternion.identity;
+        JoyconPose_R_Remote = Quaternion.identity;
         SmoothedPose_R_Remote = Quaternion.identity;
         ringconStrain = 0;
         Application.quitting += OnApplicatioQuitStatic;
@@ -274,7 +300,7 @@ public class MainJoyconInput : Joycon_obs
             DebugOnGUI.Log($"{SerialNumber_R}:Enable vibration", "Joycon");
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log("{SerialNumber_R}:Enable IMU data", "Joycon");
+            DebugOnGUI.Log($"{SerialNumber_R}:Enable IMU data", "Joycon");
             // Enable IMU data
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x40, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
@@ -360,6 +386,7 @@ public class MainJoyconInput : Joycon_obs
                     byte buttonStatus = report[3];
                     RButton = (buttonStatus & 0b01000000) > 0;
                     ZRButton = (buttonStatus & 0b10000000) > 0;
+                    AButton = (buttonStatus & 0b00001000) > 0;
                 }
             }
             
@@ -468,6 +495,13 @@ public class MainJoyconInput : Joycon_obs
             await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
         }
 
+    }
+
+    public static void RotatZRot(float RotDeg)
+    {
+        Vector3 axis= new Vector3(0, 1, 0);
+        JoyconPose_R_Arrow = Quaternion.AngleAxis(RotDeg, axis) * JoyconPose_R_Arrow;
+        SmoothedPose_R_Arrow = Quaternion.AngleAxis(RotDeg, axis) * SmoothedPose_R_Arrow;
     }
 
     public static void ResetYRot_xyOrder()

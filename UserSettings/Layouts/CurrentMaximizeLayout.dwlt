@@ -26,7 +26,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 200}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 4509
+  controlID: 43
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -88,7 +88,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1
@@ -143,7 +143,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 200}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 4510
+  controlID: 44
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: SceneView
+  m_Name: 
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -163,8 +163,8 @@ MonoBehaviour:
     y: 0
     width: 605
     height: 385
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 5}
   m_Panes:
   - {fileID: 5}
@@ -494,8 +494,8 @@ MonoBehaviour:
     y: 385
     width: 605
     height: 365
-  m_MinSize: {x: 201, y: 221}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 2}
   m_Panes:
   - {fileID: 2}
@@ -558,9 +558,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: be600000
       m_LastClickedID: 0
-      m_ExpandedIDs: 08f7feff5cf7feffa6fafefff0fcfeff3a00ffff7602fffff603ffff4a04ffff9407ffffde09ffff280dffff640fffff9615ffffea15ffff3419ffff7e1bffffc81effff0421ffff9022ffffe422ffff2e26ffff7828ffffc22bfffffe2dffff8a2fffffde2fffff2833ffff7235ffffbc38fffff83afffff03dffff463effff9041ffffda43ffff2447ffff6049ffff9a4dfffff44dffff4251ffff9053ffffde56ffff1e59ffffb078ffff0479ffff4e7cffff987effffe281ffff1e84ffff6293ffffb693ffff0097ffff4a99ffff949cffffd09efffff8a0ffff50a1ffffa6a4fffffca6ffff52aaffff9aacffffc8beffff38fbffff
+      m_ExpandedIDs: 4eecfffff4f1ffff38fbffffe05a0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -651,7 +651,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/NativeMethod
+    - Assets/Scenes
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 0
@@ -666,7 +666,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: d05d0000
     m_LastClickedID: 24016
-    m_ExpandedIDs: ffffffff0000000056630000586300005a6300005c6300005e6300006063000062630000646300006663000068630000ca630000
+    m_ExpandedIDs: 0000000050600000526000005460000056600000586000005a6000005c6000005e6000006060000062600000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -691,10 +691,10 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_AssetTreeState:
-    scrollPos: {x: 0, y: 389}
-    m_SelectedIDs: 
-    m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff0000000056630000586300005a6300005c6300005e6300006063000062630000646300006663000068630000ca630000
+    scrollPos: {x: 0, y: 289.00146}
+    m_SelectedIDs: be600000
+    m_LastClickedID: 24766
+    m_ExpandedIDs: ffffffff0000000050600000526000005460000056600000586000005a6000005c6000005e6000006060000062600000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -719,8 +719,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
+    m_SelectedInstanceIDs: be600000
+    m_LastClickedInstanceID: 24766
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: 
     m_RenameOverlay:
@@ -769,8 +769,8 @@ MonoBehaviour:
     y: 0
     width: 267
     height: 750
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 12}
   m_Panes:
   - {fileID: 12}

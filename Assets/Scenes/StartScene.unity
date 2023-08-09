@@ -1982,6 +1982,7 @@ MonoBehaviour:
   _maxXSlider: {fileID: 612619138}
   _maxYSlider: {fileID: 1308256950}
   _xOffsetSlider: {fileID: 1338600784}
+  _gyroClibrationSlider: {fileID: 0}
   _xSensitivitySlider: {fileID: 1409616425}
   _ySensitivitySlider: {fileID: 1388467412}
   JoyconSettingPanelGObj: {fileID: 1891995871}
@@ -2764,6 +2765,7 @@ MonoBehaviour:
   MaxXRot_xyOrder_deg: 21
   MaxYRot_xyOrder_deg: 21
   XRot_xyOrder_ResetYRot_deg: 2
+  GyroDriftCalibration_YRot_xyOrder: 2.5
   XSensetivity_KeyMouseMode: 0
   YSensetivity_KeyMouseMode: 0
   ControllerMode: 0

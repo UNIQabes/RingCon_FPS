@@ -15,6 +15,9 @@ public class ShootingController : MonoBehaviour
     [SerializeField] public float MaxYRot_xyOrder_deg;
     [SerializeField] public float XRot_xyOrder_ResetYRot_deg = -75;
 
+    [SerializeField] public float GyroDriftCalibration_YRot_xyOrder = 2.5f;
+
+
     [SerializeField] public float XSensetivity_KeyMouseMode=0;
     [SerializeField] public float YSensetivity_KeyMouseMode=0;
 
@@ -44,6 +47,7 @@ public class ShootingController : MonoBehaviour
         {
             if (MainJoyconInput.ConnectInfo == JoyConConnectInfo.JoyConIsReady)
             {
+                MainJoyconInput.RotatZRot(GyroDriftCalibration_YRot_xyOrder * Time.fixedDeltaTime) ;
                 DebugOnGUI.Log($"R:{MainJoyconInput.RButton} ZR:{MainJoyconInput.ZRButton}", "ddd");
                 bool RingConAttached = MainJoyconInput.ringconStrain > 100;
                 isReticleFix = !(Mathf.Abs(MainJoyconInput.ringconStrain - prevRingconStrain) < 20);
@@ -63,7 +67,7 @@ public class ShootingController : MonoBehaviour
                         Mathf.Clamp(xRot_xyOrder / maxXRot_xyOrder / 2 + 0.5f, 0, 1) * (maxY_canvas - minY_canvas) + minY_canvas, 0);
                 }
 
-                if (xRot_xyOrder < _XRot_xyOrder_ResetYRot)
+                if (xRot_xyOrder < _XRot_xyOrder_ResetYRot|MainJoyconInput.AButton)
                 {
                     //Debug.Log(_XRot_xyOrder_ResetYRot);
                     //Debug.Log("リセットした~");

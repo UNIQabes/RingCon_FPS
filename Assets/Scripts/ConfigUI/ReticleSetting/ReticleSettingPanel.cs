@@ -11,6 +11,7 @@ public class ReticleSettingPanel : MonoBehaviour
     [SerializeField] Slider _maxXSlider;
     [SerializeField] Slider _maxYSlider;
     [SerializeField] Slider _xOffsetSlider;
+    [SerializeField] Slider _gyroClibrationSlider;
     [SerializeField] Slider _xSensitivitySlider;
     [SerializeField] Slider _ySensitivitySlider;
     [SerializeField] GameObject JoyconSettingPanelGObj;
@@ -23,6 +24,7 @@ public class ReticleSettingPanel : MonoBehaviour
         _maxXSlider.onValueChanged.AddListener(OnMaxXChanged);
         _maxYSlider.onValueChanged.AddListener(OnMaxYChanged);
         _xOffsetSlider.onValueChanged.AddListener(OnXOffsetChanged);
+        _gyroClibrationSlider.onValueChanged.AddListener(OnGyroClibrationChanged);
         _xSensitivitySlider.onValueChanged.AddListener(OnXSensitivityChanged);
         _ySensitivitySlider.onValueChanged.AddListener(OnYSensitivityChanged);
 
@@ -46,6 +48,7 @@ public class ReticleSettingPanel : MonoBehaviour
         _maxXSlider.value = SettingSetter.GetSetting().MaxXRot_xyOrder_deg;
         _maxYSlider.value = SettingSetter.GetSetting().MaxYRot_xyOrder_deg;
         _xOffsetSlider.value = SettingSetter.GetSetting().XRotOffset_xyOrder_deg;
+        _gyroClibrationSlider.value = SettingSetter.GetSetting().GyroDriftCalibration_YRot_xyOrder;
         _xSensitivitySlider.value = SettingSetter.GetSetting().XSensitivity;
         _ySensitivitySlider.value = SettingSetter.GetSetting().YSensitivity;
 
@@ -77,6 +80,12 @@ public class ReticleSettingPanel : MonoBehaviour
     public void OnXOffsetChanged(float value)
     {
         SettingSetter.GetSetting().XRotOffset_xyOrder_deg = (int)value;
+        _playerSettingSetter.SetSetting();
+    }
+
+    public void OnGyroClibrationChanged(float value)
+    {
+        SettingSetter.GetSetting().GyroDriftCalibration_YRot_xyOrder = value;
         _playerSettingSetter.SetSetting();
     }
 

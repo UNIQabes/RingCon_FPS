@@ -53,9 +53,11 @@ public class PlayerSettingSetter : MonoBehaviour
             _shootingController.MaxXRot_xyOrder_deg = playerSettingData.MaxXRot_xyOrder_deg;
             _shootingController.MaxYRot_xyOrder_deg = playerSettingData.MaxYRot_xyOrder_deg;
             _shootingController.XRot_xyOrder_ResetYRot_deg=-playerSettingData.MaxXRot_xyOrder_deg;
+            _shootingController.GyroDriftCalibration_YRot_xyOrder = playerSettingData.GyroDriftCalibration_YRot_xyOrder;
             _shootingController.ControllerMode = playerSettingData.ControllerMode;
             _shootingController.XSensetivity_KeyMouseMode = playerSettingData.XSensitivity;
             _shootingController.YSensetivity_KeyMouseMode = playerSettingData.YSensitivity;
+
         }
     }
 

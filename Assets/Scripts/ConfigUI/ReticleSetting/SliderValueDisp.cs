@@ -19,7 +19,15 @@ public class SliderValueDisp : MonoBehaviour
 
     public void OnSliderValueChanged(float value)
     {
-        _tmp.text = ((int)(value)).ToString();
+        if (_slider.wholeNumbers)
+        {
+            _tmp.text = ((int)value).ToString();
+        }
+        else
+        {
+            _tmp.text = string.Format("{0:f2}", value);
+        }
+        
     }
 
     

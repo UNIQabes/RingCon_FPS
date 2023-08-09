@@ -17,9 +17,24 @@ using UnityEngine.LowLevel;
 public class Joycon_subj : MonoBehaviour
 {
     //新しい実装
-    
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static Action _afterInitCallback=()=> { };
+    private static bool _isAfterInit=false;
+    public static void RegisterAfterInitCallback(Action callback)
+    {
+        if (_isAfterInit)
+        {
+            callback();
+        }
+        else
+        {
+            _afterInitCallback += callback;
+        }
+        
+    }
+
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Init()
     {
         
@@ -32,10 +47,10 @@ public class Joycon_subj : MonoBehaviour
 
         //Application終了時の処理を設定
         Application.quitting += OnApplicatioQuitStatic;
-        DebugOnGUI.Log($"UpdateStatic 1", "UpdateStatic");
         UpdateStatic().Forget();
-        
 
+        _isAfterInit = true;
+        _afterInitCallback();
 
     }
 
@@ -55,7 +70,15 @@ public class Joycon_subj : MonoBehaviour
                 }
             }
             DebugOnGUI.Log($"_cancellationTokenOnAppQuit.IsCancellationRequested {_cancellationTokenOnAppQuit.IsCancellationRequested}", "UpdateStatic");
-            await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cancellationTokenOnAppQuit);
+            try
+            {
+                await UniTask.Yield(PlayerLoopTiming.PreUpdate, _cancellationTokenOnAppQuit);
+            }
+            catch(System.Exception e)
+            {
+                DebugOnGUI.Log($"{e}", "error");
+                throw e;
+            }
             DebugOnGUI.Log($"UpdateStatic 4", "UpdateStatic 4");
 
         }
@@ -126,7 +149,7 @@ public class Joycon_subj : MonoBehaviour
             if (enInfo.product_id == JOYCON_R_PRODUCTID | enInfo.product_id == JOYCON_L_PRODUCTID)
             {
                 Debug.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}");
-                DebugOnGUI.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}","connected");
+                //DebugOnGUI.Log($"{MyMarshal.intPtrToStrUtf32(enInfo.product_string, 30)} vendor_id:{enInfo.vendor_id} product_id:{enInfo.product_id}","connected");
                 bool isJoyConR = (enInfo.product_id == JOYCON_R_PRODUCTID);
                 joycon_Info_ptr = device;
                 string serial_number = MyMarshal.intPtrToStrUtf32(enInfo.serial_number, 100);
@@ -413,18 +436,17 @@ public class JoyConConnection
                 
                 byte[] subCmd = subCmdQueue.Dequeue();
                 Debug.Log($"pop {subCmd[0]} from subcmdQueue");
-                DebugOnGUI.Log($"pop {subCmd[0]} from subcmdQueue", "WaitSubCommandRoop");
+                //DebugOnGUI.Log($"pop {subCmd[0]} from subcmdQueue", "WaitSubCommandRoop");
                 SendSubCmdSimple(subCmd,subCmd.Length);
                 byte[] subCmdReply = null;
                 Debug.Log($"wait {subCmd[0]} reply");
-                DebugOnGUI.Log($"wait {subCmd[0]} reply", "WaitSubCommandRoop");
+                //DebugOnGUI.Log($"wait {subCmd[0]} reply", "WaitSubCommandRoop");
 
-                int debugCounter = 0;
+                
                 await UniTask.WaitUntil
                 (
                     ()=>
                     {
-                        DebugOnGUI.Log($"debugCounter:{debugCounter++}", "WaitSubCommandRoop");
                         //Debug.Log("チェックしてます");
                         foreach (byte[] aReply in _subCmdReplysInThisFrame)
                         {
@@ -505,14 +527,7 @@ public class JoyConConnection
                 {
                     DebugOnGUI.Log($"PollCount:{i}","PollCount");
                 }
-                if (inputReport[0] == 0x21) 
-                {
-                    lock (DebugOnGUI.lockObject)
-                    {
-                        DebugOnGUI.Log($"Report:{inputReport[0]}", "inputReport");
-                    }
-                    
-                }
+                
 
             }
             else
@@ -525,14 +540,14 @@ public class JoyConConnection
                 failReadCounter++;
             }
             //if (failReadCounter == 500)
-            if (failReadCounter == 50000)
+            if (failReadCounter == 70000)
             {
                 byte[] ReplyBuf = new byte[1];
                 SendSubCmd_And_WaitReply(new byte[]{0x00}, ReplyBuf, _cTokenOnAppQuit).Forget();
                 Debug.Log($"Check  {Serial_Number} Connection");
             }
             //else if (failReadCounter > 1000)
-            else if (failReadCounter > 100000)
+            else if (failReadCounter > 150000)
             {
                 Debug.Log($"{Serial_Number} ConnectionLost");
                 Debug.Log($"{Serial_Number} HidReadRoop Stop");
