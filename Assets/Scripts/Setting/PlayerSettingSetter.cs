@@ -5,6 +5,10 @@ using UnityEngine;
 public class PlayerSettingSetter : MonoBehaviour
 {
     [SerializeField] ShootingController _shootingController;
+    [SerializeField] TimeAttackRecordDisp timeAttackLv1RecordDisp;
+    [SerializeField] TimeAttackRecordDisp timeAttackLv2RecordDisp;
+    [SerializeField] ScoreAttackRecordDisp scoreAttackLv1RecordDisp;
+    [SerializeField] ScoreAttackRecordDisp scoreAttackLv2RecordDisp;
     [SerializeField] string _settingName;
     [SerializeField] bool _enable = true;
     [SerializeField] bool _setOnStart = true;
@@ -60,6 +64,27 @@ public class PlayerSettingSetter : MonoBehaviour
             _shootingController.XSensetivity_KeyMouseMode = playerSettingData.XSensitivity;
             _shootingController.YSensetivity_KeyMouseMode = playerSettingData.YSensitivity;
 
+
+        }
+        if (timeAttackLv1RecordDisp)
+        {
+            timeAttackLv1RecordDisp.RecordTime = playerSettingData.Time_TimeAttack1;
+            timeAttackLv1RecordDisp.RecordRank = playerSettingData.Rank_TimeAttack1;
+        }
+        if (timeAttackLv2RecordDisp)
+        {
+            timeAttackLv2RecordDisp.RecordTime = playerSettingData.Time_TimeAttack2;
+            timeAttackLv2RecordDisp.RecordRank = playerSettingData.Rank_TimeAttack2;
+        }
+        if (scoreAttackLv1RecordDisp)
+        {
+            scoreAttackLv1RecordDisp.RecordScore = playerSettingData.Score_ScoreAttack1;
+            scoreAttackLv1RecordDisp.RecordRank = playerSettingData.Rank_ScoreAttack1;
+        }
+        if (scoreAttackLv2RecordDisp)
+        {
+            scoreAttackLv2RecordDisp.RecordScore = playerSettingData.Score_ScoreAttack2;
+            scoreAttackLv2RecordDisp.RecordRank = playerSettingData.Rank_ScoreAttack2;
         }
     }
 

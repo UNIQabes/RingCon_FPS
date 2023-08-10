@@ -4100,10 +4100,12 @@ MonoBehaviour:
   - {fileID: 212846856}
   - {fileID: 173865394}
   CountDownText: {fileID: 2073006848}
+  _playerSettingSetter: {fileID: 535482491}
   ResultPanel_p: {fileID: 12071029}
   BRankMaxTime: 80
   ARankMaxTime: 70
   SRankMaxTime: 60
+  StageNum: 1
 --- !u!114 &535482491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4117,6 +4119,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shootingController: {fileID: 535482487}
+  timeAttackLv1RecordDisp: {fileID: 0}
+  timeAttackLv2RecordDisp: {fileID: 0}
+  scoreAttackLv1RecordDisp: {fileID: 0}
+  scoreAttackLv2RecordDisp: {fileID: 0}
   _settingName: PlayerSetting
   _enable: 1
   _setOnStart: 1
@@ -4905,8 +4911,8 @@ Camera:
   m_GameObject: {fileID: 776518659}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.31410694, g: 0.4745098, b: 0.19215688, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -6132,7 +6138,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 974802184}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12, y: 6, z: 3}
+  m_LocalPosition: {x: -12, y: -3.5, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6202,7 +6208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _wayPoints:
-  - {x: -12, y: 6, z: 3}
+  - {x: -12, y: -3.5, z: 3}
   - {x: 12, y: -3.5, z: 3}
   moveSpeed: 4
   NextwayPoint: 0
@@ -7342,7 +7348,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1244480516}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12, y: -3.5, z: 3}
+  m_LocalPosition: {x: -12, y: 6, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7412,7 +7418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _wayPoints:
-  - {x: -12, y: -3.5, z: 3}
+  - {x: -12, y: 6, z: 3}
   - {x: 12, y: 6, z: 3}
   moveSpeed: 4
   NextwayPoint: 0
@@ -10172,7 +10178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _wayPoints:
   - {x: 12, y: -3.5, z: 3}
-  - {x: -12, y: 6, z: 3}
+  - {x: -12, y: -3.5, z: 3}
   moveSpeed: 4
   NextwayPoint: 0
 --- !u!65 &1825677604
@@ -12296,7 +12302,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _wayPoints:
   - {x: 12, y: 6, z: 3}
-  - {x: -12, y: -3.5, z: 3}
+  - {x: -12, y: 6, z: 3}
   moveSpeed: 4
   NextwayPoint: 0
 --- !u!23 &5076316310050121570

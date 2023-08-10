@@ -18,10 +18,18 @@ MonoBehaviour:
   Score_HittingStage2: 999
   Rank_HittingStage3: C
   Score_HittingStage3: 999
+  Rank_ScoreAttack1: C
+  Score_ScoreAttack1: 0
+  Rank_ScoreAttack2: C
+  Score_ScoreAttack2: 0
+  Rank_TimeAttack1: B
+  Time_TimeAttack1: 75.29938
+  Rank_TimeAttack2: C
+  Time_TimeAttack2: 999
   ControllerMode: 1
-  MaxXRot_xyOrder_deg: 30
-  MaxYRot_xyOrder_deg: 60
-  XRotOffset_xyOrder_deg: 18
-  GyroDriftCalibration_YRot_xyOrder: 2.0580072
-  XSensitivity: 5
-  YSensitivity: 5
+  MaxXRot_xyOrder_deg: 45
+  MaxYRot_xyOrder_deg: 30
+  XRotOffset_xyOrder_deg: 0
+  GyroDriftCalibration_YRot_xyOrder: 2.572753
+  XSensitivity: 0
+  YSensitivity: 0

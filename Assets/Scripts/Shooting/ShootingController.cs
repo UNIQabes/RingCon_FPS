@@ -98,7 +98,7 @@ public class ShootingController : MonoBehaviour
                 {
                     _playerShooter.ShootBulletTo(shotPoint);
                 }
-                else if (RingConAttached & (MainJoyconInput.ringconStrain < 3500 || (arrowCharged & MainJoyconInput.ringconStrain < 4000)) | MainJoyconInput.ZRButton)
+                else if (RingConAttached & (MainJoyconInput.ringconStrain < 3800 || (arrowCharged & MainJoyconInput.ringconStrain < 4100)) | MainJoyconInput.ZRButton)
                 {
                     arrowCharged = true;
                     //Debug.Log($"ひっぱてるよ〜{MainJoyconInput.ringconStrain}");
@@ -119,6 +119,7 @@ public class ShootingController : MonoBehaviour
         }
         else if (ControllerMode == ShootingControllerMode.KeyMouse)
         {
+            /*
             Vector3 ReticleDelta=(Input.GetKey(KeyCode.W)?new Vector2(0,1):new Vector2(0,0))
                 + (Input.GetKey(KeyCode.S) ? new Vector2(0, -1) : new Vector2(0, 0))
                 + (Input.GetKey(KeyCode.A) ? new Vector2(-1, 0) : new Vector2(0, 0))
@@ -138,11 +139,12 @@ public class ShootingController : MonoBehaviour
             if (reticlePos.y < minY_canvas) { reticlePos.y = minY_canvas; }
             if (reticlePos.y > maxY_canvas) { reticlePos.y = maxY_canvas; }
             _reticleGobj.transform.position = reticlePos;
+            */
             //Debug.Log("うわぁぁぁぁ");
 
-            //Vector2 reticlePos;
-            //RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRect,Input.mousePosition,null,out reticlePos);
-            //_reticleGobj.transform.localPosition = new Vector3(reticlePos.x, reticlePos.y,0);
+            Vector2 reticlePos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRect,Input.mousePosition,null,out reticlePos);
+            _reticleGobj.transform.localPosition = new Vector3(reticlePos.x, reticlePos.y,0);
 
 
             Vector3 ReticleWorldPos = RTransform_MyUtil.OverLayRectToWorld(_reticleGobj.transform.position, _canvasRect, Camera.main, 20);
