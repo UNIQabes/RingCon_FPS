@@ -17,7 +17,7 @@ public class ShootingTarget : MonoBehaviour
     }
     public virtual void OnContact(ShootingContactData contactData)
     {
-        Debug.Log($"HPVariation:{contactData.HPVariation}");
+        //Debug.Log($"HPVariation:{contactData.HPVariation}");
     
     }
 

@@ -13,23 +13,23 @@ MonoBehaviour:
   m_Name: PlayerSetting
   m_EditorClassIdentifier: 
   Rank_HittingStage1: C
-  Score_HittingStage1: 999
+  Score_HittingStage1: 0
   Rank_HittingStage2: C
-  Score_HittingStage2: 999
+  Score_HittingStage2: 0
   Rank_HittingStage3: C
-  Score_HittingStage3: 999
+  Score_HittingStage3: 0
   Rank_ScoreAttack1: C
   Score_ScoreAttack1: 0
   Rank_ScoreAttack2: C
   Score_ScoreAttack2: 0
-  Rank_TimeAttack1: B
-  Time_TimeAttack1: 75.29938
+  Rank_TimeAttack1: C
+  Time_TimeAttack1: 999
   Rank_TimeAttack2: C
   Time_TimeAttack2: 999
-  ControllerMode: 1
+  ControllerMode: 0
   MaxXRot_xyOrder_deg: 45
   MaxYRot_xyOrder_deg: 30
   XRotOffset_xyOrder_deg: 0
-  GyroDriftCalibration_YRot_xyOrder: 2.572753
+  GyroDriftCalibration_YRot_xyOrder: 0
   XSensitivity: 0
   YSensitivity: 0

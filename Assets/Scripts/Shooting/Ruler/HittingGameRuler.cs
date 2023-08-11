@@ -12,6 +12,7 @@ public class HittingGameRuler : MonoBehaviour
     public List<GameObject> Waves;
     private List<GameObject>[] marks;
     private List<GameObject> destroyedMarks;
+    public TextMeshProUGUI TimerText;
     public TextMeshProUGUI CountDownText;
     public PlayerSettingSetter _playerSettingSetter;
     private float timer;
@@ -38,6 +39,7 @@ public class HittingGameRuler : MonoBehaviour
             }
             Waves[i].SetActive(false);
         }
+        CountDownText.gameObject.SetActive(false);
         FixedUpdateAsync().Forget();
     }
 
@@ -46,6 +48,15 @@ public class HittingGameRuler : MonoBehaviour
     async UniTaskVoid FixedUpdateAsync()
     {
         CancellationToken cToken = this.gameObject.GetCancellationTokenOnDestroy();
+        await UniTask.Delay(1000);
+        CountDownText.gameObject.SetActive(true);
+        CountDownText.text = "3";
+        await UniTask.Delay(1000);
+        CountDownText.text = "2";
+        await UniTask.Delay(1000);
+        CountDownText.text = "1";
+        await UniTask.Delay(1000);
+        CountDownText.gameObject.SetActive(false);
         while (waveNum < Waves.Count)
         {
             
@@ -55,7 +66,7 @@ public class HittingGameRuler : MonoBehaviour
             await UniTask.WaitUntil(() =>
             {
                 timer += Time.fixedDeltaTime;
-                CountDownText.text = $"TIME:{(int)timer/60}:{((int)timer%60).ToString("D2")}";
+                TimerText.text = $"TIME:{(int)timer/60}:{((int)timer%60).ToString("D2")}";
                 bool clearWave = true;
                 foreach (GameObject aMark in marks[waveNum])
                 {

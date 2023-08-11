@@ -502,7 +502,11 @@ public class JoyConConnection
     private void HidReadRoop()
     {
         Debug.Log($"StartPolling {Serial_Number}");
-        int failReadCounter = 0;
+        //int failReadCounter = 0;
+        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
+        bool isCheckSent=false;
+
         int i = 0;
         while (IsConnecting)
         {
@@ -510,12 +514,13 @@ public class JoyConConnection
             inputReport[0] = 0x00;
             //int ret_read = HIDapi.hid_read_timeout(_joycon_dev, inputReport, 50, 10);
             int ret_read = HIDapi.hid_read(_joycon_dev, inputReport, 50);
-
             if (ret_read != 0 && inputReport[0]!=0x00)
             {
                 _reportQueue.Enqueue(inputReport);
-                failReadCounter = 0;
-
+                //failReadCounter = 0;
+                sw.Reset();
+                sw.Start();
+                isCheckSent = false;
                 i++;
                 if (i % 1000 == 0)
                 {
@@ -532,20 +537,24 @@ public class JoyConConnection
             {
                 lock (DebugOnGUI.lockObject)
                 {
-                    DebugOnGUI.Log($"failReadCounter:{failReadCounter}", "failReadCounter");
+                    //DebugOnGUI.Log($"failReadCounter:{failReadCounter}", "failReadCounter");
+                    DebugOnGUI.Log($"FailReadTime:{sw.Elapsed.Milliseconds+ sw.Elapsed.Seconds*1000}ms", "failReadCounter");
                 }
                 
-                failReadCounter++;
+                //failReadCounter++;
             }
             //if (failReadCounter == 500)
-            if (failReadCounter == 70000)
+            //if (failReadCounter == 70000)
+            if (sw.Elapsed.Milliseconds + sw.Elapsed.Seconds * 1000 > 2000& !isCheckSent)
             {
                 byte[] ReplyBuf = new byte[1];
                 SendSubCmd_And_WaitReply(new byte[]{0x00}, ReplyBuf, _cTokenOnAppQuit).Forget();
                 Debug.Log($"Check  {Serial_Number} Connection");
+                isCheckSent = true;
             }
             //else if (failReadCounter > 1000)
-            else if (failReadCounter > 150000)
+            //else if (failReadCounter > 150000)
+            else if (sw.Elapsed.Milliseconds + sw.Elapsed.Seconds * 1000 > 4000)
             {
                 Debug.Log($"{Serial_Number} ConnectionLost");
                 Debug.Log($"{Serial_Number} HidReadRoop Stop");

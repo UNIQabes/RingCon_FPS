@@ -70,6 +70,10 @@ public class ShootingController : MonoBehaviour
                     _reticleGobj.transform.position = new Vector3(Mathf.Clamp(yRot_xyOrder / maxYRot_xyOrder / 2 + 0.5f, 0, 1) * (maxX_canvas - minX_canvas) + minX_canvas,
                         Mathf.Clamp(xRot_xyOrder / maxXRot_xyOrder / 2 + 0.5f, 0, 1) * (maxY_canvas - minY_canvas) + minY_canvas, 0);
                 }
+                else
+                {
+                    Debug.Log("fix!");
+                }
 
                 if (xRot_xyOrder < XRot_xyOrder_ResetYRot|MainJoyconInput.AButton)
                 {
@@ -119,7 +123,7 @@ public class ShootingController : MonoBehaviour
         }
         else if (ControllerMode == ShootingControllerMode.KeyMouse)
         {
-            /*
+            
             Vector3 ReticleDelta=(Input.GetKey(KeyCode.W)?new Vector2(0,1):new Vector2(0,0))
                 + (Input.GetKey(KeyCode.S) ? new Vector2(0, -1) : new Vector2(0, 0))
                 + (Input.GetKey(KeyCode.A) ? new Vector2(-1, 0) : new Vector2(0, 0))
@@ -127,7 +131,9 @@ public class ShootingController : MonoBehaviour
                 + (Input.GetKey(KeyCode.UpArrow) ? new Vector2(0, 0.5f) : new Vector2(0, 0))
                 + (Input.GetKey(KeyCode.DownArrow) ? new Vector2(0, -0.5f) : new Vector2(0, 0))
                 + (Input.GetKey(KeyCode.LeftArrow) ? new Vector2(-0.5f, 0) : new Vector2(0, 0))
-                + (Input.GetKey(KeyCode.RightArrow) ? new Vector2(0.5f, 0) : new Vector2(0, 0));
+                + (Input.GetKey(KeyCode.RightArrow) ? new Vector2(0.5f, 0) : new Vector2(0, 0))
+                + (Input.GetAxis("Mouse X")*new Vector2(1,0))
+                + (Input.GetAxis("Mouse Y") * new Vector2(0, 1));
             ReticleDelta.x = ReticleDelta.x * (10 + XSensetivity_KeyMouseMode) / 10;
             ReticleDelta.y = ReticleDelta.y * (10 + YSensetivity_KeyMouseMode) / 10;
             Vector3 reticlePos;
@@ -139,12 +145,13 @@ public class ShootingController : MonoBehaviour
             if (reticlePos.y < minY_canvas) { reticlePos.y = minY_canvas; }
             if (reticlePos.y > maxY_canvas) { reticlePos.y = maxY_canvas; }
             _reticleGobj.transform.position = reticlePos;
-            */
+            
             //Debug.Log("うわぁぁぁぁ");
-
+            /*
             Vector2 reticlePos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRect,Input.mousePosition,null,out reticlePos);
             _reticleGobj.transform.localPosition = new Vector3(reticlePos.x, reticlePos.y,0);
+            */
 
 
             Vector3 ReticleWorldPos = RTransform_MyUtil.OverLayRectToWorld(_reticleGobj.transform.position, _canvasRect, Camera.main, 20);

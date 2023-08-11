@@ -1480,7 +1480,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RingConShooting
+  m_text: 'Gyro
+
+    Shooting'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: a51a8b2b9d12c4c9585db502d078b2ef, type: 2}
@@ -2810,6 +2812,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shootingController: {fileID: 1070579303}
+  timeAttackLv1RecordDisp: {fileID: 0}
+  timeAttackLv2RecordDisp: {fileID: 0}
+  scoreAttackLv1RecordDisp: {fileID: 0}
+  scoreAttackLv2RecordDisp: {fileID: 0}
   _settingName: PlayerSetting
   _enable: 1
   _setOnStart: 1
@@ -5312,6 +5318,10 @@ PrefabInstance:
     - target: {fileID: 8613495412583890265, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613495412839204750, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: m_text
+      value: Start
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}

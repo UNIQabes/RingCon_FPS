@@ -6,15 +6,15 @@ public class PlayerDatas : ScriptableObject
 {
     //Scores
     public string Rank_HittingStage1 = "C";
-    public float Score_HittingStage1 = 999;
+    public float Score_HittingStage1 = 0;
     public string Rank_HittingStage2 = "C";
-    public float Score_HittingStage2 = 999;
+    public float Score_HittingStage2 = 0;
     public string Rank_HittingStage3 = "C";
-    public float Score_HittingStage3 = 999;
+    public float Score_HittingStage3 = 0;
     public string Rank_ScoreAttack1 = "C";
-    public float Score_ScoreAttack1 = 999;
+    public float Score_ScoreAttack1 = 0;
     public string Rank_ScoreAttack2 = "C";
-    public float Score_ScoreAttack2 = 999;
+    public float Score_ScoreAttack2 = 0;
     public string Rank_TimeAttack1 = "C";
     public float Time_TimeAttack1 = 999;
     public string Rank_TimeAttack2 = "C";
