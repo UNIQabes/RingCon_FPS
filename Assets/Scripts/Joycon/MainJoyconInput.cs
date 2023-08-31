@@ -61,8 +61,11 @@ public class MainJoyconInput : Joycon_obs
     private static List<byte[]> _inputReportsInThisFrame = null;//コルーチンでも実装できそう
     private static bool _isReadyPolling = false;
 
-    
-    //新しい実装------------------------------
+
+    private static float GyroXCalibration=0;
+    private static float GyroYCalibration=0;
+    private static float GyroZCalibration=0;
+   
     
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Init()
@@ -197,7 +200,7 @@ public class MainJoyconInput : Joycon_obs
         
     }
 
-    //以上　新しい実装------------------------------
+    
 
 
     
@@ -352,7 +355,7 @@ public class MainJoyconInput : Joycon_obs
 
     public override void OnReadReport(List<byte[]> reports)
     {
-        
+        _inputReportsInThisFrame = reports;
         int x30ReportNum = 0;
         foreach (byte[] report in reports)
         {
@@ -377,14 +380,14 @@ public class MainJoyconInput : Joycon_obs
                 {
                     float sec = Time.deltaTime / x30ReportNum;
                     ringconStrain = BitConverter.ToInt16(report, 39);
-                    float gyro_x1 = 0.070f * (float)BitConverter.ToInt16(report, 19);
-                    float gyro_y1 = 0.070f * (float)BitConverter.ToInt16(report, 21);
-                    float gyro_z1 = 0.070f * (float)BitConverter.ToInt16(report, 23);
+                    float gyro_x1 = 0.070f * (float)BitConverter.ToInt16(report, 19) ;
+                    float gyro_y1 = 0.070f * (float)BitConverter.ToInt16(report, 21) ;
+                    float gyro_z1 = 0.070f * (float)BitConverter.ToInt16(report, 23) ;
                     float acc_x1 = 0.000244f * (float)BitConverter.ToInt16(report, 13);
                     float acc_y1 = 0.000244f * (float)BitConverter.ToInt16(report, 15);
                     float acc_z1 = 0.000244f * (float)BitConverter.ToInt16(report, 17);
                     applyIMUData(new Vector3(acc_x1, acc_y1, acc_z1), new Vector3(gyro_x1, gyro_y1, gyro_z1), sec / 2);
-
+                    
 
                     float gyro_x2 = 0.070f * (float)BitConverter.ToInt16(report, 31);
                     float gyro_y2 = 0.070f * (float)BitConverter.ToInt16(report, 33);
@@ -405,35 +408,7 @@ public class MainJoyconInput : Joycon_obs
 
     }
 
-    /*
-    public static void applyIMUData(Vector3 accV, Vector3 gyroV, float sec)
-    {
-        float gyro_x = gyroV.x;
-        float gyro_y = gyroV.y;
-        float gyro_z = gyroV.z;
-        Quaternion acRoll = Quaternion.AngleAxis(Mathf.Sqrt(gyro_x * gyro_x + gyro_y * gyro_y + gyro_z * gyro_z) * sec, JoyconPose_R * new Vector3(gyro_x, gyro_y, gyro_z));
-        //Quaternion acRoll1 = argJoyconPose * Quaternion.Euler(new Vector3(gyro_x1, gyro_y1, gyro_z1) * sec / 2);
-        JoyconPose_R = acRoll * JoyconPose_R;
-        SmoothedPose_R = acRoll * SmoothedPose_R;
-
-        float acc_mag1 = accV.magnitude;
-        if (Mathf.Abs(1 - (acc_mag1)) < 0.001f)
-        {
-            Vector3 gravityV = -accV;
-            //Debug.Log($"補正あり G:{acc_mag1}");
-            //Vector3 acc_angle = new Vector3(Mathf.PI - Mathf.Atan2(acc_z, -Mathf.Sqrt(acc_x * acc_x + acc_y * acc_y)), 0, -Mathf.PI / 2 - Mathf.Atan2(acc_y, acc_x));
-            //Quaternion accPose = Quaternion.Euler(acc_angle * 180 / Mathf.PI);
-            Quaternion accPose = V3_MyUtil.RotateV2V(gravityV, DownWardVector_R);
-            Vector3 gyro_frontV = JoyconPose_R * FrontVector_R.normalized;
-            Vector3 acc_frontV = accPose * FrontVector_R.normalized;
-            //accPose = Quaternion.AngleAxis((Mathf.Atan2(gyro_frontV.x, gyro_frontV.z) - Mathf.Atan2(acc_frontV.x, acc_frontV.z)) * 180 / Mathf.PI, new Vector3(0, 1, 0)) * accPose;
-            Vector3 gyroFront_DownVVertical = V3_MyUtil.GetVerticalComp(gyro_frontV, DownWardVector_R).normalized;
-            Vector3 accFront_DownVVertical = V3_MyUtil.GetVerticalComp(acc_frontV, DownWardVector_R).normalized;
-            accPose = V3_MyUtil.RotateV2V(accFront_DownVVertical, gyroFront_DownVVertical) * accPose;
-            JoyconPose_R = accPose;
-        }
-    }
-    */
+    
 
 
     public static void applyIMUData(Vector3 accV, Vector3 gyroV, float sec)
@@ -449,9 +424,9 @@ public class MainJoyconInput : Joycon_obs
     {
         Quaternion retPose = prevPose;
         Quaternion retSmoothedPose = prevSmoothedPose;
-        float gyro_x = gyroV.x;
-        float gyro_y = gyroV.y;
-        float gyro_z = gyroV.z;
+        float gyro_x = gyroV.x+GyroXCalibration;
+        float gyro_y = gyroV.y + GyroYCalibration;
+        float gyro_z = gyroV.z + GyroZCalibration;
         Quaternion acRoll = Quaternion.AngleAxis(Mathf.Sqrt(gyro_x * gyro_x + gyro_y * gyro_y + gyro_z * gyro_z) * sec, retPose * new Vector3(gyro_x, gyro_y, gyro_z));
         //Quaternion acRoll1 = argJoyconPose * Quaternion.Euler(new Vector3(gyro_x1, gyro_y1, gyro_z1) * sec / 2);
         retPose = acRoll * retPose;
@@ -535,6 +510,52 @@ public class MainJoyconInput : Joycon_obs
         Vector3 FrontVector_Remote = new Vector3(1, 0, 0);
         JoyconPose_R_Remote = V3_MyUtil.RotateV2V(joyconFront_DownVVertical_Remote, FrontVector_R_Remote) * JoyconPose_R_Remote;
         SmoothedPose_R_Remote = V3_MyUtil.RotateV2V(smoothedFront_DownVVertical_Remote, FrontVector_R_Remote) * SmoothedPose_R_Remote;
+    }
+    public static async  UniTaskVoid SetCalibrationWhenStaticCondition()
+    {
+        Debug.Log("キャリブレーション開始");
+
+        int counter = 0;
+        Vector3 gyroVInStaticCondition = new Vector3(0,0,0);
+        float threshold = 0.5f;
+        while (counter <= 6)
+        {
+            if (ConnectInfo != JoyConConnectInfo.JoyConIsReady)
+            {
+                Debug.Log("キャリブレーション設定中止");
+                return;
+            }
+            if (_inputReportsInThisFrame != null && _inputReportsInThisFrame.Count > 0)
+            {
+
+                foreach (byte[] aInputReport in _inputReportsInThisFrame)
+                {
+                    float gyro_x1 = 0.070f * (float)BitConverter.ToInt16(aInputReport, 19);
+                    float gyro_y1 = 0.070f * (float)BitConverter.ToInt16(aInputReport, 21);
+                    float gyro_z1 = 0.070f * (float)BitConverter.ToInt16(aInputReport, 23);
+                    Vector3 gyroV1 = new Vector3(gyro_x1, gyro_y1, gyro_z1);
+                    if ((gyroVInStaticCondition - gyroV1).magnitude < threshold) { counter++; }
+                    else { counter = 0; gyroVInStaticCondition = gyroV1; /*Debug.Log("リセット!");*/ }
+
+                    float gyro_x2 = 0.070f * (float)BitConverter.ToInt16(aInputReport, 31);
+                    float gyro_y2 = 0.070f * (float)BitConverter.ToInt16(aInputReport, 33);
+                    float gyro_z2 = 0.070f * (float)BitConverter.ToInt16(aInputReport, 35);
+                    Vector3 gyroV2 = new Vector3(gyro_x2, gyro_y2, gyro_z2);
+                    if ((gyroVInStaticCondition - gyroV2).magnitude < threshold) { counter++; }
+                    else { counter = 0; gyroVInStaticCondition = gyroV2; /*Debug.Log("リセット!");*/ }
+                }
+            }
+            else
+            {
+                //Debug.Log("ぬるぬる");
+            }
+            await UniTask.Yield(cancellationTokenOnAppQuit);
+        }
+        
+        GyroXCalibration = -gyroVInStaticCondition.x;
+        GyroYCalibration = -gyroVInStaticCondition.y;
+        GyroZCalibration = -gyroVInStaticCondition.z;
+        Debug.Log($"キャリブレーション設定完了:{new Vector3(GyroXCalibration, GyroYCalibration, GyroZCalibration)}(deg/s)") ;
     }
 
     
