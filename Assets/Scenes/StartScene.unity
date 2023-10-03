@@ -6708,9 +6708,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: TransitionMark
       objectReference: {fileID: 0}
+    - target: {fileID: 6309886065430841854, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 5054366702691733327, guid: 5e03dce0d143b403caecb3b702bf25ea, type: 2}
     - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
       propertyPath: m_text
       value: Start
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 5e03dce0d143b403caecb3b702bf25ea, type: 2}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 5054366702691733327, guid: 5e03dce0d143b403caecb3b702bf25ea, type: 2}
+    - target: {fileID: 6309886065430841855, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9070d124dff44480085a3efd61da5a9b, type: 3}
