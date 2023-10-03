@@ -20,10 +20,4 @@ public class RingConPosing : MonoBehaviour
             new Vector3(0, 0, -1));
     }
 
-    private void OnGUI()
-    {
-        GUIStyle textStyle=new GUIStyle();
-        textStyle.fontSize = 50;
-        GUI.Label(new Rect(50, 50, 100, 100), $"ringconstrain:{MainJoyconInput.ringconStrain}", textStyle);
-    }
 }

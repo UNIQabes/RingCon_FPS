@@ -14,7 +14,7 @@ using UnityEngine.LowLevel;
 //hid_enumerateで接続されているJoyConのシリアルナンバーをごとのJoyconConnectingのinstanceを作成する
 
 
-public class Joycon_subj : MonoBehaviour
+public class Joycon_subj
 {
     //新しい実装
 

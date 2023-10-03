@@ -62,9 +62,9 @@ public class MainJoyconInput : Joycon_obs
     private static bool _isReadyPolling = false;
 
 
-    private static float GyroXCalibration=0;
-    private static float GyroYCalibration=0;
-    private static float GyroZCalibration=0;
+    public static float GyroXCalibration=0;
+    public static float GyroYCalibration=0;
+    public static float GyroZCalibration=0;
    
     
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -511,7 +511,7 @@ public class MainJoyconInput : Joycon_obs
         JoyconPose_R_Remote = V3_MyUtil.RotateV2V(joyconFront_DownVVertical_Remote, FrontVector_R_Remote) * JoyconPose_R_Remote;
         SmoothedPose_R_Remote = V3_MyUtil.RotateV2V(smoothedFront_DownVVertical_Remote, FrontVector_R_Remote) * SmoothedPose_R_Remote;
     }
-    public static async  UniTaskVoid SetCalibrationWhenStaticCondition()
+    public static async  UniTask SetCalibrationWhenStaticCondition()
     {
         Debug.Log("キャリブレーション開始");
 
