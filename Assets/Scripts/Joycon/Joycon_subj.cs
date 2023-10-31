@@ -480,6 +480,24 @@ public class JoyConConnection
         
     }
 
+    public void SendRumble()
+    {
+        byte[] sendData = new byte[10];
+        sendData[0] = 0x01; //Output report
+        sendData[1] = (byte)((globalPacketNumber++) % 16);    //Global packet number 0x00から0x0fをループする
+        //左のjoy-conの振動
+        sendData[2] = 0x00; //HF周波数 4step 0x04-0xfc
+        sendData[3] = 0x00; //HF振幅 2step 偶奇でHF周波数が変化 0x00-0xc8
+        sendData[4] = 0x00; //LF周波数 80以上でLF振幅が変化 0x01-0x7f 0x81-0xff
+        sendData[5] = 0x00; //LF振幅 0x40-0x72 変化後40-71
+        //右のjoy-conの振動
+        sendData[6] = 0x5c;
+        sendData[7] = 0xa1;
+        sendData[8] = 0xdc;
+        sendData[9] = 0x36;
+        HIDapi.hid_write(_joycon_dev, sendData, (uint)9);
+    }
+
     public async UniTask SendSubCmd(byte[] subCmd, CancellationToken cancellationToken)
     {
         byte[] zeroByteBuf = new byte[0];
@@ -521,7 +539,7 @@ public class JoyConConnection
             inputReport[0] = 0x00;
             //int ret_read = HIDapi.hid_read_timeout(_joycon_dev, inputReport, 50, 10);
             int ret_read = HIDapi.hid_read(_joycon_dev, inputReport, 50);
-            if (ret_read != 0 && inputReport[0]!=0x00)
+            if (ret_read > 0 && inputReport[0]!=0x00)
             {
                 _reportQueue.Enqueue(inputReport);
                 //failReadCounter = 0;

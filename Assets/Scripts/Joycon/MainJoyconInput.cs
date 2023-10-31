@@ -301,8 +301,9 @@ public class MainJoyconInput : Joycon_obs
             Debug.Log("セットアップします!");
             DebugOnGUI.Log("セットアップ開始", "Joycon");
 
-            //セットアップを開始したら、全てのランプを点滅させる
-            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b11110000 }, cancellationTokenOnAppQuit).Forget();
+            //セットアップを開始したら、4のランプを点灯させる
+            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001000 }, cancellationTokenOnAppQuit).Forget();
+            
 
             // Enable vibration
             DebugOnGUI.Log($"{SerialNumber_R}:Enable vibration", "Joycon");
@@ -316,6 +317,9 @@ public class MainJoyconInput : Joycon_obs
             //Set input report mode to 0x30
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x03, 0x30 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            //3/8終了　3のランプも点灯させる
+            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001100 }, cancellationTokenOnAppQuit).Forget();
+
             DebugOnGUI.Log($"{SerialNumber_R}:Enable MCU data", "Joycon");
             // Enabling MCU data
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x22, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
@@ -328,6 +332,9 @@ public class MainJoyconInput : Joycon_obs
             //Get ext data 59
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x59, 0x0 }, ReplyBuf, cancellationTokenOnAppQuit);
 
+            //6/8終了　2のランプも点灯させる
+            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001110 }, cancellationTokenOnAppQuit).Forget();
+
             DebugOnGUI.Log($"{SerialNumber_R}:Get external device in format config", "Joycon");
             //Get ext dev in format config 5C
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 }, ReplyBuf, cancellationTokenOnAppQuit);
@@ -337,7 +344,9 @@ public class MainJoyconInput : Joycon_obs
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5A, 0x04, 0x01, 0x01, 0x02 }, ReplyBuf, cancellationTokenOnAppQuit);
 
             //セットアップが完了したら、全てのランプを光らせる
-            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001111 }, cancellationTokenOnAppQuit).Forget();
+            await _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001111 }, cancellationTokenOnAppQuit);
+
+            _joyconConnection_R.SendRumble();
 
             ConnectInfo = JoyConConnectInfo.JoyConIsReady;
             Debug.Log($"{SerialNumber_R}:Joyconのセットアップが完了しました");
@@ -409,7 +418,6 @@ public class MainJoyconInput : Joycon_obs
                     AButton = (buttonStatus & 0b00001000) > 0;
                 }
             }
-            
         }
 
 
@@ -451,28 +459,7 @@ public class MainJoyconInput : Joycon_obs
     
 
 
-    private static async UniTask waitSubCommandReply(CancellationToken cancellationToken)
-    {
-        bool isSentReply = false;
-        while (!isSentReply)
-        {
-            if (_inputReportsInThisFrame != null)
-            {
-                foreach (byte[] aInputReport in _inputReportsInThisFrame)
-                {
-                    if (aInputReport[0] == 0x21)
-                    {
-                        Debug.Log($"get subcommand reply  {(aInputReport[13] >= 0x80 ? "ACK" : "NACK")}  ID:{aInputReport[14]}");
-                        isSentReply = true;
-                        break;
-                    }
-                }
-            }
-
-            await UniTask.Yield(PlayerLoopTiming.PreUpdate, cancellationToken);
-        }
-
-    }
+    
 
     public static void RotatZRot(float RotDeg)
     {
