@@ -18,6 +18,8 @@ public class RingConPosing : MonoBehaviour
             new Vector3(-1, 0, 0),
             new Vector3(0, 1, 0),
             new Vector3(0, 0, -1));
+        float strainDelta=MainJoyconInput.ringconStrain-4500;
+        this.transform.localScale = new Vector3(1-strainDelta/5000, 1 + strainDelta / 5000, 1);
     }
 
 }

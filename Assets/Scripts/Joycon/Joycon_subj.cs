@@ -350,6 +350,8 @@ public class JoyConConnection
         subCmdQueue = new Queue<byte[]>();
         _subCmdReplysInThisFrame = new List<byte[]>();
 
+        //通信を開始したら、PlayerLamp1を点灯させる
+        SendSubCmd(new byte[] { 0x30, 0b00000001 },CancellationToken.None).Forget();
 
         return true;
     }
@@ -477,7 +479,12 @@ public class JoyConConnection
         Debug.Log($"{Serial_Number} WaitSubCommandRoop Stop");
         
     }
-    
+
+    public async UniTask SendSubCmd(byte[] subCmd, CancellationToken cancellationToken)
+    {
+        byte[] zeroByteBuf = new byte[0];
+        await SendSubCmd_And_WaitReply(subCmd, zeroByteBuf, cancellationToken);
+    }
 
     public async UniTask SendSubCmd_And_WaitReply(byte[] subCmd,
         byte[] SubCmdReplyBuf, CancellationToken cancellationToken)//多分cancellationTokenはいらない気がするが、一応残していく
@@ -568,7 +575,7 @@ public class JoyConConnection
     }
 
     
-    public void SendSubCmd(byte[] subCmdIDAndArgs, int subCmdLen)
+    private void SendSubCmd(byte[] subCmdIDAndArgs, int subCmdLen)
     {
         if (!IsConnecting)
         {
@@ -606,10 +613,11 @@ public class JoyConConnection
     {
         _observers.Add(joycon_Obs);
     }
+
     public void DelObserver(Joycon_obs joycon_Obs)
     {
         _observers.Remove(joycon_Obs);
     }
 
-
+    
 }

@@ -300,6 +300,10 @@ public class MainJoyconInput : Joycon_obs
             ConnectInfo = JoyConConnectInfo.SettingUpJoycon;
             Debug.Log("セットアップします!");
             DebugOnGUI.Log("セットアップ開始", "Joycon");
+
+            //セットアップを開始したら、全てのランプを点滅させる
+            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b11110000 }, cancellationTokenOnAppQuit).Forget();
+
             // Enable vibration
             DebugOnGUI.Log($"{SerialNumber_R}:Enable vibration", "Joycon");
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x48, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
@@ -317,20 +321,23 @@ public class MainJoyconInput : Joycon_obs
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x22, 0x01 }, ReplyBuf, cancellationTokenOnAppQuit);
 
             DebugOnGUI.Log($"{SerialNumber_R}:Enable MCU data", "Joycon");
-            //enabling_MCU_data_21_21_1_1
+            //Enabling MCU data 21 21 1 1
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[39] { 0x21, 0x21, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF3 }, ReplyBuf, cancellationTokenOnAppQuit);
 
             DebugOnGUI.Log($"{SerialNumber_R}:Get external data", "Joycon");
-            //get_ext_data_59
+            //Get ext data 59
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x59, 0x0 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:Get external device in format config 5C", "Joycon");
-            //get_ext_dev_in_format_config_5C
+            DebugOnGUI.Log($"{SerialNumber_R}:Get external device in format config", "Joycon");
+            //Get ext dev in format config 5C
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5C, 0x06, 0x03, 0x25, 0x06, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x16, 0xED, 0x34, 0x36, 0x00, 0x00, 0x00, 0x0A, 0x64, 0x0B, 0xE6, 0xA9, 0x22, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90, 0xA8, 0xE1, 0x34, 0x36 }, ReplyBuf, cancellationTokenOnAppQuit);
 
-            DebugOnGUI.Log($"{SerialNumber_R}:Start external polling 5A", "Joycon");
-            //start_external_polling_5A
+            DebugOnGUI.Log($"{SerialNumber_R}:Start external polling", "Joycon");
+            //Start external polling 5A
             await _joyconConnection_R.SendSubCmd_And_WaitReply(new byte[] { 0x5A, 0x04, 0x01, 0x01, 0x02 }, ReplyBuf, cancellationTokenOnAppQuit);
+
+            //セットアップが完了したら、全てのランプを光らせる
+            _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001111 }, cancellationTokenOnAppQuit).Forget();
 
             ConnectInfo = JoyConConnectInfo.JoyConIsReady;
             Debug.Log($"{SerialNumber_R}:Joyconのセットアップが完了しました");
@@ -413,45 +420,30 @@ public class MainJoyconInput : Joycon_obs
 
     public static void applyIMUData(Vector3 accV, Vector3 gyroV, float sec)
     {
-        (JoyconPose_R_Arrow,SmoothedPose_R_Arrow) =applyIMUData(accV,gyroV,sec,DownWardVector_R_Arrow,FrontVector_R_Arrow, JoyconPose_R_Arrow, SmoothedPose_R_Arrow);
-        (JoyconPose_R_Ring, SmoothedPose_R_Ring) = applyIMUData(accV, gyroV, sec, DownWardVector_R_Ring, FrontVector_R_Ring, JoyconPose_R_Ring, SmoothedPose_R_Ring);
-        (JoyconPose_R, SmoothedPose_R) = applyIMUData(accV, gyroV, sec, DownWardVector_R, FrontVector_R, JoyconPose_R, SmoothedPose_R);
-        (JoyconPose_R_Remote, SmoothedPose_R_Remote) = applyIMUData(accV, gyroV, sec, DownWardVector_R_Remote, FrontVector_R_Remote, JoyconPose_R_Remote, SmoothedPose_R_Remote);
+        (JoyconPose_R_Arrow,SmoothedPose_R_Arrow) =applyIMUData(accV,gyroV,sec,JoyconPose_R_Arrow, SmoothedPose_R_Arrow);
+        (JoyconPose_R_Ring, SmoothedPose_R_Ring) = applyIMUData(accV, gyroV, sec, JoyconPose_R_Ring, SmoothedPose_R_Ring);
+        (JoyconPose_R, SmoothedPose_R) = applyIMUData(accV, gyroV, sec, JoyconPose_R, SmoothedPose_R);
+        (JoyconPose_R_Remote, SmoothedPose_R_Remote) = applyIMUData(accV, gyroV, sec, JoyconPose_R_Remote, SmoothedPose_R_Remote);
     }
 
-    private static (Quaternion pose,Quaternion smoothedPose) applyIMUData(Vector3 accV, Vector3 gyroV, float sec,
-        Vector3 downwardVector,Vector3 frontVector, Quaternion prevPose, Quaternion prevSmoothedPose)
+    private static (Quaternion pose,Quaternion smoothedPose) applyIMUData(Vector3 accV, Vector3 gyroV, float sec,Quaternion prevPose, Quaternion prevSmoothedPose)
     {
         Quaternion retPose = prevPose;
         Quaternion retSmoothedPose = prevSmoothedPose;
-        float gyro_x = gyroV.x+GyroXCalibration;
+        float gyro_x = gyroV.x　+　GyroXCalibration;
         float gyro_y = gyroV.y + GyroYCalibration;
         float gyro_z = gyroV.z + GyroZCalibration;
         Quaternion acRoll = Quaternion.AngleAxis(Mathf.Sqrt(gyro_x * gyro_x + gyro_y * gyro_y + gyro_z * gyro_z) * sec, retPose * new Vector3(gyro_x, gyro_y, gyro_z));
-        //Quaternion acRoll1 = argJoyconPose * Quaternion.Euler(new Vector3(gyro_x1, gyro_y1, gyro_z1) * sec / 2);
         retPose = acRoll * retPose;
         retSmoothedPose = acRoll * retSmoothedPose;
-        /*
-        float acc_x = accV.x;
-        float acc_y = accV.y;
-        float acc_z = accV.z;
-        */
+
 
         float acc_mag1 = accV.magnitude;
         if (Mathf.Abs(1 - (acc_mag1)) < 0.001f)
         {
             Vector3 gravityV = -accV;
-            //Debug.Log($"補正あり G:{acc_mag1}");
-            //Vector3 acc_angle = new Vector3(Mathf.PI - Mathf.Atan2(acc_z, -Mathf.Sqrt(acc_x * acc_x + acc_y * acc_y)), 0, -Mathf.PI / 2 - Mathf.Atan2(acc_y, acc_x));
-            //Quaternion accPose = Quaternion.Euler(acc_angle * 180 / Mathf.PI);
-            Quaternion accPose = V3_MyUtil.RotateV2V(gravityV, downwardVector);
-            Vector3 gyro_frontV = retPose * frontVector.normalized;
-            Vector3 acc_frontV = accPose * frontVector.normalized;
-            //accPose = Quaternion.AngleAxis((Mathf.Atan2(gyro_frontV.x, gyro_frontV.z) - Mathf.Atan2(acc_frontV.x, acc_frontV.z)) * 180 / Mathf.PI, new Vector3(0, 1, 0)) * accPose;
-            Vector3 gyroFront_DownVVertical = V3_MyUtil.GetVerticalComp(gyro_frontV, downwardVector).normalized;
-            Vector3 accFront_DownVVertical = V3_MyUtil.GetVerticalComp(acc_frontV, downwardVector).normalized;
-            accPose = V3_MyUtil.RotateV2V(accFront_DownVVertical, gyroFront_DownVVertical) * accPose;
-            retPose = accPose;
+            Vector3 gravityV_For_RetPose= retPose*gravityV;
+            retPose = V3_MyUtil.RotateV2V(gravityV_For_RetPose,new Vector3(0, 1, 0))* retPose;
         }
         return (retPose, retSmoothedPose);
     }
@@ -511,6 +503,7 @@ public class MainJoyconInput : Joycon_obs
         JoyconPose_R_Remote = V3_MyUtil.RotateV2V(joyconFront_DownVVertical_Remote, FrontVector_R_Remote) * JoyconPose_R_Remote;
         SmoothedPose_R_Remote = V3_MyUtil.RotateV2V(smoothedFront_DownVVertical_Remote, FrontVector_R_Remote) * SmoothedPose_R_Remote;
     }
+
     public static async  UniTask SetCalibrationWhenStaticCondition()
     {
         Debug.Log("キャリブレーション開始");
@@ -551,10 +544,13 @@ public class MainJoyconInput : Joycon_obs
             }
             await UniTask.Yield(cancellationTokenOnAppQuit);
         }
+
         
+
         GyroXCalibration = -gyroVInStaticCondition.x;
         GyroYCalibration = -gyroVInStaticCondition.y;
         GyroZCalibration = -gyroVInStaticCondition.z;
+        
         Debug.Log($"キャリブレーション設定完了:{new Vector3(GyroXCalibration, GyroYCalibration, GyroZCalibration)}(deg/s)") ;
     }
 
