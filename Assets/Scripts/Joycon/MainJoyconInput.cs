@@ -346,7 +346,7 @@ public class MainJoyconInput : Joycon_obs
             //セットアップが完了したら、全てのランプを光らせる
             await _joyconConnection_R.SendSubCmd(new byte[] { 0x30, 0b00001111 }, cancellationTokenOnAppQuit);
 
-            _joyconConnection_R.SendRumble();
+            _joyconConnection_R.SendRumble(1000,0.5f,400,0.5f);
 
             ConnectInfo = JoyConConnectInfo.JoyConIsReady;
             Debug.Log($"{SerialNumber_R}:Joyconのセットアップが完了しました");
