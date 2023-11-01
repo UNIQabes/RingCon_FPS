@@ -12,6 +12,7 @@ public class ReticleSettingPanel : MonoBehaviour
     [SerializeField] Slider _maxYSlider;
     [SerializeField] Slider _xOffsetSlider;
     [SerializeField] Slider _gyroClibrationSlider;
+    [SerializeField] GyroCalibrationButton _gyroClibrationButton;
     [SerializeField] Slider _xSensitivitySlider;
     [SerializeField] Slider _ySensitivitySlider;
     [SerializeField] GameObject JoyconSettingPanelGObj;
@@ -27,6 +28,7 @@ public class ReticleSettingPanel : MonoBehaviour
         _gyroClibrationSlider.onValueChanged.AddListener(OnGyroClibrationChanged);
         _xSensitivitySlider.onValueChanged.AddListener(OnXSensitivityChanged);
         _ySensitivitySlider.onValueChanged.AddListener(OnYSensitivityChanged);
+        _gyroClibrationButton.OnCalibrationFinished.AddListener(OnCalibrationDataChanged);
 
         /*
         _isUsingJoyconToggle.isOn = (SettingSetter.GetSetting().ControllerMode == ShootingControllerMode.JoyCon);
@@ -104,4 +106,12 @@ public class ReticleSettingPanel : MonoBehaviour
         SettingSetter.GetSetting().YSensitivity = (int)value;
         _playerSettingSetter.SetSetting();
     }
+    public void OnCalibrationDataChanged()
+    {
+        SettingSetter.GetSetting().GyroXCalibration = MainJoyconInput.GyroXCalibration;
+        SettingSetter.GetSetting().GyroYCalibration = MainJoyconInput.GyroYCalibration;
+        SettingSetter.GetSetting().GyroZCalibration = MainJoyconInput.GyroZCalibration;
+        _playerSettingSetter.SetSetting();
+    }
+
 }

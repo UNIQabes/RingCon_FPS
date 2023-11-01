@@ -4094,6 +4094,7 @@ MonoBehaviour:
   _maxYSlider: {fileID: 3183967541349913341}
   _xOffsetSlider: {fileID: 3183967541319570715}
   _gyroClibrationSlider: {fileID: 6369296641171506969}
+  _gyroClibrationButton: {fileID: 7579202188419847568}
   _xSensitivitySlider: {fileID: 3183967541768122978}
   _ySensitivitySlider: {fileID: 3183967541671308447}
   JoyconSettingPanelGObj: {fileID: 3183967542242109588}
@@ -5669,6 +5670,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ButtonText: {fileID: 1658095173728849751}
+  OnCalibrationFinished:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7734916630160062461
 GameObject:
   m_ObjectHideFlags: 0

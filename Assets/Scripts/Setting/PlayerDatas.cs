@@ -28,6 +28,9 @@ public class PlayerDatas : ScriptableObject
     public int MaxYRot_xyOrder_deg = 45;
     public int XRotOffset_xyOrder_deg = 0;
     public float GyroDriftCalibration_YRot_xyOrder=0;
+    public float GyroXCalibration=0;
+    public float GyroYCalibration=0;
+    public float GyroZCalibration=0;
 
     //KeyMouseSettings
     public int XSensitivity=0;
@@ -56,6 +59,9 @@ public class PlayerDatas : ScriptableObject
         MaxYRot_xyOrder_deg = PlayerPrefs.GetInt("MaxYRot_xyOrder_deg", 45);
         XRotOffset_xyOrder_deg = PlayerPrefs.GetInt("XRotOffset_xyOrder_deg", 0);
         GyroDriftCalibration_YRot_xyOrder= PlayerPrefs.GetFloat("GyroDriftCalibration_YRot_xyOrder", 0);
+        GyroXCalibration=PlayerPrefs.GetFloat("GyroXCalibration",0);
+        GyroYCalibration=PlayerPrefs.GetFloat("GyroYCalibration", 0);
+        GyroZCalibration=PlayerPrefs.GetFloat("GyroZCalibration", 0);
 
         ControllerMode = (ShootingControllerMode)PlayerPrefs.GetInt("ControllerMode", 0);
 
@@ -87,6 +93,9 @@ public class PlayerDatas : ScriptableObject
         PlayerPrefs.SetInt("MaxYRot_xyOrder_deg", MaxYRot_xyOrder_deg);
         PlayerPrefs.SetInt("XRotOffset_xyOrder_deg", XRotOffset_xyOrder_deg);
         PlayerPrefs.SetFloat("GyroDriftCalibration_YRot_xyOrder", GyroDriftCalibration_YRot_xyOrder);
+        PlayerPrefs.SetFloat("GyroXCalibration", GyroXCalibration);
+        PlayerPrefs.SetFloat("GyroYCalibration", GyroYCalibration);
+        PlayerPrefs.SetFloat("GyroZCalibration", GyroZCalibration);
 
 
         PlayerPrefs.SetInt("XSensitivty", XSensitivity);

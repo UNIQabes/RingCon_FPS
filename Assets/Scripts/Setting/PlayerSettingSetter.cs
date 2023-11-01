@@ -51,6 +51,11 @@ public class PlayerSettingSetter : MonoBehaviour
             return;
         }
 
+        MainJoyconInput.GyroXCalibration = playerSettingData.GyroXCalibration;
+        MainJoyconInput.GyroYCalibration = playerSettingData.GyroYCalibration;
+        MainJoyconInput.GyroZCalibration = playerSettingData.GyroZCalibration;
+
+
         //PlayerDataをセット
         if (_shootingController)
         {

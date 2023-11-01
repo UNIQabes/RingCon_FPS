@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
+using UnityEngine.Events;
 using Cysharp.Threading.Tasks;
 using TMPro;
 
@@ -9,6 +10,7 @@ public class GyroCalibrationButton : MonoBehaviour
 {
     private static bool _isSettingCalibration=false;
     public TextMeshProUGUI ButtonText;
+    public UnityEvent OnCalibrationFinished = new UnityEvent();
 
     public void OnClicked()
     {
@@ -26,10 +28,13 @@ public class GyroCalibrationButton : MonoBehaviour
         {
             _isSettingCalibration = true;
             await MainJoyconInput.SetCalibrationWhenStaticCondition();
+            OnCalibrationFinished.Invoke();
         }
-        ButtonText.text = "Start Calibration";
+        ButtonText.text = "Calibration Finished";
         _isSettingCalibration = false;
-
+        
     }
+
+
     
 }

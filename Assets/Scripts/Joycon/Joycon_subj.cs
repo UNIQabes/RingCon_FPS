@@ -90,6 +90,7 @@ public class Joycon_subj
         {
             aPair.Value.Disconnect();
         }
+        HIDapi.hid_exit();
         _cTokenSourceOnAppQuit.Cancel();
     }
     //新しい実装(終わり)

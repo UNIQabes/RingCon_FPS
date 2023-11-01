@@ -331,7 +331,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1103140743}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6735,11 +6735,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1961586251}
+  - {fileID: 4692565774277471795}
   - {fileID: 1740077557}
   - {fileID: 20349585}
   - {fileID: 89251760}
   - {fileID: 1402063331}
-  - {fileID: 4692565774277471795}
   - {fileID: 1386638678}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -7195,6 +7195,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7579202188419847568, guid: 592aac67d01ac467abab54c5c6c106d6, type: 3}
+      propertyPath: _playerSettingSetter
+      value: 
+      objectReference: {fileID: 1037252108}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 592aac67d01ac467abab54c5c6c106d6, type: 3}
 --- !u!224 &1386638678 stripped
@@ -7479,7 +7483,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1103140743}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -8095,7 +8099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4440325137402783408, guid: c3a92f0ecfdcc4da7bb60484ff0e35f0, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4440325137402783408, guid: c3a92f0ecfdcc4da7bb60484ff0e35f0, type: 3}
       propertyPath: m_AnchorMax.x
@@ -8306,7 +8310,7 @@ RectTransform:
   m_Children:
   - {fileID: 4692565775198787674}
   m_Father: {fileID: 1103140743}
-  m_RootOrder: 5
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -8607,6 +8611,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1103140743}
     m_Modifications:
+    - target: {fileID: 2275737396870518876, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: _playerSettingSetter
+      value: 
+      objectReference: {fileID: 1037252108}
     - target: {fileID: 6526857966723889033, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: _playerSettingSetter
       value: 
@@ -8621,7 +8629,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8613495412583890264, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8613495412583890264, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_AnchorMax.x

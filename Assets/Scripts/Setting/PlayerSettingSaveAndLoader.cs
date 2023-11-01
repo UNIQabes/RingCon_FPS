@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerSettingSaveAndLoader : MonoBehaviour
 {
@@ -36,6 +33,7 @@ public class PlayerSettingSaveAndLoader : MonoBehaviour
         if (!playerDatas)
         {
             Debug.Log("Settingが存在しません");
+            return;
         }
         playerDatas.SaveToPlayerPrefs();
         
@@ -54,6 +52,7 @@ public class PlayerSettingSaveAndLoader : MonoBehaviour
         }
         playerDatas.LoadFromPlayerPrefs();
     }
+
     private void OnDestroy()
     {
         if (_saveSettingOnDestroy)
