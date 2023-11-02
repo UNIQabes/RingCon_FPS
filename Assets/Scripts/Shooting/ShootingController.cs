@@ -24,6 +24,10 @@ public class ShootingController : MonoBehaviour
 
     [SerializeField] public ShootingControllerMode ControllerMode=ShootingControllerMode.JoyCon;
 
+    [SerializeField] public int RingconModerateStarin = 4330;
+    [SerializeField] public int RingconPushThreshold = 5000;
+    [SerializeField] public int RingconPullThreshold = 3800;
+
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +65,6 @@ public class ShootingController : MonoBehaviour
                 float xRot_xyOrder = Mathf.Atan2(ringconFrontV_InGame.y, Mathf.Sqrt(Mathf.Pow(ringconFrontV_InGame.x, 2) + Mathf.Pow(ringconFrontV_InGame.z, 2)))+ XRot_Offset_xyOrder;
                 float yRot_xyOrder = Mathf.Atan2(ringconFrontV_InGame.x, ringconFrontV_InGame.z);
 
-                //_reticleGobj.transform.position = new Vector3(604 + 600 * (yRot_xyOrder), 320 + 400 * (xRot_xyOrder), 0);
                 float minX_canvas, minY_canvas, maxX_canvas, maxY_canvas;
                 (minX_canvas, minY_canvas, maxX_canvas, maxY_canvas) = RTransform_MyUtil.GetCanvasXYRange(_canvasRect);
 
@@ -98,11 +101,13 @@ public class ShootingController : MonoBehaviour
                     //Debug.Log($"RayHit:{hit.collider.gameObject.name}");
                 }
 
-                if ((RingConAttached & MainJoyconInput.ringconStrain > 5000) | MainJoyconInput.RButton)
+                int RingconDischargeThreshold= RingconPullThreshold / 2 + RingconModerateStarin / 2;
+
+                if ((RingConAttached & MainJoyconInput.ringconStrain > RingconPushThreshold) | MainJoyconInput.RButton)
                 {
                     _playerShooter.ShootBulletTo(shotPoint);
                 }
-                else if (RingConAttached & (MainJoyconInput.ringconStrain < 3800 || (arrowCharged & MainJoyconInput.ringconStrain < 4100)) | MainJoyconInput.ZRButton)
+                else if (RingConAttached & (MainJoyconInput.ringconStrain < RingconPullThreshold || (arrowCharged & MainJoyconInput.ringconStrain < RingconDischargeThreshold)) | MainJoyconInput.ZRButton)
                 {
                     arrowCharged = true;
                     //Debug.Log($"ひっぱてるよ〜{MainJoyconInput.ringconStrain}");
@@ -185,22 +190,7 @@ public class ShootingController : MonoBehaviour
             _reticleGraphic.SetIsRockedOn(hit.collider);
             _reticleGraphic.SetIsReticleFixed(isReticleFix);
             prevRingconStrain = MainJoyconInput.ringconStrain;
-
-
-
-
-
-
-            
         }
-
-
-
-
-
-
-
-
         //DebugOnGUI.Log(MainJoyconInput.ringconStrain);
     }
 
