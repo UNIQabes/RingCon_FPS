@@ -3944,6 +3944,7 @@ GameObject:
   - component: {fileID: 535482487}
   - component: {fileID: 535482489}
   - component: {fileID: 535482490}
+  - component: {fileID: 535482493}
   - component: {fileID: 535482492}
   - component: {fileID: 535482491}
   m_Layer: 0
@@ -3978,6 +3979,9 @@ MonoBehaviour:
   XSensetivity_KeyMouseMode: 0
   YSensetivity_KeyMouseMode: 0
   ControllerMode: 2
+  RingconModerateStarin: 4330
+  RingconPushThreshold: 5000
+  RingconPullThreshold: 3800
 --- !u!4 &535482488
 Transform:
   m_ObjectHideFlags: 0
@@ -4077,6 +4081,42 @@ MonoBehaviour:
   _enable: 1
   _loadSettingOnStart: 1
   _saveSettingOnDestroy: 1
+--- !u!114 &535482493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535482486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 924e4507cac344e7f83727de5aca689f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waveNum: 13
+  Waves:
+  - {fileID: 530906281}
+  - {fileID: 1854439564}
+  - {fileID: 670208710}
+  - {fileID: 1833145778}
+  - {fileID: 1456956869}
+  - {fileID: 341556481}
+  - {fileID: 2058754477}
+  - {fileID: 1628508129}
+  - {fileID: 1630703338}
+  - {fileID: 55197680}
+  - {fileID: 727724928}
+  - {fileID: 2130376794}
+  - {fileID: 212846856}
+  - {fileID: 173865394}
+  TimerText: {fileID: 2073006848}
+  CountDownText: {fileID: 1739470590}
+  _playerSettingSetter: {fileID: 535482491}
+  ResultPanel_p: {fileID: 12071029}
+  BRankMaxTime: 80
+  ARankMaxTime: 70
+  SRankMaxTime: 60
+  StageNum: 1
 --- !u!1 &547494764
 GameObject:
   m_ObjectHideFlags: 0
@@ -10938,9 +10978,13 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8613495412839204744, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8613495412839204750, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_text
-      value: TimeAttackLv1
+      value: Tutorial
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
@@ -11789,7 +11833,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TIME:01:01
+  m_text: Tutorial
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

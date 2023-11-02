@@ -8711,6 +8711,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8613495412829323995, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: _nextSceneName
+      value: ArcadeTop
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
 --- !u!1001 &8710033628827243219
