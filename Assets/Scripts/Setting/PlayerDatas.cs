@@ -31,6 +31,9 @@ public class PlayerDatas : ScriptableObject
     public float GyroXCalibration=0;
     public float GyroYCalibration=0;
     public float GyroZCalibration=0;
+    public int RingconThreshold_Pull = 0;
+    public int RingconStrain_mod = 0;
+    public int RingconThreshold_Push = 0;
 
     //KeyMouseSettings
     public int XSensitivity=0;
@@ -62,6 +65,9 @@ public class PlayerDatas : ScriptableObject
         GyroXCalibration=PlayerPrefs.GetFloat("GyroXCalibration",0);
         GyroYCalibration=PlayerPrefs.GetFloat("GyroYCalibration", 0);
         GyroZCalibration=PlayerPrefs.GetFloat("GyroZCalibration", 0);
+        RingconThreshold_Pull = PlayerPrefs.GetInt("RingconThreshold_Pull", 3800);
+        RingconStrain_mod = PlayerPrefs.GetInt("RingconStrain_mod", 4330);
+        RingconThreshold_Push = PlayerPrefs.GetInt("RingconThreshold_Push", 5000);
 
         ControllerMode = (ShootingControllerMode)PlayerPrefs.GetInt("ControllerMode", 0);
 
@@ -96,6 +102,9 @@ public class PlayerDatas : ScriptableObject
         PlayerPrefs.SetFloat("GyroXCalibration", GyroXCalibration);
         PlayerPrefs.SetFloat("GyroYCalibration", GyroYCalibration);
         PlayerPrefs.SetFloat("GyroZCalibration", GyroZCalibration);
+        PlayerPrefs.SetInt("RingconThreshold_Pull", 3800);
+        PlayerPrefs.SetInt("RingconStrain_mod", 4330);
+        PlayerPrefs.SetInt("RingconThreshold_Push", 5000);
 
 
         PlayerPrefs.SetInt("XSensitivty", XSensitivity);
