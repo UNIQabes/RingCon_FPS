@@ -59,7 +59,8 @@ public class PlayerShooter : MonoBehaviour
     {
         FillingRate = Mathf.Min(1, FillingRate + Mathf.Min(chargeRate,maxChargeRate));
         //Debug.Log($"FillingRate:{FillingRate}");
-    } 
+    }
+
     public void ShootArrowTo(Vector3 aimTo)
     {
         if (FillingRate > 0)
@@ -67,12 +68,22 @@ public class PlayerShooter : MonoBehaviour
             Vector3 muzzlePos = this.transform.position + this.transform.rotation * new Vector3(0, 0, 2);
             Quaternion bulletPose = V3_MyUtil.RotateV2V(Vector3.forward, aimTo - muzzlePos);
             _arrowAttacker.ChargeRate = FillingRate;
-            Instantiate(ArrowGObject, muzzlePos, bulletPose);
+            GameObject instObj= Instantiate(ArrowGObject, muzzlePos, bulletPose);
+            if (FillingRate == 1)
+            {
+                instObj.GetComponent<ArrowAttacker>().OnHitShootingTarget = OnFullChargedArrowHit; ;
+
+            }
             FillingRate = 0;
         }
         
     }
 
-    
-    
+    public void OnFullChargedArrowHit(HitData h)
+    {
+
+        FillingRate = 1;
+    }
+
+
 }

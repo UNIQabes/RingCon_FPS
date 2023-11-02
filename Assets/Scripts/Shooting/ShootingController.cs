@@ -75,7 +75,7 @@ public class ShootingController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("fix!");
+                    //Debug.Log("fix!");
                 }
 
                 if (xRot_xyOrder < XRot_xyOrder_ResetYRot|MainJoyconInput.AButton)
@@ -113,7 +113,7 @@ public class ShootingController : MonoBehaviour
                     //Debug.Log($"ひっぱてるよ〜{MainJoyconInput.ringconStrain}");
                     _playerShooter.ChargeArrow(1);
                 }
-                else
+                else if(arrowCharged)
                 {
                     arrowCharged = false;
                     _playerShooter.ShootArrowTo(shotPoint);
@@ -180,7 +180,7 @@ public class ShootingController : MonoBehaviour
                 //Debug.Log($"ひっぱてるよ〜{MainJoyconInput.ringconStrain}");
                 _playerShooter.ChargeArrow(1);
             }
-            else
+            else if(arrowCharged)
             {
                 arrowCharged = false;
                 _playerShooter.ShootArrowTo(shotPoint);
@@ -193,6 +193,8 @@ public class ShootingController : MonoBehaviour
         }
         //DebugOnGUI.Log(MainJoyconInput.ringconStrain);
     }
+
+
 
     private void OnGUI()
     {
