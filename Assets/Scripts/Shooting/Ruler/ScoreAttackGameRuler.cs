@@ -89,10 +89,19 @@ public class ScoreAttackGameRuler : MonoBehaviour
         {
             return (_playerSettingSetter.GetSetting().Rank_ScoreAttack1, _playerSettingSetter.GetSetting().Score_ScoreAttack1);
         }
-        else
+        else if (stageNum == 2)
         {
             return (_playerSettingSetter.GetSetting().Rank_ScoreAttack2, _playerSettingSetter.GetSetting().Score_ScoreAttack2);
         }
+        else if (StageNum == 3) //5番目に高いスコアを返す
+        {
+            return ("A", _playerSettingSetter.GetSetting().ScoreRanking1[4]);
+        }
+        else if (StageNum == 4)
+        {
+            return ("A", _playerSettingSetter.GetSetting().ScoreRanking2[4]);
+        }
+        return ("X", -10000);
     }
 
     private void SetResult(int stageNum, string recordRank, float recordScore)
@@ -102,10 +111,42 @@ public class ScoreAttackGameRuler : MonoBehaviour
             _playerSettingSetter.GetSetting().Rank_ScoreAttack1 = recordRank;
             _playerSettingSetter.GetSetting().Score_ScoreAttack1 = recordScore;
         }
-        else
+        else if(stageNum == 2)
         {
             _playerSettingSetter.GetSetting().Rank_ScoreAttack2 = recordRank;
             _playerSettingSetter.GetSetting().Score_ScoreAttack2 = recordScore;
+        }
+        else if (stageNum == 3)
+        {
+            int NewRecordRank=6;
+            for (int i = 0; i < 5 ; i++)
+            {
+                if (recordScore >= _playerSettingSetter.GetSetting().ScoreRanking1[i])
+                {
+                    NewRecordRank = i + 1;
+                    break;
+                }
+            }
+
+            List<int> newRank = new List<int>(_playerSettingSetter.GetSetting().ScoreRanking1);
+            newRank.Insert(NewRecordRank - 1, (int)recordScore);
+            _playerSettingSetter.GetSetting().ScoreRanking1 = newRank.GetRange(0, 5).ToArray();
+        }
+        else if (stageNum == 4)
+        {
+            int NewRecordRank = 6;
+            for (int i = 0; i < 5; i++)
+            {
+                if (recordScore >= _playerSettingSetter.GetSetting().ScoreRanking2[i])
+                {
+                    NewRecordRank = i + 1;
+                    break;
+                }
+            }
+
+            List<int> newRank = new List<int>(_playerSettingSetter.GetSetting().ScoreRanking2);
+            newRank.Insert(NewRecordRank - 1, (int)recordScore);
+            _playerSettingSetter.GetSetting().ScoreRanking2 = newRank.GetRange(0, 5).ToArray();
         }
     }
 

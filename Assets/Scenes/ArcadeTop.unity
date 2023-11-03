@@ -1211,6 +1211,7 @@ GameObject:
   - component: {fileID: 989054414}
   - component: {fileID: 989054413}
   - component: {fileID: 989054412}
+  - component: {fileID: 989054415}
   m_Layer: 5
   m_Name: StartButton
   m_TagString: Untagged
@@ -1282,7 +1283,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 989054413}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 989054415}
+        m_TargetAssemblyTypeName: TransSceneButton, Assembly-CSharp
+        m_MethodName: OnClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &989054413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1321,6 +1334,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989054410}
   m_CullTransparentMesh: 1
+--- !u!114 &989054415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989054410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6232649119aae4619b5588b82399ff4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nextSceneName: NormalStage
 --- !u!1 &999100723
 GameObject:
   m_ObjectHideFlags: 0

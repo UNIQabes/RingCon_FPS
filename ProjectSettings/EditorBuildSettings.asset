@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/ArcadeTop.unity
     guid: a6e4d121648c24cc4ac74c4bca4f1d6b
   - enabled: 1
+    path: Assets/Scenes/NormalStage.unity
+    guid: b10bb004bf1cf464d84111e454bda769
+  - enabled: 1
     path: Assets/Scenes/TimeAttackLv2.unity
     guid: 515a0a8db457141de9291cbe61f66428
   - enabled: 1
