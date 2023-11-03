@@ -75,8 +75,10 @@ public class ScoreAttackGameRuler : MonoBehaviour
         if (GetResult(StageNum).recordScore < Score)
         {
             SetResult(StageNum, rank, Score);
+            ResultPanel_p.resultDetails.Add($"<color=orange>Rank In!!</color>");
         }
 
+        
 
         ResultPanel_p.gameObject.SetActive(true);
         ResultPanel_p.DispResultDetails();

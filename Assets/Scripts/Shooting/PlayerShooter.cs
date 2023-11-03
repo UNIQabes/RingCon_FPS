@@ -82,7 +82,7 @@ public class PlayerShooter : MonoBehaviour
     public void OnFullChargedArrowHit(HitData h)
     {
 
-        FillingRate = 1;
+        FillingRate = 0.5f;
     }
 
 

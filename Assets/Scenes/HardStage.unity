@@ -811,7 +811,7 @@ MonoBehaviour:
   ARankMinScore: 3000
   SRankMinScore: 4000
   StageNum: 4
---- !u!114 &515785051
+--- !u!114 &515785052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -820,7 +820,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 515785049}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e31b025dca1b24d0aafdc616d411cbc8, type: 3}
+  m_Script: {fileID: 11500000, guid: f0cb5e6e562fe4d278d7deced3c9da2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   scoreAttackGameRuler: {fileID: 515785050}
@@ -828,8 +828,9 @@ MonoBehaviour:
   - {fileID: 1657228340}
   - {fileID: 936711896}
   - {fileID: 121426066}
-  testObject: {fileID: 119878634}
-  markPrefab: {fileID: 6870522990377567727, guid: c535c8cca13554e7384c438f5d1f3252, type: 3}
+  testObject: {fileID: 0}
+  hardMark_SAM: {fileID: 3231388553436536060, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+  softMark_SAM: {fileID: 7783271861689556522, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
   CountDownText: {fileID: 507151618}
 --- !u!1 &616791464
 GameObject:
@@ -1910,7 +1911,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8272073322420384932, guid: c535c8cca13554e7384c438f5d1f3252, type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8272073322420384932, guid: c535c8cca13554e7384c438f5d1f3252, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2202,3 +2203,133 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5571651706667334213, guid: a9dff5081f66949b7beec9d82451d528, type: 3}
   m_PrefabInstance: {fileID: 2102266631}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7783271862342480665
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 7.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -9.21
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556513, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556520, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_Name
+      value: FallingSoftSAMark
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556520, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783271861689556522, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+      propertyPath: scoreAttackGameRuler
+      value: 
+      objectReference: {fileID: 515785050}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
+--- !u!1001 &7840464535752198986
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523191, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523195, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_Name
+      value: FallingHardSAMark
+      objectReference: {fileID: 0}
+    - target: {fileID: 93867896968523195, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231388553436536060, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
+      propertyPath: scoreAttackGameRuler
+      value: 
+      objectReference: {fileID: 515785050}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}

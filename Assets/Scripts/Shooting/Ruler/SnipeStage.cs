@@ -32,6 +32,8 @@ public class SnipeStage : MonoBehaviour
         CancellationToken cToken = this.gameObject.GetCancellationTokenOnDestroy();
         await UniTask.Delay(4000, false, PlayerLoopTiming.FixedUpdate, cancellationToken: cToken);
         int markTimeLimit=4000;
+        List<GameObject> instantiatedMarks = new List<GameObject>();
+
         markPrefab.DissapearTime = markTimeLimit;
         for (int i=0;i<5;i++)
         {
@@ -40,8 +42,9 @@ public class SnipeStage : MonoBehaviour
             {
                 markPrefab.DissapearTime = markTimeLimit;
                 Vector3 prefabPos= buildingWinPosProviders[Random.Range(0, buildingWinPosProviders.Count)].GetWinPos(Random.Range(0, 4), Random.Range(0, 6));
-                Instantiate(markPrefab, prefabPos,Quaternion.identity);
+                //instantiatedMarks.Add(Instantiate(markPrefab, prefabPos,Quaternion.identity));
             }
+
 
             await UniTask.Delay(markTimeLimit, false, PlayerLoopTiming.FixedUpdate, cToken);
         }
@@ -60,6 +63,7 @@ public class SnipeStage : MonoBehaviour
         markTimeLimit = 10000;
         float markScore = 220;
         markPrefab.DissapearTime = markTimeLimit;
+        
         for (int i = 0; i < 5; i++)
         {
 
