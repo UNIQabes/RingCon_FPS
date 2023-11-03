@@ -19,6 +19,9 @@ public class PlayerDatas : ScriptableObject
     public float Time_TimeAttack1 = 999;
     public string Rank_TimeAttack2 = "C";
     public float Time_TimeAttack2 = 999;
+    public int[] ScoreRanking1=new int[5] {0,0,0,0,0};
+    public int[] ScoreRanking2 = new int[5] { 0, 0, 0, 0, 0 };
+
 
 
     public ShootingControllerMode ControllerMode = ShootingControllerMode.KeyMouse;
@@ -58,6 +61,16 @@ public class PlayerDatas : ScriptableObject
         Time_TimeAttack1=PlayerPrefs.GetFloat("Time_TimeAttack1", 999);
         Time_TimeAttack2=PlayerPrefs.GetFloat("Time_TimeAttack2", 999);
 
+        for (int i = 0; i < 5; i++)
+        {
+            ScoreRanking1[i] = PlayerPrefs.GetInt($"ScoreRanking1[{i}]", 0);
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            ScoreRanking2[i] = PlayerPrefs.GetInt($"ScoreRanking2[{i}]", 0);
+        }
+
+
         MaxXRot_xyOrder_deg = PlayerPrefs.GetInt("MaxXRot_xyOrder_deg", 30);
         MaxYRot_xyOrder_deg = PlayerPrefs.GetInt("MaxYRot_xyOrder_deg", 45);
         XRotOffset_xyOrder_deg = PlayerPrefs.GetInt("XRotOffset_xyOrder_deg", 0);
@@ -73,6 +86,8 @@ public class PlayerDatas : ScriptableObject
 
         XSensitivity = PlayerPrefs.GetInt("XSensitivty", 0);
         YSensitivity = PlayerPrefs.GetInt("YSensitivity", 0);
+
+        
     }
 
     [ContextMenu("SaveToPlayerPrefs")]
@@ -94,6 +109,15 @@ public class PlayerDatas : ScriptableObject
         PlayerPrefs.SetFloat("Score_ScoreAttack2", Score_ScoreAttack2);
         PlayerPrefs.SetFloat("Time_TimeAttack1", Time_TimeAttack1);
         PlayerPrefs.SetFloat("Time_TimeAttack2", Time_TimeAttack2);
+
+        for (int i = 0; i < 5; i++)
+        {
+            PlayerPrefs.SetInt($"ScoreRanking1[{i}]", ScoreRanking1[i]);
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            PlayerPrefs.SetInt($"ScoreRanking2[{i}]", ScoreRanking2[i]);
+        }
 
         PlayerPrefs.SetInt("MaxXRot_xyOrder_deg", MaxXRot_xyOrder_deg);
         PlayerPrefs.SetInt("MaxYRot_xyOrder_deg", MaxYRot_xyOrder_deg);

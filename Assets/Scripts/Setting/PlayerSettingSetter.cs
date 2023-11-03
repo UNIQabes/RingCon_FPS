@@ -9,6 +9,8 @@ public class PlayerSettingSetter : MonoBehaviour
     [SerializeField] TimeAttackRecordDisp timeAttackLv2RecordDisp;
     [SerializeField] ScoreAttackRecordDisp scoreAttackLv1RecordDisp;
     [SerializeField] ScoreAttackRecordDisp scoreAttackLv2RecordDisp;
+    [SerializeField] ScoreRanking scoreRanking1;
+    [SerializeField] ScoreRanking scoreRanking2;
     [SerializeField] string _settingName;
     [SerializeField] bool _enable = true;
     [SerializeField] bool _setOnStart = true;
@@ -95,6 +97,14 @@ public class PlayerSettingSetter : MonoBehaviour
         {
             scoreAttackLv2RecordDisp.RecordScore = playerSettingData.Score_ScoreAttack2;
             scoreAttackLv2RecordDisp.RecordRank = playerSettingData.Rank_ScoreAttack2;
+        }
+        if (scoreRanking1)
+        {
+            scoreRanking1.ScoreList = new List<int>(playerSettingData.ScoreRanking1);
+        }
+        if (scoreRanking2)
+        {
+            scoreRanking2.ScoreList = new List<int>(playerSettingData.ScoreRanking2);
         }
     }
 
