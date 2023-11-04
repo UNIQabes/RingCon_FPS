@@ -807,9 +807,9 @@ MonoBehaviour:
   CountDownText: {fileID: 507151618}
   _playerSettingSetter: {fileID: 211681357}
   ResultPanel_p: {fileID: 2102266632}
-  BRankMinScore: 2000
-  ARankMinScore: 3000
-  SRankMinScore: 4000
+  BRankMinScore: 600
+  ARankMinScore: 900
+  SRankMinScore: 1200
   StageNum: 4
 --- !u!114 &515785052
 MonoBehaviour:
@@ -824,10 +824,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreAttackGameRuler: {fileID: 515785050}
-  buildingWinPosProviders:
-  - {fileID: 1657228340}
-  - {fileID: 936711896}
-  - {fileID: 121426066}
   testObject: {fileID: 0}
   hardMark_SAM: {fileID: 3231388553436536060, guid: 0e9c16f63eaf948f19864edddbb4e2dd, type: 3}
   softMark_SAM: {fileID: 7783271861689556522, guid: 215465a5f79654aed91bd1ad788c5435, type: 3}
@@ -2065,6 +2061,10 @@ PrefabInstance:
     - target: {fileID: 8613495412583890265, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613495412829323995, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: _nextSceneName
+      value: ArcadeTop
       objectReference: {fileID: 0}
     - target: {fileID: 8613495412839204750, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_text

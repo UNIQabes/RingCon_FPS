@@ -24,8 +24,8 @@ MonoBehaviour:
   Score_ScoreAttack2: 0
   Rank_TimeAttack1: C
   Time_TimeAttack1: 999
-  Rank_TimeAttack2: C
-  Time_TimeAttack2: 999
+  Rank_TimeAttack2: S
+  Time_TimeAttack2: 32.920563
   ScoreRanking1: 0000000000000000000000000000000000000000
   ScoreRanking2: 0000000000000000000000000000000000000000
   ControllerMode: 1

@@ -37,98 +37,107 @@ public class HardStage : MonoBehaviour
     {
         CancellationToken cToken = this.gameObject.GetCancellationTokenOnDestroy();
         await UniTask.Delay(4000, false, PlayerLoopTiming.FixedUpdate, cancellationToken: cToken);
-        int markTimeLimit=4000;
+
+
+        //wave1---------
+        int SoftMarkScore = 30;
+        int HardMarkScore = 100;
+        float fallingSpeed = 1;
+        int markTimeLimit = (int)(6000/fallingSpeed);
+        int MarkAppearInterval = 500;
+        List<int> HardMarkAppear = new List<int>(new int[] { 4 ,9});
         List<GameObject> instantiatedMarks = new List<GameObject>();
 
-        
+        softMark_SAM.DissapearTime=hardMark_SAM.DissapearTime = markTimeLimit;
+        softMark_FM.FallingSpeed = hardMark_FM.FallingSpeed = fallingSpeed;
 
-        hardMark_SAM.DissapearTime = markTimeLimit;
-        softMark_SAM.DissapearTime = markTimeLimit;
-        for (int i=0;i<5;i++)
+        softMark_SAM.score = SoftMarkScore;
+        hardMark_SAM.score = HardMarkScore;
+
+        for (int i=0;i<10;i++)
         {
-
-            //markPrefab.DissapearTime = markTimeLimit;
-            //Vector3 prefabPos= buildingWinPosProviders[Random.Range(0, buildingWinPosProviders.Count)].GetWinPos(Random.Range(0, 4), Random.Range(0, 6));
             Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
-            instantiatedMarks.Add(Instantiate(softMark_SAM.gameObject, prefabPos, Quaternion.identity));
-
-
-            //await UniTask.Delay(markTimeLimit, false, PlayerLoopTiming.FixedUpdate, cToken);
-            await UniTask.WaitUntil(()=> { instantiatedMarks.RemoveAll((o)=>o==null);return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
+            instantiatedMarks.Add(Instantiate(HardMarkAppear.Contains(i)?hardMark_SAM.gameObject: softMark_SAM.gameObject, prefabPos, Quaternion.identity));
+            await UniTask.Delay(MarkAppearInterval);
         }
-
-        
-        await UniTask.Delay(1000);
-        CountDownText.gameObject.SetActive(true);
-        CountDownText.text = "3";
-        await UniTask.Delay(1000);
-        CountDownText.text = "2";
-        await UniTask.Delay(1000);
-        CountDownText.text = "1";
-        await UniTask.Delay(1000);
-        CountDownText.gameObject.SetActive(false);
-
-        markTimeLimit = 10000;
-        float markScore = 220;
-        hardMark_SAM.DissapearTime = markTimeLimit;
-        softMark_SAM.DissapearTime = markTimeLimit;
-        hardMark_SAM.score = markScore;
-        softMark_SAM.score = markScore;
-
-        for (int i = 0; i < 5; i++)
-        {
-
-            //markPrefab.score = markScore;
-            //markPrefab.DissapearTime = markTimeLimit;
-            for (int v = 0; v < 3; v++)
-            {
-                //Vector3 prefabPos = buildingWinPosProviders[Random.Range(0, buildingWinPosProviders.Count)].GetWinPos(Random.Range(0, 4), Random.Range(0, 6));
-                Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
-                instantiatedMarks.Add(Instantiate(softMark_SAM.gameObject, prefabPos, Quaternion.identity));
-            }
-            //await UniTask.Delay(markTimeLimit, false, PlayerLoopTiming.FixedUpdate, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
-            await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
-        }
-
-        await UniTask.Delay(1000);
-        CountDownText.gameObject.SetActive(true);
-        CountDownText.text = "3";
-        await UniTask.Delay(1000);
-        CountDownText.text = "2";
-        await UniTask.Delay(1000);
-        CountDownText.text = "1";
-        await UniTask.Delay(1000);
-        CountDownText.gameObject.SetActive(false);
-
-
-        markTimeLimit = 4000;
-        markScore = 200;
-        softMark_SAM.DissapearTime = markTimeLimit;
-        softMark_SAM.score = markScore;
-        hardMark_SAM.DissapearTime = markTimeLimit;
-        hardMark_SAM.score = markScore;
-        for (int i = 0; i < 5; i++)
-        {
-
-            //markPrefab.DissapearTime = markTimeLimit;
-            //markPrefab.score = markScore;
-            //Vector3 prefabPos = buildingWinPosProviders[Random.Range(0, buildingWinPosProviders.Count)].GetWinPos(Random.Range(0, 4), Random.Range(0, 6));
-            Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
-            instantiatedMarks.Add(Instantiate(softMark_SAM.gameObject, prefabPos, Quaternion.identity));
-
-            //await UniTask.Delay(markTimeLimit, false, PlayerLoopTiming.FixedUpdate, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
-            await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
-            markTimeLimit -= 250;
-            markScore += 20;
-        }
-
-        //markPrefab.DissapearTime = markTimeLimit;
-        //markPrefab.score = markScore;
-        //Vector3 LastPrefabPos = buildingWinPosProviders[0].GetWinPos(3, 2);
-        Vector3 LastPrefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
-        instantiatedMarks.Add(Instantiate(softMark_SAM.gameObject, LastPrefabPos, Quaternion.identity));
-        //await UniTask.Delay(markTimeLimit, false, PlayerLoopTiming.FixedUpdate, cancellationToken: gameObject.GetCancellationTokenOnDestroy());
         await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
+
+        CountDownText.gameObject.SetActive(true);
+        CountDownText.text = "Speed Up!!";
+        await UniTask.Delay(1000);
+        CountDownText.text = "3";
+        await UniTask.Delay(1000);
+        CountDownText.text = "2";
+        await UniTask.Delay(1000);
+        CountDownText.text = "1";
+        await UniTask.Delay(1000);
+        CountDownText.gameObject.SetActive(false);
+
+
+        //wave2---------
+        SoftMarkScore = 45;
+        HardMarkScore = 150;
+        fallingSpeed = 2;
+        markTimeLimit = (int)(6000 / fallingSpeed);
+        MarkAppearInterval = 500;
+        HardMarkAppear = new List<int>(new int[] { 4 });
+        instantiatedMarks = new List<GameObject>();
+
+        softMark_SAM.DissapearTime = hardMark_SAM.DissapearTime = markTimeLimit;
+        softMark_FM.FallingSpeed = hardMark_FM.FallingSpeed = fallingSpeed;
+
+        softMark_SAM.score = SoftMarkScore;
+        hardMark_SAM.score = HardMarkScore;
+
+
+        for (int i = 0; i < 15; i++)
+        {
+            Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
+            instantiatedMarks.Add(Instantiate(HardMarkAppear.Contains(i) ? hardMark_SAM.gameObject : softMark_SAM.gameObject, prefabPos, Quaternion.identity));
+            await UniTask.Delay(MarkAppearInterval);
+        }
+        await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
+
+        CountDownText.gameObject.SetActive(true);
+        CountDownText.text = "Speed Up!!";
+        await UniTask.Delay(1000);
+        CountDownText.text = "3";
+        await UniTask.Delay(1000);
+        CountDownText.text = "2";
+        await UniTask.Delay(1000);
+        CountDownText.text = "1";
+        await UniTask.Delay(1000);
+        CountDownText.gameObject.SetActive(false);
+
+
+        //wave3---------
+        SoftMarkScore = 60;
+        HardMarkScore = 200;
+        fallingSpeed = 3;
+        markTimeLimit = (int)(6000 / fallingSpeed);
+        MarkAppearInterval = 500;
+        HardMarkAppear = new List<int>(new int[] { 4,10,18,29 });
+        instantiatedMarks = new List<GameObject>();
+
+        softMark_SAM.DissapearTime = hardMark_SAM.DissapearTime = markTimeLimit;
+        softMark_FM.FallingSpeed = hardMark_FM.FallingSpeed = fallingSpeed;
+
+        softMark_SAM.score = SoftMarkScore;
+        hardMark_SAM.score = HardMarkScore;
+
+
+        for (int i = 0; i < 20; i++)
+        {
+            Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
+            instantiatedMarks.Add(Instantiate(HardMarkAppear.Contains(i) ? hardMark_SAM.gameObject : softMark_SAM.gameObject, prefabPos, Quaternion.identity));
+            await UniTask.Delay(MarkAppearInterval);
+        }
+        await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
+
+        CountDownText.gameObject.SetActive(true);
+        CountDownText.text = "Finish!!";
+        await UniTask.Delay(1000);
+        CountDownText.gameObject.SetActive(false);
 
         scoreAttackGameRuler.isGameFinished = true;
     }

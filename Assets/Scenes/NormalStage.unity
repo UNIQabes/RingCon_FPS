@@ -2065,6 +2065,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8613495412829323995, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
+      propertyPath: _nextSceneName
+      value: ArcadeTop
+      objectReference: {fileID: 0}
     - target: {fileID: 8613495412839204750, guid: 85fb7450bb533494c8f3929ea3c74b8f, type: 3}
       propertyPath: m_text
       value: ScoreAttackLv1
