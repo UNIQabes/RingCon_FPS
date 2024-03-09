@@ -20,6 +20,7 @@ public class ScoreAttackGameRuler : MonoBehaviour
     public float SRankMinScore;
     public int StageNum;
 
+
     void Start()
     {
         Score = 0;
@@ -27,6 +28,7 @@ public class ScoreAttackGameRuler : MonoBehaviour
         ScoreText.text = $"Score:{(int)Score}";
         CountDownText.gameObject.SetActive(false);
         FixedUpdateAsync().Forget();
+
     }
 
 
@@ -34,14 +36,14 @@ public class ScoreAttackGameRuler : MonoBehaviour
     async UniTaskVoid FixedUpdateAsync()
     {
         CancellationToken cToken = this.gameObject.GetCancellationTokenOnDestroy();
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(true);
         CountDownText.text = "3";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "2";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "1";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(false);
         await UniTask.WaitUntil(() =>
         {

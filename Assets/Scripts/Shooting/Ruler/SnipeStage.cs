@@ -51,18 +51,21 @@ public class SnipeStage : MonoBehaviour
         }
 
         
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(true);
         CountDownText.text = "3";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "2";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "1";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(false);
 
+        
         markTimeLimit = 10000;
         float markScore = 220;
+
+        /*
         markPrefab.DissapearTime = markTimeLimit;
         
         for (int i = 0; i < 5; i++)
@@ -91,7 +94,7 @@ public class SnipeStage : MonoBehaviour
         CountDownText.text = "1";
         await UniTask.Delay(1000);
         CountDownText.gameObject.SetActive(false);
-
+        */
 
         markTimeLimit = 4000;
         markScore = 200;
@@ -120,10 +123,10 @@ public class SnipeStage : MonoBehaviour
             await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
         }
 
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(true);
         CountDownText.text = "Finish!!";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(false);
 
         scoreAttackGameRuler.isGameFinished = true;

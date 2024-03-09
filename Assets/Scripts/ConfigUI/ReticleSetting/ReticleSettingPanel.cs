@@ -131,6 +131,7 @@ public class ReticleSettingPanel : MonoBehaviour
 
     public void OnPowButtonPushed()
     {
+        Debug.Log("Set to Scriptable Object");
         Debug.Log("Pow");
         SetRingconStrengthButtonColor(0);
 
@@ -141,6 +142,7 @@ public class ReticleSettingPanel : MonoBehaviour
     }
     public void OnModButtonPushed()
     {
+        Debug.Log("Set to Scriptable Object");
         Debug.Log("Mod");
         SetRingconStrengthButtonColor(1);
 
@@ -151,6 +153,7 @@ public class ReticleSettingPanel : MonoBehaviour
     }
     public void OnWeakButtonPushed()
     {
+        Debug.Log("Set to Scriptable Object");
         Debug.Log("Weak");
         SetRingconStrengthButtonColor(2);
 
@@ -164,6 +167,8 @@ public class ReticleSettingPanel : MonoBehaviour
     //便利関数
     public void SetRingconStrengthButtonColor(int ButtonNum)
     {
+        
+
         ColorBlock cb =　 _pow_RConStrengthButton.colors;
         cb.highlightedColor = (ButtonNum == 0) ? Color.white : Color.yellow;
         cb.normalColor = (ButtonNum ==0)? Color.yellow:Color.white;

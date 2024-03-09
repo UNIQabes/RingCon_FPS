@@ -45,7 +45,9 @@ public class PlayerDatas : ScriptableObject
     [ContextMenu("LoadFromPlayerPrefs")]
     public void LoadFromPlayerPrefs()
     {
-        Rank_HittingStage1=PlayerPrefs.GetString("Rank_HittingStage1","C");
+        Debug.Log("Load From PlayerPrefs");
+
+        Rank_HittingStage1 =PlayerPrefs.GetString("Rank_HittingStage1","C");
         Rank_HittingStage2 = PlayerPrefs.GetString("Rank_HittingStage2", "C");
         Rank_HittingStage3 = PlayerPrefs.GetString("Rank_HittingStage3", "C");
         Rank_ScoreAttack1=PlayerPrefs.GetString("Rank_ScoreAttack1", "C");
@@ -93,6 +95,8 @@ public class PlayerDatas : ScriptableObject
     [ContextMenu("SaveToPlayerPrefs")]
     public void SaveToPlayerPrefs()
     {
+        Debug.Log("Set to PlayerPrefs");
+
         PlayerPrefs.SetString("Rank_HittingStage1", Rank_HittingStage1);
         PlayerPrefs.SetString("Rank_HittingStage2", Rank_HittingStage2);
         PlayerPrefs.SetString("Rank_HittingStage3", Rank_HittingStage3);
@@ -126,9 +130,9 @@ public class PlayerDatas : ScriptableObject
         PlayerPrefs.SetFloat("GyroXCalibration", GyroXCalibration);
         PlayerPrefs.SetFloat("GyroYCalibration", GyroYCalibration);
         PlayerPrefs.SetFloat("GyroZCalibration", GyroZCalibration);
-        PlayerPrefs.SetInt("RingconThreshold_Pull", 3800);
-        PlayerPrefs.SetInt("RingconStrain_mod", 4330);
-        PlayerPrefs.SetInt("RingconThreshold_Push", 5000);
+        PlayerPrefs.SetInt("RingconThreshold_Pull", RingconThreshold_Pull);
+        PlayerPrefs.SetInt("RingconStrain_mod", RingconStrain_mod);
+        PlayerPrefs.SetInt("RingconThreshold_Push", RingconThreshold_Push);
 
 
         PlayerPrefs.SetInt("XSensitivty", XSensitivity);

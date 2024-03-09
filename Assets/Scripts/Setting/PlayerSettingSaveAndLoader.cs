@@ -25,6 +25,7 @@ public class PlayerSettingSaveAndLoader : MonoBehaviour
 
     void SaveSetting()
     {
+        
         if (!_enable)
         {
             return;
@@ -41,6 +42,7 @@ public class PlayerSettingSaveAndLoader : MonoBehaviour
 
     void LoadSetting()
     {
+
         if (!_enable)
         {
             return;

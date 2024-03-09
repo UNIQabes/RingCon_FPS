@@ -23,7 +23,6 @@ public class HardStage : MonoBehaviour
         softMark_FM= softMark_SAM.gameObject.GetComponent<FallingMover>();
         hardMark_SAM.scoreAttackGameRuler = scoreAttackGameRuler;
         softMark_SAM.scoreAttackGameRuler = scoreAttackGameRuler;
-
         FixedUpdateAsync().Forget();
     }
 
@@ -48,8 +47,10 @@ public class HardStage : MonoBehaviour
         List<int> HardMarkAppear = new List<int>(new int[] { 4 ,9});
         List<GameObject> instantiatedMarks = new List<GameObject>();
 
-        softMark_SAM.DissapearTime=hardMark_SAM.DissapearTime = markTimeLimit;
-        softMark_FM.FallingSpeed = hardMark_FM.FallingSpeed = fallingSpeed;
+        softMark_SAM.DissapearTime = markTimeLimit;
+        hardMark_SAM.DissapearTime = markTimeLimit * 2;
+        softMark_FM.FallingSpeed = fallingSpeed;
+        hardMark_FM.FallingSpeed = fallingSpeed /2;
 
         softMark_SAM.score = SoftMarkScore;
         hardMark_SAM.score = HardMarkScore;
@@ -58,19 +59,19 @@ public class HardStage : MonoBehaviour
         {
             Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
             instantiatedMarks.Add(Instantiate(HardMarkAppear.Contains(i)?hardMark_SAM.gameObject: softMark_SAM.gameObject, prefabPos, Quaternion.identity));
-            await UniTask.Delay(MarkAppearInterval);
+            await UniTask.Delay(MarkAppearInterval, cancellationToken: cToken);
         }
         await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
 
         CountDownText.gameObject.SetActive(true);
         CountDownText.text = "Speed Up!!";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000,cancellationToken: cToken);
         CountDownText.text = "3";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "2";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "1";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(false);
 
 
@@ -83,8 +84,10 @@ public class HardStage : MonoBehaviour
         HardMarkAppear = new List<int>(new int[] { 4 });
         instantiatedMarks = new List<GameObject>();
 
-        softMark_SAM.DissapearTime = hardMark_SAM.DissapearTime = markTimeLimit;
-        softMark_FM.FallingSpeed = hardMark_FM.FallingSpeed = fallingSpeed;
+        softMark_SAM.DissapearTime =  markTimeLimit;
+        hardMark_SAM.DissapearTime = markTimeLimit*2;
+        softMark_FM.FallingSpeed = fallingSpeed;
+        hardMark_FM.FallingSpeed = fallingSpeed/2;
 
         softMark_SAM.score = SoftMarkScore;
         hardMark_SAM.score = HardMarkScore;
@@ -94,19 +97,19 @@ public class HardStage : MonoBehaviour
         {
             Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
             instantiatedMarks.Add(Instantiate(HardMarkAppear.Contains(i) ? hardMark_SAM.gameObject : softMark_SAM.gameObject, prefabPos, Quaternion.identity));
-            await UniTask.Delay(MarkAppearInterval);
+            await UniTask.Delay(MarkAppearInterval, cancellationToken: cToken);
         }
         await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
 
         CountDownText.gameObject.SetActive(true);
         CountDownText.text = "Speed Up!!";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "3";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "2";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.text = "1";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(false);
 
 
@@ -119,8 +122,10 @@ public class HardStage : MonoBehaviour
         HardMarkAppear = new List<int>(new int[] { 4,10,18,29 });
         instantiatedMarks = new List<GameObject>();
 
-        softMark_SAM.DissapearTime = hardMark_SAM.DissapearTime = markTimeLimit;
-        softMark_FM.FallingSpeed = hardMark_FM.FallingSpeed = fallingSpeed;
+        softMark_SAM.DissapearTime = markTimeLimit;
+        hardMark_SAM.DissapearTime = markTimeLimit * 2;
+        softMark_FM.FallingSpeed = fallingSpeed;
+        hardMark_FM.FallingSpeed = fallingSpeed /2;
 
         softMark_SAM.score = SoftMarkScore;
         hardMark_SAM.score = HardMarkScore;
@@ -130,13 +135,13 @@ public class HardStage : MonoBehaviour
         {
             Vector3 prefabPos = new Vector3(Random.Range(-9, 9), Random.Range(9, 11), -5);
             instantiatedMarks.Add(Instantiate(HardMarkAppear.Contains(i) ? hardMark_SAM.gameObject : softMark_SAM.gameObject, prefabPos, Quaternion.identity));
-            await UniTask.Delay(MarkAppearInterval);
+            await UniTask.Delay(MarkAppearInterval, cancellationToken: cToken);
         }
         await UniTask.WaitUntil(() => { instantiatedMarks.RemoveAll((o) => o == null); return instantiatedMarks.Count == 0; }, PlayerLoopTiming.FixedUpdate, cToken);
 
         CountDownText.gameObject.SetActive(true);
         CountDownText.text = "Finish!!";
-        await UniTask.Delay(1000);
+        await UniTask.Delay(1000, cancellationToken: cToken);
         CountDownText.gameObject.SetActive(false);
 
         scoreAttackGameRuler.isGameFinished = true;

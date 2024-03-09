@@ -61,6 +61,7 @@ public class PlayerSettingSetter : MonoBehaviour
         //PlayerDataをセット
         if (_shootingController)
         {
+            Debug.Log($"Set to ShootingController:{playerSettingData.RingconThreshold_Push}/{_playerSettingData.RingconStrain_mod}/{playerSettingData.RingconThreshold_Pull}");
             _shootingController.MaxXRot_xyOrder_deg = playerSettingData.MaxXRot_xyOrder_deg;
             _shootingController.MaxYRot_xyOrder_deg = playerSettingData.MaxYRot_xyOrder_deg;
             _shootingController.XRot_xyOrder_ResetYRot_deg=-playerSettingData.MaxXRot_xyOrder_deg;

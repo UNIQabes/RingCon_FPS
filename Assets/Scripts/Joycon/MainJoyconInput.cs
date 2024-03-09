@@ -428,13 +428,13 @@ public class MainJoyconInput : Joycon_obs
 
     public static void applyIMUData(Vector3 accV, Vector3 gyroV, float sec)
     {
-        (JoyconPose_R_Arrow,SmoothedPose_R_Arrow) =applyIMUData(accV,gyroV,sec,JoyconPose_R_Arrow, SmoothedPose_R_Arrow);
-        (JoyconPose_R_Ring, SmoothedPose_R_Ring) = applyIMUData(accV, gyroV, sec, JoyconPose_R_Ring, SmoothedPose_R_Ring);
-        (JoyconPose_R, SmoothedPose_R) = applyIMUData(accV, gyroV, sec, JoyconPose_R, SmoothedPose_R);
-        (JoyconPose_R_Remote, SmoothedPose_R_Remote) = applyIMUData(accV, gyroV, sec, JoyconPose_R_Remote, SmoothedPose_R_Remote);
+        (JoyconPose_R_Arrow,SmoothedPose_R_Arrow) =applyIMUData(accV,gyroV,sec,JoyconPose_R_Arrow, SmoothedPose_R_Arrow,FrontVector_R_Arrow,DownWardVector_R_Arrow);
+        (JoyconPose_R_Ring, SmoothedPose_R_Ring) = applyIMUData(accV, gyroV, sec, JoyconPose_R_Ring, SmoothedPose_R_Ring, FrontVector_R_Arrow, DownWardVector_R_Arrow);
+        (JoyconPose_R, SmoothedPose_R) = applyIMUData(accV, gyroV, sec, JoyconPose_R, SmoothedPose_R, FrontVector_R_Arrow, DownWardVector_R_Arrow);
+        (JoyconPose_R_Remote, SmoothedPose_R_Remote) = applyIMUData(accV, gyroV, sec, JoyconPose_R_Remote, SmoothedPose_R_Remote, FrontVector_R_Arrow, DownWardVector_R_Arrow);
     }
 
-    private static (Quaternion pose,Quaternion smoothedPose) applyIMUData(Vector3 accV, Vector3 gyroV, float sec,Quaternion prevPose, Quaternion prevSmoothedPose)
+    private static (Quaternion pose,Quaternion smoothedPose) applyIMUData(Vector3 accV, Vector3 gyroV, float sec,Quaternion prevPose, Quaternion prevSmoothedPose, Vector3 frontVector, Vector3 downwardVector)
     {
         Quaternion retPose = prevPose;
         Quaternion retSmoothedPose = prevSmoothedPose;
@@ -449,9 +449,19 @@ public class MainJoyconInput : Joycon_obs
         float acc_mag1 = accV.magnitude;
         if (Mathf.Abs(1 - (acc_mag1)) < 0.001f)
         {
+            /*
             Vector3 gravityV = -accV;
             Vector3 gravityV_For_RetPose= retPose*gravityV;
             retPose = V3_MyUtil.RotateV2V(gravityV_For_RetPose,new Vector3(0, 1, 0))* retPose;
+            */
+            Vector3 gravityV = -accV;
+            Quaternion accPose = V3_MyUtil.RotateV2V(gravityV, downwardVector);
+            Vector3 gyro_frontV = retPose * frontVector.normalized;
+            Vector3 acc_frontV = accPose * frontVector.normalized;
+            Vector3 gyroFront_DownVVertical = V3_MyUtil.GetVerticalComp(gyro_frontV, downwardVector).normalized;
+            Vector3 accFront_DownVVertical = V3_MyUtil.GetVerticalComp(acc_frontV, downwardVector).normalized;
+            accPose = V3_MyUtil.RotateV2V(accFront_DownVVertical, gyroFront_DownVVertical) * accPose;
+            retPose = accPose;
         }
         return (retPose, retSmoothedPose);
     }

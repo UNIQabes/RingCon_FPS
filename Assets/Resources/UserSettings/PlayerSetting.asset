@@ -29,15 +29,15 @@ MonoBehaviour:
   ScoreRanking1: 0000000000000000000000000000000000000000
   ScoreRanking2: 0000000000000000000000000000000000000000
   ControllerMode: 1
-  MaxXRot_xyOrder_deg: 30
-  MaxYRot_xyOrder_deg: 20
+  MaxXRot_xyOrder_deg: 45
+  MaxYRot_xyOrder_deg: 30
   XRotOffset_xyOrder_deg: 0
   GyroDriftCalibration_YRot_xyOrder: 0
   GyroXCalibration: -0.91
   GyroYCalibration: 2.66
   GyroZCalibration: 1.33
   RingconThreshold_Pull: 3800
-  RingconStrain_mod: 4330
-  RingconThreshold_Push: 5000
+  RingconStrain_mod: 4000
+  RingconThreshold_Push: 4700
   XSensitivity: 0
   YSensitivity: 0

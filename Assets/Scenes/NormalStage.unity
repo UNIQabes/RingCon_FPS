@@ -807,9 +807,9 @@ MonoBehaviour:
   CountDownText: {fileID: 507151618}
   _playerSettingSetter: {fileID: 211681357}
   ResultPanel_p: {fileID: 2102266632}
-  BRankMinScore: 2000
-  ARankMinScore: 3000
-  SRankMinScore: 4000
+  BRankMinScore: 1400
+  ARankMinScore: 1800
+  SRankMinScore: 2300
   StageNum: 3
 --- !u!114 &515785051
 MonoBehaviour:
@@ -1253,7 +1253,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
