@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3551298863306091744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3551298863306091745}
+  - component: {fileID: 3551298863306091746}
+  - component: {fileID: 3551298863306091747}
+  - component: {fileID: 3551298863306091749}
+  - component: {fileID: 3551298863306091748}
+  m_Layer: 0
+  m_Name: GM
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3551298863306091745
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3551298863306091744}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.5, z: 3.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3551298863306091746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3551298863306091744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2204410779c714643b138d99448bbf6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerShooter: {fileID: 0}
+  _reticleGobj: {fileID: 0}
+  _chargeCircleImage: {fileID: 0}
+  _canvasRect: {fileID: 0}
+  _reticleGraphic: {fileID: 0}
+  MaxXRot_xyOrder_deg: 0
+  MaxYRot_xyOrder_deg: 0
+  XRot_xyOrder_ResetYRot_deg: -75
+  XRot_Offset_xyOrder_deg: 0
+  GyroDriftCalibration_YRot_xyOrder: 2.5
+  XSensetivity_KeyMouseMode: 0
+  YSensetivity_KeyMouseMode: 0
+  ControllerMode: 1
+--- !u!114 &3551298863306091747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3551298863306091744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b5fdeb96aa54d47b561beea3b51c4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3551298863306091749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3551298863306091744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bede7640d9c0d4a74869a732eb17ae2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SettingName: PlayerSetting
+  _enable: 1
+  _loadSettingOnStart: 1
+  _saveSettingOnDestroy: 1
+--- !u!114 &3551298863306091748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3551298863306091744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20a9362534b4467cbc49cdddc64afd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shootingController: {fileID: 3551298863306091746}
+  timeAttackLv1RecordDisp: {fileID: 0}
+  timeAttackLv2RecordDisp: {fileID: 0}
+  scoreAttackLv1RecordDisp: {fileID: 0}
+  scoreAttackLv2RecordDisp: {fileID: 0}
+  _settingName: PlayerSetting
+  _enable: 1
+  _setOnStart: 1

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c676bb24202274abe968381d4f48c27c, type: 3}
+  m_Name: PlayerSetting
+  m_EditorClassIdentifier: 
+  Rank_HittingStage1: C
+  Score_HittingStage1: 0
+  Rank_HittingStage2: C
+  Score_HittingStage2: 0
+  Rank_HittingStage3: C
+  Score_HittingStage3: 0
+  Rank_ScoreAttack1: C
+  Score_ScoreAttack1: 0
+  Rank_ScoreAttack2: C
+  Score_ScoreAttack2: 0
+  Rank_TimeAttack1: C
+  Time_TimeAttack1: 999
+  Rank_TimeAttack2: S
+  Time_TimeAttack2: 32.920563
+  ScoreRanking1: 0000000000000000000000000000000000000000
+  ScoreRanking2: 0000000000000000000000000000000000000000
+  ControllerMode: 1
+  MaxXRot_xyOrder_deg: 45
+  MaxYRot_xyOrder_deg: 30
+  XRotOffset_xyOrder_deg: 0
+  GyroDriftCalibration_YRot_xyOrder: 0
+  GyroXCalibration: -0.91
+  GyroYCalibration: 2.66
+  GyroZCalibration: 1.33
+  RingconThreshold_Pull: 3800
+  RingconStrain_mod: 4000
+  RingconThreshold_Push: 4700
+  XSensitivity: 0
+  YSensitivity: 0

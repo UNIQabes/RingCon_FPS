@@ -42,7 +42,9 @@ public static class MyMarshal
 
     public static string intPtrToStrUtf32(IntPtr intPtr, int maxlen)
     {
+
         string retV = "";
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         byte[] wcharBuf = new byte[4];
         IntPtr curPtr = intPtr;
         while (true)
@@ -62,6 +64,12 @@ public static class MyMarshal
             }
             curPtr = IntPtr.Add(curPtr, 4);
         }
+#elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        retV = Marshal.PtrToStringAnsi(intPtr);
+#endif
+
         return retV;
     }
+
+
 }

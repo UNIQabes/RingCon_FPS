@@ -4,5 +4,38 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/MJITestScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/ArcadeTop.unity
+    guid: a6e4d121648c24cc4ac74c4bca4f1d6b
+  - enabled: 0
+    path: Assets/Scenes/StartScene.unity
+    guid: 76e597e69ad604b0ba33fced318fbca1
+  - enabled: 1
+    path: Assets/Scenes/ShootingRange.unity
+    guid: cac46a66d52454c7e86123abe9f226f6
+  - enabled: 0
+    path: Assets/Scenes/StageSelectScene.unity
+    guid: a73b949015f4e4fee90c2606efa33d9a
+  - enabled: 1
+    path: Assets/Scenes/NormalStage.unity
+    guid: b10bb004bf1cf464d84111e454bda769
+  - enabled: 0
+    path: Assets/Scenes/TimeAttackLv2.unity
+    guid: 515a0a8db457141de9291cbe61f66428
+  - enabled: 0
+    path: Assets/Scenes/TimeAttackLv1.unity
+    guid: 895490f0b53f943e7a85326eb85ec3fa
+  - enabled: 1
+    path: Assets/Scenes/HardStage.unity
+    guid: 4267cffee393e4bf1b1ab5c7ab84d460
+  - enabled: 0
+    path: Assets/Scenes/ScoreAttackLv1.unity
+    guid: ba4d513bf456744e4932bf75547eddb0
+  - enabled: 0
+    path: Assets/Scenes/ScoreAttackLv2.unity
+    guid: b6717aaf502f340f0ac0763d59bee40f
   m_configObjects: {}
